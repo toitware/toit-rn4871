@@ -1,0 +1,1 @@
+# Repository with drivers for utilising Bluetooth module RN4871 for the purpose of Smart Tire project
