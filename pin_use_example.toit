@@ -10,5 +10,5 @@ main:
     analog := Adc (gpio.Pin 33)
 
     while true:
-        print analog.get
+        print analog.get/1024.0
         sleep --ms=1000
