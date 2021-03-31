@@ -12,8 +12,12 @@ main:
   tx_pin := gpio.Pin TX_PIN
   rx_pin := gpio.Pin RX_PIN 
   rst_pin := gpio.Pin RESET_PIN --input=false --output=true --pull_up=true --pull_down=false
+  
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
-
-  device.command_mode
-  device.write "GA"
-  print device.read
+  
+//   device.reboot
+  sleep --ms=1000
+  print "Pre configuration mode"
+  device.enterConfigurationMode
+  print "Past configuration mode"
+  print device.getName
