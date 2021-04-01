@@ -20,8 +20,9 @@ PROMPT_LEN ::= 4
 PROMPT_END ::= "END"
 PROMPT_END_FIST_CHAR ::= 'E'
 PROMPT_END_LAST_CHAR ::= 'D'
+PROMPT_ERROR ::= "Err"
 
-DATA_LAST_CHAR ::= '\r'
+DATA_LAST_CHAR ::= "\r"
 
 CONF_COMMAND::= "\$\$\$"
 
@@ -60,11 +61,26 @@ ENUM_PARTIAL_ANSWER ::= 2
 ENUM_COMPLETE_ANSWER ::= 3
 ENUM_DATA_ANSWER ::= 4
 
+// Baudrate settings
+ENUM_BAUDRATE_460800 ::= 1
+ENUM_BAUDRATE_921600 ::= 0
+ENUM_BAUDRATE_230400 ::= 2
+ENUM_BAUDRATE_115200 ::= 3
+ENUM_BAUDRATE_57600 ::= 4
+ENUM_BAUDRATE_38400 ::= 5
+ENUM_BAUDRATE_28800 ::= 6
+ENUM_BAUDRATE_19200 ::= 7
+ENUM_BAUDRATE_14400 ::= 8
+ENUM_BAUDRATE_9600 ::= 9
+ENUM_BAUDRATE_4800 ::= 0xA
+ENUM_BAUDRATE_2400 ::= 0xB
+
+
 class RN4871:
   
   recMessage := ""
   antenna/serial.Port
-  status/int
+  status/int := ENUM_DATAMODE
   answerLen/int := 0
   uartBuffer := []
   uartBufferLen := 10
@@ -74,19 +90,6 @@ class RN4871:
   tx_pin_/gpio.Pin
   reset_pin_/gpio.Pin
   bleAddress := []
-
-
-/*
-private:
-    boolean checkAnswer(const char *answer);
-    char *uartBuffer;
-    int uartBufferLen;
-    RN4870StatusE status;
-    char endStreamChar;
-    char bleAddress[6];
-*/
-  
-  
 
 
 
@@ -105,20 +108,33 @@ private:
     reset_pin_.set 0
     sleep --ms=50
     reset_pin_.set 1
-    recMessage = readData
-    if(recMessage == "%REBOOT%"):
-      print "Communication established properly. Message received:"
-      print recMessage
-      recMessage = ""   
+    answerOrTimeout
+    if(popData == "%REBOOT%"):
+      sleep --ms=INTERNAL_CMD_TIMEOUT*5
+      print "Reboot successfull. Communication established properly"
       return true
     else:
-      print "Communication not established, Message received"
-      print recMessage
-      recMessage = ""   
+      print "Reboot failure. Communication not established"
       return false
 
+  popData -> string:
+    result := recMessage
+    recMessage = ""
+    answerLen = 0
+    return result
+  
   readData -> string:
-    return antenna.read.to_string.trim
+    return recMessage
+
+
+  answerOrTimeout -> bool:
+    with_timeout --ms=INTERNAL_CMD_TIMEOUT: 
+      uartBuffer = antenna.read
+      recMessage = uartBuffer.to_string.trim
+      answerLen = recMessage.size
+      return true
+
+    return false
 
   startBLE userRA=null:
     if (this.enterConfigurationMode == false):
@@ -135,11 +151,11 @@ private:
   enterConfigurationMode ->bool:
     // Command mode
     sendData CONF_COMMAND
-    recMessage = readData
-    print "elo"
-    print recMessage
-    if(recMessage == PROMPT):
+    answerOrTimeout
+    
+    if(popData == PROMPT):
       print "Command mode set up"
+      setStatus ENUM_CONFMODE
       return true   
     else:
       print "Failed to set command mode"
@@ -148,11 +164,11 @@ private:
   enterDataMode ->bool:
     setStatus ENUM_ENTER_DATMODE
     antenna.write EXIT_CONF
-    return true;
+    
+    return answerOrTimeout
 
   hasAnswer:
-    recMessage = antenna.read
-    uartBuffer = recMessage
+    uartBuffer = recMessage.to_byte_array
     
     if(status != ENUM_DATAMODE):
       if(uartBuffer.last == endStreamChar):
@@ -173,7 +189,7 @@ private:
         return false
     
     rawConfiguration FACTORY_RESET
-    return true
+    return answerOrTimeout
 
   assignRandomAddress userRA ->bool:
     if(status == ENUM_CONFMODE):
@@ -185,7 +201,7 @@ private:
         rawConfiguration AUTO_RANDOM_ADDRESS
       
       if(answerOrTimeout == true):
-        setAddress this.recMessage.trim.to_int
+        setAddress popData.trim.to_byte_array
         return true
       else:
         return false
@@ -195,8 +211,8 @@ private:
 
   sendData message/string:
     answerLen = 0 // Reset Answer Counter
-    antenna.write message+"\n"
-    print "Message sent: $message\n"
+    antenna.write message
+    print "Message sent: $message" 
 
   setName newName:
     if(status != ENUM_CONFMODE):
@@ -209,39 +225,119 @@ private:
 
   getName:
     if(status != ENUM_CONFMODE):
-      return "Not in Configuration mode"
-    print "I'm here"
+      return false
     rawConfiguration GET_NAME
-    result := antenna.read.to_string
+    return answerOrTimeout
+
+  getFwVersion:
+    if(status != ENUM_CONFMODE):
+      return false
+
+    rawConfiguration(GET_FWVERSION)
+    return answerOrTimeout
+
+  getSwVersion:
+    if(status != ENUM_CONFMODE):
+      return false
+
+    rawConfiguration GET_SWVERSION
+    return answerOrTimeout
+
+  getHwVersion:
+    if(status != ENUM_CONFMODE):
+      return false
+
+    rawConfiguration GET_HWVERSION
+    return answerOrTimeout
+
+  setBaudRate param/int -> bool:
+    if(status != ENUM_CONFMODE):
+      return false
+
+    rawConfiguration SET_BAUDRATE+",$param"
+    return answerOrTimeout
+
+  getBaudRate -> bool:
+    if(status != ENUM_CONFMODE):
+      return false
+
+    rawConfiguration GET_BAUDRATE
+    return answerOrTimeout
+
+  getSN -> bool:
+    if(status != ENUM_CONFMODE):
+      return false
+
+    rawConfiguration GET_SERIALNUM
+    return answerOrTimeout
+
+  setPowerSave powerSave/bool:
+    // if not in configuration mode enter immediately
+    if (status != ENUM_CONFMODE):
+      if (not enterConfigurationMode):
+        return false
+
+    // write command to buffer
+    if (powerSave):
+      uartBuffer = SET_POWERSAVE + ",$POWERSAVE_ENABLE"
+    else:
+      uartBuffer = SET_POWERSAVE + ",$POWERSAVE_DISABLE"
+
+    rawConfiguration uartBuffer
+    return answerOrTimeout
+    
+  getPowerSave:
+    if (status != ENUM_CONFMODE):
+        return false
+
+    rawConfiguration GET_POWERSAVE
+    result := answerOrTimeout
+
+    recMessage = readData
+    if(recMessage == PROMPT_ERROR):
+      print "Error lol"
+      return false
+
     return result
 
   rawConfiguration stream/string->none:
-    this.answerLen = 0
-    this.antenna.write stream.trim+"\n" 
+    answerLen = 0
+    antenna.write (stream.trim+DATA_LAST_CHAR )
 
   validateAnswer:
-    return true
+    if (status == ENUM_ENTER_CONFMODE):
+      if ((recMessage[0] == PROMPT_FIRST_CHAR) and (recMessage[recMessage.size-1] == PROMPT_LAST_CHAR)):
+        setStatus ENUM_CONFMODE
+        return true
 
-  answerOrTimeout:
-/*
-      while ((this->hasAnswer()!=completeAnswer) && (INTERNAL_CMD_TIMEOUT>timeout)){
-        delay(DELAY_INTERNAL_CMD);
-        timeout++;
-    }
+    if (status == ENUM_ENTER_DATMODE):
+      if ((recMessage[0] == PROMPT_FIRST_CHAR) and (recMessage[recMessage.size-1] == PROMPT_LAST_CHAR)):
+        setStatus ENUM_DATAMODE
+        return true
 
-    if (INTERNAL_CMD_TIMEOUT>timeout) {
-        return true;
-    } else {
-        return false;
-    }
-}
-*/
-    return true 
+    return false
+
 
   setStatus statusToSet:
-    print "Set status to: $statusToSet"
+
+
+    if(ENUM_ENTER_DATMODE == statusToSet):
+      print "Status set to: ENTER_DATMODE"
+    else if (ENUM_DATAMODE == statusToSet):
+      print "Status set to: DATAMODE"
+    else if (ENUM_ENTER_CONFMODE == statusToSet):
+      print "Status set to: ENTER_CONFMODE"
+    else if (ENUM_CONFMODE == statusToSet):
+      print "Status set to: CONFMODE"
+    else:
+      print "Error: Not able to update status. Mode: $statusToSet is unknown"
+      return false
+    
+    status = statusToSet
+    
     return true
 
   setAddress address:
     this.bleAddress  = address
+    print "Address assigned to $address"
     return true

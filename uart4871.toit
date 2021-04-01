@@ -15,9 +15,10 @@ main:
   
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   
-//   device.reboot
-  sleep --ms=1000
-  print "Pre configuration mode"
-  device.enterConfigurationMode
-  print "Past configuration mode"
+  print device.reboot
+  print device.enterConfigurationMode
   print device.getName
+  print device.getBaudRate
+  print (device.setPowerSave false)
+  print device.getPowerSave
+  
