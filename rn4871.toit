@@ -227,28 +227,32 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       return false
     rawConfiguration GET_NAME
-    return answerOrTimeout
+    answerOrTimeout
+    return popData
 
   getFwVersion:
     if(status != ENUM_CONFMODE):
       return false
 
     rawConfiguration(GET_FWVERSION)
-    return answerOrTimeout
+    answerOrTimeout
+    return popData
 
   getSwVersion:
     if(status != ENUM_CONFMODE):
       return false
 
     rawConfiguration GET_SWVERSION
-    return answerOrTimeout
+    answerOrTimeout
+    return popData
 
   getHwVersion:
     if(status != ENUM_CONFMODE):
       return false
 
     rawConfiguration GET_HWVERSION
-    return answerOrTimeout
+    answerOrTimeout
+    return popData
 
   setBaudRate param/int -> bool:
     if(status != ENUM_CONFMODE):
@@ -257,25 +261,30 @@ class RN4871:
     rawConfiguration SET_BAUDRATE+",$param"
     return answerOrTimeout
 
-  getBaudRate -> bool:
+  getBaudRate -> string:
     if(status != ENUM_CONFMODE):
-      return false
+      print "Error: Not in Configuration mode"
+      return ""
 
     rawConfiguration GET_BAUDRATE
-    return answerOrTimeout
+    answerOrTimeout
+    return popData
 
-  getSN -> bool:
+  getSN -> string:
     if(status != ENUM_CONFMODE):
-      return false
+      print "Error: Not in Configuration mode"
+      return ""
 
     rawConfiguration GET_SERIALNUM
-    return answerOrTimeout
+    answerOrTimeout
+    return popData
 
   setPowerSave powerSave/bool:
     // if not in configuration mode enter immediately
     if (status != ENUM_CONFMODE):
       if (not enterConfigurationMode):
-        return false
+        print "Error: Cannot enter Configuration mode"
+        return ""
 
     // write command to buffer
     if (powerSave):
@@ -284,7 +293,8 @@ class RN4871:
       uartBuffer = SET_POWERSAVE + ",$POWERSAVE_DISABLE"
 
     rawConfiguration uartBuffer
-    return answerOrTimeout
+    answerOrTimeout
+    return popData
     
   getPowerSave:
     if (status != ENUM_CONFMODE):
