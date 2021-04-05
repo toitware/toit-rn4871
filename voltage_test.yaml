@@ -1,5 +1,0 @@
-name: "Voltage test"
-entrypoint: voltage_test.toit
-triggers:
-  on_boot: true
-  on_install: true
