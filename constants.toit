@@ -11,7 +11,9 @@ PROMPT_END_FIST_CHAR ::= 'E'
 PROMPT_END_LAST_CHAR ::= 'D'
 PROMPT_ERROR ::= "Err"
 
-DATA_LAST_CHAR ::= "\r"
+CRLF  ::=                "\r\n"
+CR ::=                   '\r'
+LF ::=                   '\n'
 
 CONF_COMMAND::= "\$\$\$"
 

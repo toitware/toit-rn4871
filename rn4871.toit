@@ -10,12 +10,6 @@ import gpio
 import .constants show *
 
 
-
-
-// MORE!!!
-
-
-
 class RN4871:
   
   recMessage := ""
@@ -68,13 +62,20 @@ class RN4871:
 
 
   answerOrTimeout -> bool:
-    with_timeout --ms=INTERNAL_CMD_TIMEOUT: 
-      uartBuffer = antenna.read
-      recMessage = uartBuffer.to_string.trim
-      answerLen = recMessage.size
-      return true
 
-    return false
+    exception := try:  
+      with_timeout --ms=INTERNAL_CMD_TIMEOUT: 
+        print INTERNAL_CMD_TIMEOUT
+        uartBuffer = antenna.read
+        recMessage = uartBuffer.to_string.trim
+        answerLen = recMessage.size
+        print "Past here"
+        return true
+    finally:  
+      return false
+
+    
+    
 
   startBLE userRA=null:
     if (this.enterConfigurationMode == false):
@@ -252,7 +253,7 @@ class RN4871:
 
   rawConfiguration stream/string->none:
     answerLen = 0
-    antenna.write (stream.trim+DATA_LAST_CHAR )
+    antenna.write (stream.trim+CR )
 
   validateAnswer:
     if (status == ENUM_ENTER_CONFMODE):

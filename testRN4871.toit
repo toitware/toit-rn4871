@@ -15,7 +15,7 @@ main:
   
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   
-  print device.reboot
+  // print device.reboot
   print device.enterConfigurationMode
   print device.getName
   print device.getBaudRate
