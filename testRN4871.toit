@@ -17,7 +17,6 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  sleep --ms=5000
   print "Device name: $device.getName"
   print "Firmware version: $device.getFwVersion"
   print "Software version: $device.getSwVersion"

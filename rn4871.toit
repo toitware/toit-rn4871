@@ -181,7 +181,7 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       return false
 
-    sendCommand(GET_FWVERSION)
+    sendCommand DISPLAY_FW_VERSION
     answerOrTimeout
     result := popData
     return result
@@ -325,8 +325,8 @@ class RN4871:
       return false
     
     sendCommand value
-    result := answerOrTimeout
-    if readData == PROMPT_ERROR:
-      return false
+    answerOrTimeout
+    if readData == AOK_RESP:
+      return true
     else:
-      return answerOrTimeout
+      return false
