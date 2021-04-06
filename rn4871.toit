@@ -38,19 +38,19 @@ class RN4871:
     print "Device object created"
     
   // Reset
-  reboot ->bool:
+  pinReboot ->bool:
     reset_pin_.set 0
     sleep --ms=50
     reset_pin_.set 1
-    answerOrTimeout
+    answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
     if(popData == "%REBOOT%"):
-      sleep --ms=INTERNAL_CMD_TIMEOUT*5
-      print "Reboot successfull. Communication established properly"
+      sleep --ms=INTERNAL_CMD_TIMEOUT
+      print "Reboot successfull"
       return true
     else:
-      print "Reboot failure. Communication not established"
+      print "Reboot failure"
       return false
-
+  
   popData -> string:
     result := recMessage
     recMessage = ""
@@ -61,20 +61,19 @@ class RN4871:
     return recMessage
 
 
-  answerOrTimeout -> bool:
+  answerOrTimeout --timeout=INTERNAL_CMD_TIMEOUT-> bool:
 
-    exception := try:  
-      with_timeout --ms=INTERNAL_CMD_TIMEOUT: 
-        print INTERNAL_CMD_TIMEOUT
+    exception := catch: 
+      with_timeout --ms=timeout: 
         uartBuffer = antenna.read
         recMessage = uartBuffer.to_string.trim
         answerLen = recMessage.size
-        print "Past here"
-        return true
-    finally:  
+    
+    if(exception != null):  
+      print "Exception raised: Answer timeout"
       return false
 
-    
+    return true
     
 
   startBLE userRA=null:
@@ -91,6 +90,7 @@ class RN4871:
 
   enterConfigurationMode ->bool:
     // Command mode
+    setStatus ENUM_ENTER_CONFMODE
     sendData CONF_COMMAND
     answerOrTimeout
     
@@ -105,8 +105,11 @@ class RN4871:
   enterDataMode ->bool:
     setStatus ENUM_ENTER_DATMODE
     antenna.write EXIT_CONF
-    
-    return answerOrTimeout
+    result := answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
+    if readData == PROMPT_END:
+      setStatus ENUM_DATAMODE
+    return result
+
 
   hasAnswer:
     uartBuffer = recMessage.to_byte_array
@@ -128,9 +131,10 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       if(not enterConfigurationMode):
         return false
-    
     rawConfiguration FACTORY_RESET
-    return answerOrTimeout
+    result := (answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT)
+    sleep --ms=STATUS_CHANGE_TIMEOUT
+    return result
 
   assignRandomAddress userRA ->bool:
     if(status == ENUM_CONFMODE):
@@ -166,10 +170,11 @@ class RN4871:
 
   getName:
     if(status != ENUM_CONFMODE):
-      return false
-    rawConfiguration GET_NAME
+      return "Error: Not in the CONFMODE"
+    rawConfiguration GET_DEVICE_NAME
     answerOrTimeout
-    return popData
+    result := popData
+    return result
 
   getFwVersion:
     if(status != ENUM_CONFMODE):
@@ -177,7 +182,8 @@ class RN4871:
 
     rawConfiguration(GET_FWVERSION)
     answerOrTimeout
-    return popData
+    result := popData
+    return result
 
   getSwVersion:
     if(status != ENUM_CONFMODE):
@@ -185,7 +191,8 @@ class RN4871:
 
     rawConfiguration GET_SWVERSION
     answerOrTimeout
-    return popData
+    result := popData
+    return result
 
   getHwVersion:
     if(status != ENUM_CONFMODE):
@@ -193,7 +200,8 @@ class RN4871:
 
     rawConfiguration GET_HWVERSION
     answerOrTimeout
-    return popData
+    result := popData
+    return result
 
   setBaudRate param/int -> bool:
     if(status != ENUM_CONFMODE):
@@ -209,7 +217,8 @@ class RN4871:
 
     rawConfiguration GET_BAUDRATE
     answerOrTimeout
-    return popData
+    result := popData
+    return result
 
   getSN -> string:
     if(status != ENUM_CONFMODE):
@@ -218,7 +227,8 @@ class RN4871:
 
     rawConfiguration GET_SERIALNUM
     answerOrTimeout
-    return popData
+    result := popData
+    return result
 
   setPowerSave powerSave/bool:
     // if not in configuration mode enter immediately

@@ -1,19 +1,34 @@
 DELAY_INTERNAL_CMD ::= 5
-INTERNAL_CMD_TIMEOUT ::= 200 // 1000 mSec = 1Sec.
+INTERNAL_CMD_TIMEOUT ::= 300 // 1000 mSec = 1Sec.
+STATUS_CHANGE_TIMEOUT ::= 1000
 SMALL_ANSWER_DATA_LEN::= 20
 
-PROMPT ::= "CMD>"
+
+// ------------------- Response -----------------------
+PROMPT          ::=      "CMD>"  // exact prompt is "CMD> " (last char is a space)
+PROMPT_END      ::=      "END"
+
+//-- Response
+AOK_RESP          ::=    "AOK"
+ERR_RESP          ::=    "Err"
+FACTORY_RESET_RESP  ::=  "Reboot after Factory Reset"
+DEVICE_MODEL      ::=    "RN"
+REBOOTING_RESP     ::=   "Rebooting"
+NONE_RESP          ::=   "none"
+SCANNING_RESP      ::=   "Scanning"		
+
+//-- Events
+REBOOT_EVENT      ::=    "%REBOOT%"
 PROMPT_FIRST_CHAR::= 'C'
 PROMPT_LAST_CHAR ::= '>'
 PROMPT_LEN ::= 4
-PROMPT_END ::= "END"
 PROMPT_END_FIST_CHAR ::= 'E'
 PROMPT_END_LAST_CHAR ::= 'D'
 PROMPT_ERROR ::= "Err"
 
 CRLF  ::=                "\r\n"
-CR ::=                   '\r'
-LF ::=                   '\n'
+CR ::=                   "\r"
+LF ::=                   "\n"
 
 CONF_COMMAND::= "\$\$\$"
 
@@ -65,3 +80,119 @@ ENUM_BAUDRATE_14400 ::= 8
 ENUM_BAUDRATE_9600 ::= 9
 ENUM_BAUDRATE_4800 ::= 0xA
 ENUM_BAUDRATE_2400 ::= 0xB
+
+// Added from new repo
+// ------------------- Commands -----------------------
+
+// --- Set Commands
+SET_BEACON_FEATURES  ::= "SC,"
+BEACON_OFF ::=           "0"
+BEACON_ON ::=            "1"
+BEACON_ADV_ON  ::=       "2"
+
+SET_ADV_POWER  ::=       "SGA,"
+SET_CONN_POWER  ::=      "SGC,"
+MIN_POWER_OUTPUT::=  0
+MAX_POWER_OUTPUT::= 5
+SET_SERIALIZED_NAME::="S-,"
+MAX_SERIALIZED_NAME_LEN ::= 15
+SET_DEVICE_NAME::="SN,"
+MAX_DEVICE_NAME_LEN::=20
+SET_LOW_POWER_ON::=   "SO,1"
+SET_LOW_POWER_OFF::=  "SO,0"
+SET_DORMANT_MODE::=   "O,0"
+SET_SETTINGS::=       "S:,"
+
+
+SET_SUPPORTED_FEATURES ::= "SR,"
+// > Bitmap of supported features
+NO_BEACON_SCAN_BMP::= 0x1000
+NO_CONNECT_SCAN_BMP::=0x0800
+NO_DUPLICATE_SCAN_BMP::=0x0400
+PASSIVE_SCAN_BMP::=   0x0200
+UART_TRANSP_NO_ACK_BMP::=0x0100
+MLDP_SUPPORT_BMP::=   0x0020
+
+SET_DEFAULT_SERVICES::="SS,"
+// > Bitmap of services
+NO_SERVICE::=          0x00
+DEVICE_INFO_SERVICE::= 0x80
+UART_TRANSP_SERVICE::= 0x40
+BEACON_SERVICE::=      0x20
+AIRPATCH_SERVICE::=    0x10
+//-- Get Commands
+GET_SETTINGS::=        "G:,"
+GET_DEVICE_NAME::=     "GN"
+GET_CONNECTION_STATUS::="GK"
+
+//--- Action Commands
+START_DEFAULT_ADV::=   "A"
+START_CUSTOM_ADV::=    "A,"
+STOP_ADV::=            "Y"
+CLEAR_IMMEDIATE_ADV::= "IA,Z"
+CLEAR_PERMANENT_ADV::=   "NA,Z"
+CLEAR_IMMEDIATE_BEACON ::="IB,Z"
+CLEAR_PERMANENT_BEACON::= "NB,Z"
+START_IMMEDIATE_ADV ::=  "IA,"
+START_PERMANENT_ADV ::=  "NA,"
+START_IMMEDIATE_BEACON ::="IB,"
+START_PERMANENT_BEACON ::="NB,"
+AD_TYPE_FLAGS ::=        0x01
+AD_TYPE_INCOMPLETE_16_UUID ::=0x02
+AD_TYPE_COMPLETE_16_UUID::= 0x03
+AD_TYPE_INCOMPLETE_32_UUID::= 0x04
+AD_TYPE_COMPLETE_32_UUID ::=0x05
+AD_TYPE_INCOMPLETE_128_UUID ::=0x06
+AD_TYPE_COMPLETE_128_UUID ::=0x07
+AD_TYPE_SHORTENED_LOCAL_NAME::= 0x08
+AD_TYPE_COMPLETE_LOCAL_NAME ::=0x09
+AD_TYPE_TX_POWER_LEVEL ::=0x0A
+AD_TYPE_CLASS_OF_DEVICE::= 0x0D
+AD_TYPE_SIMPLE_PAIRING_HASH ::=0x0E
+AD_TYPE_SIMPLE_PAIRING_RANDOMIZER::= 0x0F
+AD_TYPE_TK_VALUE ::=0x10
+AD_TYPE_SECURITY_OOB_FLAG::= 0x11
+AD_TYPE_SLAVE_CONNECTION_INTERVAL ::=0x12
+AD_TYPE_LIST_16_SERVICE_UUID::= 0x14
+AD_TYPE_LIST_128_SERVICE_UUID::= 0x15
+AD_TYPE_SERVICE_DATA::= 0x16
+AD_TYPE_MANUFACTURE_SPECIFIC_DATA ::=0xFF
+START_DEFAULT_SCAN   ::= "F"
+START_CUSTOM_SCAN  ::=   "F,"
+STOP_SCAN          ::=   "X"
+ADD_WHITE_LIST     ::=   "JA,"
+MAX_WHITE_LIST_SIZE  ::= 16
+MAC_ADDRESS_LEN     ::=  12
+PUBLIC_ADDRESS_TYPE  ::= "0"
+PRIVATE_ADDRESS_TYPE ::= "1"
+ADD_BONDED_WHITE_LIST::= "JB"
+CLEAR_WHITE_LIST  ::=    "JC"
+KILL_CONNECTION   ::=    "K,1"
+GET_RSSI_LEVEL    ::=    "M"
+REBOOT            ::=    "R,1"
+DISPLAY_FW_VERSION  ::=  "V"
+
+// --- List Commands
+
+// --- Service Definition
+DEFINE_CHARACT_UUID ::=  "PC,"
+DEFINE_SERVICE_UUID ::=  "PS,"
+CLEAR_ALL_SERVICES  ::=  "PZ"
+INDICATE_PROPERTY   ::=  0b00100000
+NOTIFY_PROPERTY     ::=  0b00010000
+WRITE_PROPERTY      ::=  0b00001000
+WRITE_NO_RESP_PROPERTY::= 0b00000100
+READ_PROPERTY      ::=   0b00000010
+PRIVATE_SERVICE_LEN  ::= 32  // 128-bit
+PUBLIC_SERVICE_LEN   ::= 4   // 16-bit
+
+// --- Characteristic Access
+READ_REMOTE_CHARACT  ::= "CHR,"
+WRITE_REMOTE_CHARACT ::= "CHW,"
+DISCOVER_REMOTE    ::=   "CI"  // start client role
+READ_LOCAL_CHARACT  ::=  "SHR,"
+WRITE_LOCAL_CHARACT ::=  "SHW,"
+
+
+
+
