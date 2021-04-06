@@ -1,6 +1,7 @@
 import serial.ports.uart
 import gpio
 import .rn4871 show *
+import .constants show *
 
 RX_PIN ::= 32
 TX_PIN ::= 33
@@ -16,9 +17,13 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
+  sleep --ms=5000
   print "Device name: $device.getName"
   print "Firmware version: $device.getFwVersion"
   print "Software version: $device.getSwVersion"
   print "Hardware version: $device.getHwVersion"
   print "Serial number: $device.getSN"
   print "Baudrate: $device.getBaudRate"
+  print "Connection status: $device.getConStatus"
+  print "Get Powersave: $device.getPowerSave"
+  print "Set BEACON ON: $(device.setBeaconFeatures BEACON_ON)"

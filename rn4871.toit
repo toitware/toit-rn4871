@@ -62,7 +62,6 @@ class RN4871:
 
 
   answerOrTimeout --timeout=INTERNAL_CMD_TIMEOUT-> bool:
-
     exception := catch: 
       with_timeout --ms=timeout: 
         uartBuffer = antenna.read
@@ -72,6 +71,8 @@ class RN4871:
     if(exception != null):  
       print "Exception raised: Answer timeout"
       return false
+    else if(recMessage == PROMPT_ERROR):
+      print "Error: RN4871 module returned Err"
 
     return true
     
@@ -131,7 +132,7 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       if(not enterConfigurationMode):
         return false
-    rawConfiguration FACTORY_RESET
+    sendCommand FACTORY_RESET
     result := (answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT)
     sleep --ms=STATUS_CHANGE_TIMEOUT
     return result
@@ -140,10 +141,10 @@ class RN4871:
     if(status == ENUM_CONFMODE):
       timeout := 0
       if(null == userRA):
-        rawConfiguration AUTO_RANDOM_ADDRESS
+        sendCommand AUTO_RANDOM_ADDRESS
       else:
         //Would be nice to be able to choose specific but they didn't have it in the original project either
-        rawConfiguration AUTO_RANDOM_ADDRESS
+        sendCommand AUTO_RANDOM_ADDRESS
       
       if(answerOrTimeout == true):
         setAddress popData.trim.to_byte_array
@@ -164,14 +165,14 @@ class RN4871:
       return false
     
     this.uartBuffer = SET_NAME + ", " + newName
-    rawConfiguration(uartBuffer)
+    sendCommand(uartBuffer)
 
     return answerOrTimeout
 
   getName:
     if(status != ENUM_CONFMODE):
       return "Error: Not in the CONFMODE"
-    rawConfiguration GET_DEVICE_NAME
+    sendCommand GET_DEVICE_NAME
     answerOrTimeout
     result := popData
     return result
@@ -180,7 +181,7 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       return false
 
-    rawConfiguration(GET_FWVERSION)
+    sendCommand(GET_FWVERSION)
     answerOrTimeout
     result := popData
     return result
@@ -189,7 +190,7 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       return false
 
-    rawConfiguration GET_SWVERSION
+    sendCommand GET_SWVERSION
     answerOrTimeout
     result := popData
     return result
@@ -198,7 +199,7 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       return false
 
-    rawConfiguration GET_HWVERSION
+    sendCommand GET_HWVERSION
     answerOrTimeout
     result := popData
     return result
@@ -207,7 +208,7 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       return false
 
-    rawConfiguration SET_BAUDRATE+",$param"
+    sendCommand SET_BAUDRATE+",$param"
     return answerOrTimeout
 
   getBaudRate -> string:
@@ -215,7 +216,7 @@ class RN4871:
       print "Error: Not in Configuration mode"
       return ""
 
-    rawConfiguration GET_BAUDRATE
+    sendCommand GET_BAUDRATE
     answerOrTimeout
     result := popData
     return result
@@ -225,7 +226,7 @@ class RN4871:
       print "Error: Not in Configuration mode"
       return ""
 
-    rawConfiguration GET_SERIALNUM
+    sendCommand GET_SERIALNUM
     answerOrTimeout
     result := popData
     return result
@@ -239,29 +240,35 @@ class RN4871:
 
     // write command to buffer
     if (powerSave):
-      uartBuffer = SET_POWERSAVE + ",$POWERSAVE_ENABLE"
+      sendCommand SET_LOW_POWER_ON
+      print "Low power ON"
     else:
-      uartBuffer = SET_POWERSAVE + ",$POWERSAVE_DISABLE"
+      sendCommand SET_LOW_POWER_OFF
+      print "Low power OFF"
 
-    rawConfiguration uartBuffer
+    result := answerOrTimeout
+    return result
+  
+  getConStatus -> string:
+    if(status != ENUM_CONFMODE):
+      print "Error: Not in Configuration mode"
+      return ""
+
+    sendCommand GET_CONNECTION_STATUS
     answerOrTimeout
-    return popData
-    
+    result := popData
+    return result
+
   getPowerSave:
     if (status != ENUM_CONFMODE):
         return false
 
-    rawConfiguration GET_POWERSAVE
-    result := answerOrTimeout
+    sendCommand GET_POWERSAVE
+    answerOrTimeout
+    recMessage = popData
+    return recMessage
 
-    recMessage = readData
-    if(recMessage == PROMPT_ERROR):
-      print "Error lol"
-      return false
-
-    return result
-
-  rawConfiguration stream/string->none:
+  sendCommand stream/string->none:
     answerLen = 0
     antenna.write (stream.trim+CR )
 
@@ -295,10 +302,31 @@ class RN4871:
       return false
     
     status = statusToSet
-    
+  
     return true
 
   setAddress address:
     this.bleAddress  = address
     print "Address assigned to $address"
     return true
+
+  setBeaconFeatures value:
+    is_correct := false
+    catch:
+      try:
+        value = value.to_string
+      finally:
+        [BEACON_OFF, BEACON_ON, BEACON_ADV_ON].do:
+          if (it == value):
+            is_correct = true
+    
+    if(is_correct == false):
+      print "Error: Value: $value is not in beacon commands set"
+      return false
+    
+    sendCommand value
+    result := answerOrTimeout
+    if readData == PROMPT_ERROR:
+      return false
+    else:
+      return answerOrTimeout
