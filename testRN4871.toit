@@ -17,7 +17,11 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
+  setname := device.setName "KrisDevkit1"
+  print "Set name $setname"
   print "Device name: $device.getName"
+
+  /*
   print "Firmware version: $device.getFwVersion"
   print "Software version: $device.getSwVersion"
   print "Hardware version: $device.getHwVersion"
@@ -26,3 +30,4 @@ main:
   print "Connection status: $device.getConStatus"
   print "Get Powersave: $device.getPowerSave"
   print "Set BEACON ON: $(device.setBeaconFeatures BEACON_ON)"
+  */

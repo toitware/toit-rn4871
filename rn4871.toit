@@ -163,19 +163,46 @@ class RN4871:
   setName newName:
     if(status != ENUM_CONFMODE):
       return false
-    
     this.uartBuffer = SET_NAME + ", " + newName
     sendCommand(uartBuffer)
-
-    return answerOrTimeout
+    result := answerOrTimeout
+    if(popData != AOK_RESP):
+      result = false
+    answerOrTimeout
+    return result
 
   getName:
     if(status != ENUM_CONFMODE):
       return "Error: Not in the CONFMODE"
     sendCommand GET_DEVICE_NAME
+    // result := ""
+    // 2.repeat:
+    //   answerOrTimeout
+    //   result = result + popData
     answerOrTimeout
     result := popData
+    resultList := result.split "\n"
+    actualResult := extractName resultList
+    print actualResult
+
+    //answerOrTimeout
     return result
+  
+  extractName lis/List -> List:
+    print lis
+    if lis == []:
+      return lis
+    lastVal := lis.remove_last
+    tempList := lastVal.split " "
+    if tempList == []:
+      return lis
+    i := 0
+    elem := []
+    (tempList.size).repeat:
+      elem = tempList[i]
+      if (elem != "CMD>" and elem != "," and elem != ""):
+        return elem
+    return extractName lis
 
   getFwVersion:
     if(status != ENUM_CONFMODE):
