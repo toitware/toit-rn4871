@@ -39,7 +39,7 @@ EXIT_CONF ::="---\r"
 AUTO_RANDOM_ADDRESS::= "&R"
 USER_RANDOM_ADDRESS::= "&,"
 
-SET_NAME ::="SDM,"
+SET_NAME ::="SN,"
 //GET_NAME ::="GDM"
 
 SET_BAUDRATE ::="SB,"
