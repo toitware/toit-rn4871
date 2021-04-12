@@ -17,9 +17,8 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  setname := device.setName "KrisDevkit1"
-  print "Set name $setname"
   print "Device name: $device.getName"
+  print "Get settigns: $(device.getSettings "A")"
 
   /*
   print "Firmware version: $device.getFwVersion"

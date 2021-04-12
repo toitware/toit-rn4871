@@ -163,6 +163,10 @@ class RN4871:
   setName newName:
     if(status != ENUM_CONFMODE):
       return false
+
+    if newName.size > MAX_DEVICE_NAME_LEN:
+      print "Error: The name is too long"
+      return false
     this.uartBuffer = SET_NAME + ", " + newName
     sendCommand(uartBuffer)
     result := answerOrTimeout
@@ -347,3 +351,10 @@ class RN4871:
       return true
     else:
       return false
+
+
+  getSettings addr/string -> string:
+    uartBuffer = GET_SETTINGS + addr
+    sendCommand uartBuffer
+    answerOrTimeout
+    return popData
