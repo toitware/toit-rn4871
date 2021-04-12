@@ -19,6 +19,7 @@ main:
   device.enterConfigurationMode
   print "Device name: $device.getName"
   print "Get settigns: $(device.getSettings "A")"
+  print "Set settigns: $(device.setSettings "C" "2")"
 
   /*
   print "Firmware version: $device.getFwVersion"

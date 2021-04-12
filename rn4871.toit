@@ -358,3 +358,16 @@ class RN4871:
     sendCommand uartBuffer
     answerOrTimeout
     return popData
+
+  setSettings addr/string value/string:
+    // Manual insertion of settings
+    uartBuffer = SET_SETTINGS + addr + "," + value
+    sendCommand uartBuffer
+    answerOrTimeout
+    result := popData
+    result = extractName result
+    print "setSettings response: $result"
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
