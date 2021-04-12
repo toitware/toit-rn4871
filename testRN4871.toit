@@ -17,17 +17,4 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  print "Device name: $device.getName"
-  print "Get settigns: $(device.getSettings "A")"
-  print "Set settigns: $(device.setSettings "C" "2")"
-
-  /*
-  print "Firmware version: $device.getFwVersion"
-  print "Software version: $device.getSwVersion"
-  print "Hardware version: $device.getHwVersion"
-  print "Serial number: $device.getSN"
-  print "Baudrate: $device.getBaudRate"
-  print "Connection status: $device.getConStatus"
-  print "Get Powersave: $device.getPowerSave"
-  print "Set BEACON ON: $(device.setBeaconFeatures BEACON_ON)"
-  */
+  print "Set adv power to 5: $(device.setAdvPower 10)"

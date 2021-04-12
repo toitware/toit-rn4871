@@ -101,6 +101,7 @@ SET_SETTINGS::=       "S"
 
 
 SET_SUPPORTED_FEATURES ::= "SR,"
+
 // > Bitmap of supported features
 NO_BEACON_SCAN_BMP::= 0x1000
 NO_CONNECT_SCAN_BMP::=0x0800

@@ -180,10 +180,10 @@ class RN4871:
       return "Error: Not in the CONFMODE"
     sendCommand GET_DEVICE_NAME
     answerOrTimeout
-    actualResult := extractName popData
+    actualResult := extractResult popData
     return actualResult
   
-  extractName name/string="" lis/List=[] firstIteration=true-> string:
+  extractResult name/string="" lis/List=[] firstIteration=true-> string:
     if firstIteration:
       if name == "":
         return name
@@ -196,7 +196,7 @@ class RN4871:
     elem := lis.remove_last.trim
     if  (elem != "CMD>" and elem != "," and elem !=""):
       return elem
-    return extractName "" lis false
+    return extractResult "" lis false
 
   getFwVersion:
     if(status != ENUM_CONFMODE):
@@ -365,8 +365,43 @@ class RN4871:
     sendCommand uartBuffer
     answerOrTimeout
     result := popData
-    result = extractName result
+    result = extractResult result
     print "setSettings response: $result"
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+  
+  // Retrieve BTE address: I have no idea what that is:
+//   bool Rn487xBle::retrieveBtAddress(void)
+// {
+//   if (getSettings(0, 6))
+//   {    
+//     btAddress[0] = uartBuffer[10] ;
+//     btAddress[1] = uartBuffer[11] ;
+//     btAddress[2] = uartBuffer[8] ;
+//     btAddress[3] = uartBuffer[9] ;
+//     btAddress[4] = uartBuffer[6] ;
+//     btAddress[5] = uartBuffer[7] ;
+//     btAddress[6] = uartBuffer[4] ;
+//     btAddress[7] = uartBuffer[5] ;
+//     btAddress[8] = uartBuffer[2] ;
+//     btAddress[9] = uartBuffer[3] ;
+//     btAddress[10]= uartBuffer[0] ;
+//     btAddress[11]= uartBuffer[1] ;
+//     return true ;
+//   }
+//   return false ;
+// }
+  setAdvPower value/int:
+    if value > MAX_POWER_OUTPUT:
+      value = MAX_POWER_OUTPUT
+    else if value < MIN_POWER_OUTPUT:
+      value = MIN_POWER_OUTPUT
+
+    sendCommand SET_ADV_POWER + "$value"
+    answerOrTimeout
+    result := extractResult popData
     if result == AOK_RESP:
       return true
     else:
