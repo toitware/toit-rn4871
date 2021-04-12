@@ -175,34 +175,24 @@ class RN4871:
     if(status != ENUM_CONFMODE):
       return "Error: Not in the CONFMODE"
     sendCommand GET_DEVICE_NAME
-    // result := ""
-    // 2.repeat:
-    //   answerOrTimeout
-    //   result = result + popData
     answerOrTimeout
-    result := popData
-    resultList := result.split "\n"
-    actualResult := extractName resultList
-    print actualResult
-
-    //answerOrTimeout
-    return result
+    actualResult := extractName popData
+    return actualResult
   
-  extractName lis/List -> List:
-    print lis
+  extractName name/string="" lis/List=[] firstIteration=true-> string:
+    if firstIteration:
+      if name == "":
+        return name
+      tempList := name.split "\n"
+      tempList.map:
+        lis = lis + (it.split " ")
     if lis == []:
-      return lis
-    lastVal := lis.remove_last
-    tempList := lastVal.split " "
-    if tempList == []:
-      return lis
-    i := 0
-    elem := []
-    (tempList.size).repeat:
-      elem = tempList[i]
-      if (elem != "CMD>" and elem != "," and elem != ""):
-        return elem
-    return extractName lis
+      return ""
+        
+    elem := lis.remove_last.trim
+    if  (elem != "CMD>" and elem != "," and elem !=""):
+      return elem
+    return extractName "" lis false
 
   getFwVersion:
     if(status != ENUM_CONFMODE):
