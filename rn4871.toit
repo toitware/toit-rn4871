@@ -406,3 +406,19 @@ class RN4871:
       return true
     else:
       return false
+
+  setConnPower value/int:
+    if value > MAX_POWER_OUTPUT:
+      value = MAX_POWER_OUTPUT
+    else if value < MIN_POWER_OUTPUT:
+      value = MIN_POWER_OUTPUT
+
+    sendCommand SET_CONN_POWER + "$value"
+    answerOrTimeout
+    result := extractResult popData
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+  
