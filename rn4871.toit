@@ -345,7 +345,7 @@ class RN4871:
       print "Error: Value: $value is not in beacon commands set"
       return false
     
-    sendCommand value
+    sendCommand SET_BEACON_FEATURES+value
     answerOrTimeout
     if readData == AOK_RESP:
       return true
@@ -448,3 +448,35 @@ class RN4871:
     sendCommand GET_DEVICE_INFO
     result := readForTime
     return result
+
+  setSupFeatures value:
+    is_correct := false
+    [NO_BEACON_SCAN_BMP, NO_CONNECT_SCAN_BMP, NO_DUPLICATE_SCAN_BMP, PASSIVE_SCAN_BMP, UART_TRANSP_NO_ACK_BMP, MLDP_SUPPORT_BMP].do:
+      if (it == value):
+        is_correct = true
+        
+    if(is_correct == false):
+      print "Error: Value: $value is not in supported features set"
+      return false
+    sendCommand SET_SUPPORTED_FEATURES+value
+    answerOrTimeout
+    if popData == AOK_RESP:
+      return true
+    else:
+      return false
+
+  setDefServices value:
+    is_correct := false
+    [NO_SERVICE, DEVICE_INFO_SERVICE, UART_TRANSP_SERVICE, BEACON_SERVICE, AIRPATCH_SERVICE].do:
+      if (it == value):
+        is_correct = true
+        
+    if(is_correct == false):
+      print "Error: Value: $value is not a default service"
+      return false
+    sendCommand SET_DEFAULT_SERVICES+value
+    answerOrTimeout
+    if popData == AOK_RESP:
+      return true
+    else:
+      return false
