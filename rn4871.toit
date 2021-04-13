@@ -43,7 +43,12 @@ class RN4871:
     sleep --ms=50
     reset_pin_.set 1
     answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
-    if(readData == "%REBOOT%"):
+    result := popData
+    answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
+    result = result + popData
+    result = extractResult result
+    print result
+    if(result == "%REBOOT%"):
       sleep --ms=INTERNAL_CMD_TIMEOUT
       print "Reboot successfull"
       return true
@@ -167,7 +172,7 @@ class RN4871:
     if newName.size > MAX_DEVICE_NAME_LEN:
       print "Error: The name is too long"
       return false
-    this.uartBuffer = SET_NAME + ", " + newName
+    this.uartBuffer = SET_NAME + newName
     sendCommand(uartBuffer)
     result := answerOrTimeout
     if(popData != AOK_RESP):
