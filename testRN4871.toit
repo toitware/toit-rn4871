@@ -19,3 +19,4 @@ main:
   device.enterConfigurationMode
   print "Set adv power to 5: $(device.setAdvPower 10)"
   print "Set connection power to 5: $(device.setConnPower 10)"
+  device.dormantMode

@@ -43,7 +43,7 @@ class RN4871:
     sleep --ms=50
     reset_pin_.set 1
     answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
-    if(popData == "%REBOOT%"):
+    if(readData == "%REBOOT%"):
       sleep --ms=INTERNAL_CMD_TIMEOUT
       print "Reboot successfull"
       return true
@@ -421,4 +421,16 @@ class RN4871:
     else:
       return false
 
-  
+
+// *********************************************************************************
+// Set the module to Dormant
+// *********************************************************************************
+// Immediately forces the device into lowest power mode possible.
+// Removing the device from Dormant mode requires power reset.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  dormantMode -> none:
+    print "[dormantMode]"
+    sendCommand(SET_DORMANT_MODE)
+    sleep --ms=INTERNAL_CMD_TIMEOUT
