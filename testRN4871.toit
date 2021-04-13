@@ -19,4 +19,5 @@ main:
   device.enterConfigurationMode
   print "Set beacon adv feature: $(device.setBeaconFeatures BEACON_ADV_ON)"
   print "Set UART transp feature: $(device.setSupFeatures NO_BEACON_SCAN_BMP)"
+  print "Set def servies: $(device.setDefServices UART_TRANSP_SERVICE)"
   print device.devInfo

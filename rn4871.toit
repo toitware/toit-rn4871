@@ -464,3 +464,19 @@ class RN4871:
       return true
     else:
       return false
+
+  setDefServices value:
+    is_correct := false
+    [NO_SERVICE, DEVICE_INFO_SERVICE, UART_TRANSP_SERVICE, BEACON_SERVICE, AIRPATCH_SERVICE].do:
+      if (it == value):
+        is_correct = true
+        
+    if(is_correct == false):
+      print "Error: Value: $value is not a default service"
+      return false
+    sendCommand SET_DEFAULT_SERVICES+value
+    answerOrTimeout
+    if popData == AOK_RESP:
+      return true
+    else:
+      return false
