@@ -42,8 +42,7 @@ class RN4871:
     reset_pin_.set 0
     sleep --ms=50
     reset_pin_.set 1
-    answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
-    result := popData
+    result := extractResult(readForTime --ms=50)
     if(result == REBOOT_EVENT):
       sleep --ms=INTERNAL_CMD_TIMEOUT
       print "Reboot successfull"
