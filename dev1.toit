@@ -17,9 +17,10 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  device.setBeaconFeatures BEACON_ON
-  print "Waiting 5 sec"
-
-  sleep --ms=5000
-  //print (device.setName "KrisDevkit2")
+  device.setConnPower 5
+  device.setDefServices SERVICE_UART_TRANSP_SERVICE
+  device.setBeaconFeatures BEACON_ADV_ON
+  device.setSupFeatures FEATURE_UART_TRANSP_NO_ACK
   print device.devInfo
+  device.enterDataMode
+  //device.listenToUart --ms=20000

@@ -71,8 +71,6 @@ class RN4871:
     if(exception != null):  
       print "Exception raised: Answer timeout"
       return false
-    else if(recMessage == PROMPT_ERROR):
-      print "Error: RN4871 module returned Err"
 
     return true
     
@@ -451,7 +449,7 @@ class RN4871:
 
   setSupFeatures value:
     is_correct := false
-    [NO_BEACON_SCAN_BMP, NO_CONNECT_SCAN_BMP, NO_DUPLICATE_SCAN_BMP, PASSIVE_SCAN_BMP, UART_TRANSP_NO_ACK_BMP, MLDP_SUPPORT_BMP].do:
+    [FEATURE_NO_BEACON_SCAN, FEATURE_NO_CONNECT_SCAN, FEATURE_NO_DUPLICATE_SCAN, FEATURE_PASSIVE_SCAN, FEATURE_UART_TRANSP_NO_ACK, FEATURE_MLDP_SUPPORT].do:
       if (it == value):
         is_correct = true
         
@@ -467,7 +465,7 @@ class RN4871:
 
   setDefServices value:
     is_correct := false
-    [NO_SERVICE, DEVICE_INFO_SERVICE, UART_TRANSP_SERVICE, BEACON_SERVICE, AIRPATCH_SERVICE].do:
+    [SERVICE_NO_SERVICE, SERVICE_DEVICE_INFO_SERVICE, SERVICE_UART_TRANSP_SERVICE, SERVICE_BEACON_SERVICE, SERVICE_AIRPATCH_SERVICE].do:
       if (it == value):
         is_correct = true
         
@@ -480,3 +478,18 @@ class RN4871:
       return true
     else:
       return false
+
+  listenToUart --ms/int=INTERNAL_CMD_TIMEOUT -> none:
+    dur := Duration --ms=ms
+    start := Time.now
+    print "Begin to listen to UART\n"
+    while (start.to_now < dur ):
+      exception := catch: 
+        with_timeout --ms=ms: 
+          uartBuffer = antenna.read
+          recMessage = uartBuffer.to_string.trim    
+      if(exception != null):  
+        //
+      else:
+        print popData
+    
