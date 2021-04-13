@@ -44,11 +44,7 @@ class RN4871:
     reset_pin_.set 1
     answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
     result := popData
-    answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
-    result = result + popData
-    result = extractResult result
-    print result
-    if(result == "%REBOOT%"):
+    if(result == REBOOT_EVENT):
       sleep --ms=INTERNAL_CMD_TIMEOUT
       print "Reboot successfull"
       return true
@@ -439,3 +435,19 @@ class RN4871:
     print "[dormantMode]"
     sendCommand(SET_DORMANT_MODE)
     sleep --ms=INTERNAL_CMD_TIMEOUT
+
+  readForTime --ms/int=INTERNAL_CMD_TIMEOUT ->string:
+    dur := Duration --ms=ms
+    start := Time.now
+    result := ""
+    while (start.to_now < dur ):
+      answerOrTimeout
+      result = result + popData
+    return result
+
+
+
+  devInfo -> string:
+    sendCommand GET_DEVICE_INFO
+    answerOrTimeout
+    return popData
