@@ -445,9 +445,7 @@ class RN4871:
       result = result + popData
     return result
 
-
-
   devInfo -> string:
     sendCommand GET_DEVICE_INFO
-    answerOrTimeout
-    return popData
+    result := readForTime
+    return result
