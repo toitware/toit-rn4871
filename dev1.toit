@@ -17,6 +17,3 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  print "Set adv power to 5: $(device.setAdvPower 10)"
-  print "Set connection power to 5: $(device.setConnPower 10)"
-  device.dormantMode
