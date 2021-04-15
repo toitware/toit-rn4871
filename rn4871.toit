@@ -91,9 +91,8 @@ class RN4871:
     // Command mode
     setStatus ENUM_ENTER_CONFMODE
     sendData CONF_COMMAND
-    answerOrTimeout
-    
-    if(popData == PROMPT):
+    result := readForTime --ms=500
+    if(result == PROMPT or result == "CMD"):
       print "Command mode set up"
       setStatus ENUM_CONFMODE
       return true   

@@ -3,8 +3,8 @@ import gpio
 import .rn4871 show *
 import .constants show *
 
-RX_PIN ::= 32
-TX_PIN ::= 33
+RX_PIN ::= 33
+TX_PIN ::= 32
 RESET_PIN ::= 25
 
 
@@ -17,10 +17,6 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  device.setConnPower 5
-  device.setDefServices SERVICE_UART_TRANSP_SERVICE
-  device.setBeaconFeatures BEACON_ADV_ON
-  device.setSupFeatures FEATURE_UART_TRANSP_NO_ACK
+  device.setSupFeatures FEATURE_MLDP_SUPPORT
   print device.devInfo
-  device.enterDataMode
   //device.listenToUart --ms=20000
