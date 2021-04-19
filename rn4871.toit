@@ -491,4 +491,22 @@ class RN4871:
         //
       else:
         print popData
-    
+  
+  // *********************************************************************************
+// Clear all services
+// *********************************************************************************
+// Clears all settings of services and characteristics.
+// A power cycle is required afterwards to make the changes effective.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+
+  clearAllServices:
+    print "[cleanAllServices]"
+    sendCommand(CLEAR_ALL_SERVICES)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
