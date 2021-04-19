@@ -483,10 +483,11 @@ class RN4871:
     start := Time.now
     print "Begin to listen to UART\n"
     while (start.to_now < dur ):
+      antenna.write "test"
       exception := catch: 
         with_timeout --ms=ms: 
           uartBuffer = antenna.read
-          recMessage = uartBuffer.to_string.trim    
+          recMessage = uartBuffer.to_string.trim  
       if(exception != null):  
         //
       else:
@@ -614,3 +615,51 @@ class RN4871:
     else:
       return false
 
+
+  // *********************************************************************************
+  // Start Advertising immediatly
+  // *********************************************************************************
+  // Input : uint8_t adType  Bluetooth SIG defines AD types in the assigned number list
+  //         in the Core Specification
+  //         const char adData[] has various lengths and follows the format defined
+  //         by Bluetooth SIG Supplement to the Bluetooth Core specification
+  // Output: bool true if successfully executed
+  // *********************************************************************************
+
+  startImmediateAdvertising adType adData ->bool:    
+    typeName := ""
+    AD_TYPES.filter:
+      if AD_TYPES[it] == adType:
+        typeName = it
+
+    
+    if typeName == "":
+      print "startImmediateAdvertising failed: adType $adType is wrong"
+      return false
+
+    print "[startImmediateAdvertising]: type $typeName"
+    return false
+
+/*
+bool Rn487xBle::startImmediateAdvertising(uint8_t adType, const char adData[])
+{
+  debugPrintLn("[startImmediateAdvertising]") ;
+
+  uint8_t len = strlen(START_IMMEDIATE_ADV) ;
+  char c[2] ;
+  sprintf(c, "%02X", adType) ;
+  uint8_t newLen = strlen(c) ;
+
+  this->flush() ;
+  memcpy(uartBuffer, START_IMMEDIATE_ADV, len) ; 
+  memcpy(&uartBuffer[len], c, newLen) ;
+  memcpy(&uartBuffer[len+newLen], ",", 1) ;
+  memcpy(&uartBuffer[len+newLen+1], adData, strlen(adData)) ;
+  sendCommand(uartBuffer) ;
+  if (expectResponse(AOK_RESP, DEFAULT_CMD_TIMEOUT))
+  {
+    return true ;
+  }
+  return false ;
+}
+*/
