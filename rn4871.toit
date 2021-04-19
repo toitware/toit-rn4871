@@ -493,14 +493,13 @@ class RN4871:
         print popData
   
   // *********************************************************************************
-// Clear all services
-// *********************************************************************************
-// Clears all settings of services and characteristics.
-// A power cycle is required afterwards to make the changes effective.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
-
+  // Clear all services
+  // *********************************************************************************
+  // Clears all settings of services and characteristics.
+  // A power cycle is required afterwards to make the changes effective.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   clearAllServices:
     print "[cleanAllServices]"
     sendCommand(CLEAR_ALL_SERVICES)
@@ -510,3 +509,108 @@ class RN4871:
       return true
     else:
       return false
+
+  // *********************************************************************************
+  // Start Advertisement
+  // *********************************************************************************
+  // The advertisement is undirect connectable.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
+  startAdvertising:
+    print "[startAdvertising]"
+    sendCommand(START_DEFAULT_ADV)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+  // *********************************************************************************
+  // Stops Advertisement
+  // *********************************************************************************
+  // Stops advertisement started by the startAdvertising method.
+  // Input : void
+  // Output: bool true if successfully executed
+  //*********************************************************************************
+  stopAdvertising:
+    print "[stopAdvertising]"
+    sendCommand(STOP_ADV)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+  // *********************************************************************************
+  // Clear the advertising structure Immediately
+  // *********************************************************************************
+  // Make the changes immediately effective without a reboot.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
+  clearImmediateAdvertising:
+    print "[clearImmediateAdvertising]"
+    sendCommand(CLEAR_IMMEDIATE_ADV)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+  // *********************************************************************************
+  // Clear the advertising structure in a permanent way
+  // *********************************************************************************
+  // The changes are saved into NVM only if other procedures require permanent
+  // configuration changes. A reboot is requested after executing this method.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
+  clearPermanentAdvertising:
+    print "[clearPermanentAdvertising]"
+    sendCommand(CLEAR_PERMANENT_ADV)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+  // *********************************************************************************
+  // Clear the Beacon structure Immediately
+  // *********************************************************************************
+  // Make the changes immediately effective without a reboot.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
+  clearImmediateBeacon:
+    print "[clearImmediateBeacon]"
+    sendCommand(CLEAR_IMMEDIATE_BEACON)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+// *********************************************************************************
+// Clear the Beacon structure in a permanent way
+// *********************************************************************************
+// The changes are saved into NVM only if other procedures require permanent
+// configuration changes. A reboot is requested after executing this method.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  clearPermanentBeacon:
+    print "[clearPermanentBeacon]"
+    sendCommand(CLEAR_PERMANENT_BEACON)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
