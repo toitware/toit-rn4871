@@ -3,7 +3,8 @@ import gpio.adc show Adc
 
 main:
     //test_analog_pin := gpio.Pin 33
-    analog := Adc (gpio.Pin 33)
+    henr1 := Adc (gpio.Pin 34)
+    henr0_460 := Adc (gpio.Pin 34)
     initial_time := Time.now
     duration := Duration.since initial_time
     list := []
@@ -14,7 +15,8 @@ main:
     while true:
         20.repeat:
             duration = Duration.since initial_time
-            list = list + [duration.in_ms, analog.get/1024.0]
+            list = list + [duration.in_ms, henr1.get/1024.0, henr0_460.get/1024.0]
+            
             sleep --ms=7
         print list
         list =[]
