@@ -15,7 +15,7 @@ main:
     while true:
         5.repeat:
             duration = Duration.since initial_time
-            list = list + [duration.in_ms, henr1.get/1024.0, henr0_460.get/1024.0]
+            list = list + [duration.in_ms/1000.0, henr1.get/1024.0, henr0_460.get/1024.0]
             
             sleep --ms=7
         print list
