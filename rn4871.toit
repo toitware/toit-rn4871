@@ -369,27 +369,6 @@ class RN4871:
     else:
       return false
   
-  // Retrieve BTE address: I have no idea what that is:
-//   bool Rn487xBle::retrieveBtAddress(void)
-// {
-//   if (getSettings(0, 6))
-//   {    
-//     btAddress[0] = uartBuffer[10] ;
-//     btAddress[1] = uartBuffer[11] ;
-//     btAddress[2] = uartBuffer[8] ;
-//     btAddress[3] = uartBuffer[9] ;
-//     btAddress[4] = uartBuffer[6] ;
-//     btAddress[5] = uartBuffer[7] ;
-//     btAddress[6] = uartBuffer[4] ;
-//     btAddress[7] = uartBuffer[5] ;
-//     btAddress[8] = uartBuffer[2] ;
-//     btAddress[9] = uartBuffer[3] ;
-//     btAddress[10]= uartBuffer[0] ;
-//     btAddress[11]= uartBuffer[1] ;
-//     return true ;
-//   }
-//   return false ;
-// }
   setAdvPower value/int:
     if value > MAX_POWER_OUTPUT:
       value = MAX_POWER_OUTPUT
@@ -626,40 +605,20 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
 
-  startImmediateAdvertising adType adData ->bool:    
+  startImmediateAdvertising adType/string adData/string ->bool:    
     typeName := ""
     AD_TYPES.filter:
       if AD_TYPES[it] == adType:
         typeName = it
 
-    
     if typeName == "":
-      print "startImmediateAdvertising failed: adType $adType is wrong"
+      print "startImmediateAdvertising failed: adType $adType is not one of accepted types"
       return false
 
-    print "[startImmediateAdvertising]: type $typeName"
-    return false
-
-/*
-bool Rn487xBle::startImmediateAdvertising(uint8_t adType, const char adData[])
-{
-  debugPrintLn("[startImmediateAdvertising]") ;
-
-  uint8_t len = strlen(START_IMMEDIATE_ADV) ;
-  char c[2] ;
-  sprintf(c, "%02X", adType) ;
-  uint8_t newLen = strlen(c) ;
-
-  this->flush() ;
-  memcpy(uartBuffer, START_IMMEDIATE_ADV, len) ; 
-  memcpy(&uartBuffer[len], c, newLen) ;
-  memcpy(&uartBuffer[len+newLen], ",", 1) ;
-  memcpy(&uartBuffer[len+newLen+1], adData, strlen(adData)) ;
-  sendCommand(uartBuffer) ;
-  if (expectResponse(AOK_RESP, DEFAULT_CMD_TIMEOUT))
-  {
-    return true ;
-  }
-  return false ;
-}
-*/
+    print "[startImmediateAdvertising]: type $typeName, data $adData "
+    sendCommand(START_IMMEDIATE_ADV+adType+","+adData)
+    answerOrTimeout
+    if popData == AOK_RESP:
+      return true
+    else:
+      return false
