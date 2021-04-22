@@ -719,15 +719,26 @@ class RN4871:
 // ready for scan before establishing connection.
 // By default, scan interval of 375 milliseconds and scan window of 250 milliseconds
 // Use stopScanning() method to stop an active scan
-// Input : void
+// The user has the option to specify the scan interval and scan window as first 
+// and second parameter, respectively. Each unit is 0.625 millisecond. Scan interval
+// must be larger or equal to scan window. The scan interval and the scan window
+// values can range from 2.5 milliseconds to 10.24 seconds.
+// Input1 : void
+// or
+// Input2 : uint16_t scan interval value (must be >= scan window)
+//         uint16_t scan window value
 // Output: bool true if successfully executed
 // *********************************************************************************
-  startScanning:
-    print "[startScanning]"
-    sendCommand START_DEFAULT_SCAN
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == SCANNING_RESP:
+  startScanning --scanInterval/int=0 --scanWindow/int=0:
+    if(scanInterval*scanWindow != 0):
+      print "[startScanning] Custom scanning"
+      sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
+    else:
+      print "[startScanning] Default scanning"
+      sendCommand START_DEFAULT_SCAN
+    
+    answerOrTimeout
+    if popData == SCANNING_RESP:
       return true
     else:
       return false
