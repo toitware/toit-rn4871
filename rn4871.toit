@@ -617,8 +617,38 @@ class RN4871:
 
     print "[startImmediateAdvertising]: type $typeName, data $adData "
     sendCommand(START_IMMEDIATE_ADV+adType+","+adData)
-    answerOrTimeout
-    if popData == AOK_RESP:
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+// *********************************************************************************
+// Start Advertising permanently
+// *********************************************************************************
+// A reboot is needed after issuing this method
+// Input : uint8_t adType  Bluetooth SIG defines AD types in the assigned number list
+//         in the Core Specification
+//         const char adData[] has various lengths and follows the format defined
+//         by Bluetooth SIG Supplement to the Bluetooth Core specification
+// Output: bool true if successfully executed
+// *********************************************************************************
+  startPermanentAdvertising adType/string adData/string ->bool:    
+    typeName := ""
+    AD_TYPES.filter:
+      if AD_TYPES[it] == adType:
+        typeName = it
+
+    if typeName == "":
+      print "startPermanentAdvertising failed: adType $adType is not one of accepted types"
+      return false
+
+    print "[startPermanentAdvertising]: type $typeName, data $adData "
+    sendCommand(START_PERMANENT_ADV+adType+","+adData)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
       return true
     else:
       return false
