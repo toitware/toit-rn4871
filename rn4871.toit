@@ -42,7 +42,7 @@ class RN4871:
     reset_pin_.set 0
     sleep --ms=50
     reset_pin_.set 1
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     if(result == REBOOT_EVENT):
       sleep --ms=INTERNAL_CMD_TIMEOUT
       print "Reboot successfull"
@@ -91,7 +91,7 @@ class RN4871:
     // Command mode
     setStatus ENUM_ENTER_CONFMODE
     sendData CONF_COMMAND
-    result := readForTime --ms=500
+    result := readForTime --ms=INTERNAL_CMD_TIMEOUT
     if(result == PROMPT or result == "CMD"):
       print "Command mode set up"
       setStatus ENUM_CONFMODE
@@ -483,7 +483,7 @@ class RN4871:
   clearAllServices:
     print "[cleanAllServices]"
     sendCommand(CLEAR_ALL_SERVICES)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -500,7 +500,7 @@ class RN4871:
   startAdvertising:
     print "[startAdvertising]"
     sendCommand(START_DEFAULT_ADV)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -517,7 +517,7 @@ class RN4871:
   stopAdvertising:
     print "[stopAdvertising]"
     sendCommand(STOP_ADV)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -534,7 +534,7 @@ class RN4871:
   clearImmediateAdvertising:
     print "[clearImmediateAdvertising]"
     sendCommand(CLEAR_IMMEDIATE_ADV)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -552,7 +552,7 @@ class RN4871:
   clearPermanentAdvertising:
     print "[clearPermanentAdvertising]"
     sendCommand(CLEAR_PERMANENT_ADV)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -569,7 +569,7 @@ class RN4871:
   clearImmediateBeacon:
     print "[clearImmediateBeacon]"
     sendCommand(CLEAR_IMMEDIATE_BEACON)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -587,7 +587,7 @@ class RN4871:
   clearPermanentBeacon:
     print "[clearPermanentBeacon]"
     sendCommand(CLEAR_PERMANENT_BEACON)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -617,7 +617,7 @@ class RN4871:
 
     print "[startImmediateAdvertising]: type $typeName, data $adData "
     sendCommand(START_IMMEDIATE_ADV+adType+","+adData)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -646,7 +646,7 @@ class RN4871:
 
     print "[startPermanentAdvertising]: type $typeName, data $adData "
     sendCommand(START_PERMANENT_ADV+adType+","+adData)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -675,7 +675,7 @@ class RN4871:
 
     print "[startImmediateBeacon]: type $typeName, data $adData "
     sendCommand(START_IMMEDIATE_BEACON+adType+","+adData)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
@@ -705,10 +705,29 @@ class RN4871:
 
     print "[startPermanentBeacon]: type $typeName, data $adData "
     sendCommand(START_PERMANENT_BEACON+adType+","+adData)
-    result := extractResult(readForTime --ms=50)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     print result
     if result == AOK_RESP:
       return true
     else:
       return false
 
+// *********************************************************************************
+// Start Scanning
+// *********************************************************************************
+// Method available only when the module is set as a Central (GAP) device and is
+// ready for scan before establishing connection.
+// By default, scan interval of 375 milliseconds and scan window of 250 milliseconds
+// Use stopScanning() method to stop an active scan
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  startScanning:
+    print "[startScanning]"
+    sendCommand START_DEFAULT_SCAN
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+    print result
+    if result == SCANNING_RESP:
+      return true
+    else:
+      return false
