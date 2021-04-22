@@ -749,3 +749,20 @@ class RN4871:
       return true
     else:
       return false
+
+// *********************************************************************************
+// Stop Scanning
+// *********************************************************************************
+// Stops scan process started by startScanning() method
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  stopScanning:
+    print "[stopScanning]"
+    sendCommand(STOP_SCAN)
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
