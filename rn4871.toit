@@ -729,10 +729,17 @@ class RN4871:
 //         uint16_t scan window value
 // Output: bool true if successfully executed
 // *********************************************************************************
-  startScanning --scanInterval/int=0 --scanWindow/int=0:
-    if(scanInterval*scanWindow != 0):
-      print "[startScanning] Custom scanning"
-      sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
+  startScanning --scanInterval_ms/int=0 --scanWindow_ms/int=0:
+    if(scanInterval_ms*scanWindow_ms != 0):
+      values := [2.5, scanInterval_ms, scanInterval_ms, 10.24].sort
+
+      if(values.first == 2.5 and values.last == 10.24):
+        scanInterval := (scanInterval_ms / 0.625).to_int
+        scanWindow := (scanWindow_ms / 0.625).to_int
+        print "[startScanning] Custom scanning"
+        sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
+      else:
+        print "Error: [startScanning] input values out of range"
     else:
       print "[startScanning] Default scanning"
       sendCommand START_DEFAULT_SCAN
