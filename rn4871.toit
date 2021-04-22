@@ -652,3 +652,33 @@ class RN4871:
       return true
     else:
       return false
+
+// *********************************************************************************
+// Start Beacon adv immediatly
+// *********************************************************************************
+// Input : uint8_t adType  Bluetooth SIG defines AD types in the assigned number list
+//         in the Core Specification
+//         const char adData[] has various lengths and follows the format defined
+//         by Bluetooth SIG Supplement to the Bluetooth Core specification
+// Output: bool true if successfully executed
+// *********************************************************************************
+
+  startImmediateBeacon adType/string adData/string ->bool:    
+    typeName := ""
+    AD_TYPES.filter:
+      if AD_TYPES[it] == adType:
+        typeName = it
+
+    if typeName == "":
+      print "startImmediateBeacon failed: adType $adType is not one of accepted types"
+      return false
+
+    print "[startImmediateBeacon]: type $typeName, data $adData "
+    sendCommand(START_IMMEDIATE_BEACON+adType+","+adData)
+    result := extractResult(readForTime --ms=50)
+    print result
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
