@@ -24,17 +24,19 @@ class RN4871:
   tx_pin_/gpio.Pin
   reset_pin_/gpio.Pin
   bleAddress := []
+  debug := false
 
 
 
   // UART constructor
-  constructor --tx/gpio.Pin --rx/gpio.Pin --reset_pin/gpio.Pin --baud_rate/int:
+  constructor --tx/gpio.Pin --rx/gpio.Pin --reset_pin/gpio.Pin --baud_rate/int --debug_mode/bool=false:
     rx_pin_ = rx
     tx_pin_ = tx
     reset_pin_ = reset_pin
     antenna = serial.Port --tx=tx --rx=rx --baud_rate=baud_rate
     status = ENUM_DATAMODE
     answerLen = 0
+    debug = debug_mode
     print "Device object created"
     
   // Reset
@@ -363,7 +365,7 @@ class RN4871:
     answerOrTimeout
     result := popData
     result = extractResult result
-    print "setSettings response: $result"
+    debugPrint "setSettings response: $result"
     if result == AOK_RESP:
       return true
     else:
@@ -407,7 +409,7 @@ class RN4871:
 // Output: bool true if successfully executed
 // *********************************************************************************
   dormantMode -> none:
-    print "[dormantMode]"
+    debugPrint "[dormantMode]"
     sendCommand(SET_DORMANT_MODE)
     sleep --ms=INTERNAL_CMD_TIMEOUT
 
@@ -481,14 +483,9 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   clearAllServices:
-    print "[cleanAllServices]"
+    debugPrint "[cleanAllServices]"
     sendCommand(CLEAR_ALL_SERVICES)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
   // *********************************************************************************
   // Start Advertisement
@@ -498,14 +495,9 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   startAdvertising:
-    print "[startAdvertising]"
+    debugPrint "[startAdvertising]"
     sendCommand(START_DEFAULT_ADV)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
   // *********************************************************************************
   // Stops Advertisement
@@ -515,14 +507,9 @@ class RN4871:
   // Output: bool true if successfully executed
   //*********************************************************************************
   stopAdvertising:
-    print "[stopAdvertising]"
+    debugPrint "[stopAdvertising]"
     sendCommand(STOP_ADV)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
   // *********************************************************************************
   // Clear the advertising structure Immediately
@@ -532,14 +519,9 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   clearImmediateAdvertising:
-    print "[clearImmediateAdvertising]"
+    debugPrint "[clearImmediateAdvertising]"
     sendCommand(CLEAR_IMMEDIATE_ADV)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
   // *********************************************************************************
   // Clear the advertising structure in a permanent way
@@ -550,14 +532,9 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   clearPermanentAdvertising:
-    print "[clearPermanentAdvertising]"
+    debugPrint "[clearPermanentAdvertising]"
     sendCommand(CLEAR_PERMANENT_ADV)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
   // *********************************************************************************
   // Clear the Beacon structure Immediately
@@ -567,14 +544,9 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   clearImmediateBeacon:
-    print "[clearImmediateBeacon]"
+    debugPrint "[clearImmediateBeacon]"
     sendCommand(CLEAR_IMMEDIATE_BEACON)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
 // *********************************************************************************
 // Clear the Beacon structure in a permanent way
@@ -585,14 +557,9 @@ class RN4871:
 // Output: bool true if successfully executed
 // *********************************************************************************
   clearPermanentBeacon:
-    print "[clearPermanentBeacon]"
+    debugPrint "[clearPermanentBeacon]"
     sendCommand(CLEAR_PERMANENT_BEACON)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
 
   // *********************************************************************************
@@ -615,14 +582,9 @@ class RN4871:
       print "startImmediateAdvertising failed: adType $adType is not one of accepted types"
       return false
 
-    print "[startImmediateAdvertising]: type $typeName, data $adData "
+    debugPrint "[startImmediateAdvertising]: type $typeName, data $adData "
     sendCommand(START_IMMEDIATE_ADV+adType+","+adData)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
 // *********************************************************************************
 // Start Advertising permanently
@@ -644,14 +606,9 @@ class RN4871:
       print "startPermanentAdvertising failed: adType $adType is not one of accepted types"
       return false
 
-    print "[startPermanentAdvertising]: type $typeName, data $adData "
+    debugPrint "[startPermanentAdvertising]: type $typeName, data $adData "
     sendCommand(START_PERMANENT_ADV+adType+","+adData)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
 // *********************************************************************************
 // Start Beacon adv immediatly
@@ -673,14 +630,9 @@ class RN4871:
       print "startImmediateBeacon failed: adType $adType is not one of accepted types"
       return false
 
-    print "[startImmediateBeacon]: type $typeName, data $adData "
+    debugPrint "[startImmediateBeacon]: type $typeName, data $adData "
     sendCommand(START_IMMEDIATE_BEACON+adType+","+adData)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
 // *********************************************************************************
 // Start Beacon adv permanently
@@ -703,14 +655,9 @@ class RN4871:
       print "startPermanentBeacon failed: adType $adType is not one of accepted types"
       return false
 
-    print "[startPermanentBeacon]: type $typeName, data $adData "
+    debugPrint "[startPermanentBeacon]: type $typeName, data $adData "
     sendCommand(START_PERMANENT_BEACON+adType+","+adData)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
 // *********************************************************************************
 // Start Scanning
@@ -736,12 +683,12 @@ class RN4871:
       if(values.first == 2.5 and values.last == 10.24):
         scanInterval := (scanInterval_ms / 0.625).to_int
         scanWindow := (scanWindow_ms / 0.625).to_int
-        print "[startScanning] Custom scanning"
+        debugPrint "[startScanning] Custom scanning"
         sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
       else:
         print "Error: [startScanning] input values out of range"
     else:
-      print "[startScanning] Default scanning"
+      debugPrint "[startScanning] Default scanning"
       sendCommand START_DEFAULT_SCAN
     
     answerOrTimeout
@@ -758,14 +705,9 @@ class RN4871:
 // Output: bool true if successfully executed
 // *********************************************************************************
   stopScanning:
-    print "[stopScanning]"
+    debugPrint "[stopScanning]"
     sendCommand(STOP_SCAN)
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    print result
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
 
   
 // *********************************************************************************
@@ -803,11 +745,7 @@ class RN4871:
       print "Error: [addMacAddrWhiteList] received faulty input"
       return false
     
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
+    return (expectedResult AOK_RESP)
       
 // *********************************************************************************
 // Add all currently bonded devices to the white list
@@ -825,8 +763,39 @@ class RN4871:
     print("[addBondedWhiteList]")
     
     sendCommand(ADD_BONDED_WHITE_LIST) ;
+    return (expectedResult AOK_RESP)
+
+// *********************************************************************************
+// Clear the white list
+// *********************************************************************************
+// Once the white list is cleared, white list feature is disabled.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  clearWhiteList:
+    print("clearWhiteList")
+    sendCommand(CLEAR_WHITE_LIST) ;
+    return (expectedResult AOK_RESP)
+
+  expectedResult resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
     result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     if result == AOK_RESP:
       return true
     else:
       return false
+
+  debugPrint text/string:
+    if (debug == true):
+      print text
+
+// *********************************************************************************
+// Kill the active connection
+// *********************************************************************************
+// Disconnect the active BTLE link. It can be used in central or peripheral role.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  killConnection:
+    debugPrint("[killConnection]")
+    sendCommand(KILL_CONNECTION) ;
+    return (extractResult AOK_RESP)
