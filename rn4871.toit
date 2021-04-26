@@ -849,12 +849,52 @@ class RN4871:
 // *********************************************************************************
   setServiceUUID uuid/string -> bool:
     
-    if (uuid.size == 4):
+    if (uuid.size == PRIVATE_SERVICE_LEN):
       debugPrint("[setServiceUUID]: Set public UUID")
-    else if (uuid.size == 32):
+    else if (uuid.size == PUBLIC_SERVICE_LEN):
       debugPrint("[setServiceUUID]: Set private UUID")
     else:
       print("Error: [setServiceUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
       return false
     sendCommand "$DEFINE_SERVICE_UUID,$uuid"  
+    return (expectedResult AOK_RESP)
+
+// Input : const char *uuid 
+//         can be either a 16-bit UUID for public service
+//         or a 128-bit UUID for private service
+//         uint8_t property is a 8-bit property bitmap of the characteristics
+//         uint8_t octetLen is an 8-bit value that indicates the maximum data size
+//         in octet where the value of the characteristics holds in the range
+//         from 1 to 20 (0x01 to 0x14)
+// Output: bool true if successfully executed
+// *********************************************************************************
+  setCharactUUID --uuid/string --property/string --octetLen-> bool:
+    catch:
+      try:
+        octetLen = octetLen.to_string
+      finally:
+        tab := ["1", octetLen, "20"].sort
+        if(tab.first != "1" or tab.last != "20"):
+          print "Error: [setCharactUUID] octetLen is too long, should be between 1 and 20" 
+          return false
+        
+    
+    if (uuid.size == PRIVATE_SERVICE_LEN):
+      debugPrint("[setCharactUUID]: Set public UUID")
+    else if (uuid.size == PUBLIC_SERVICE_LEN):
+      debugPrint("[setCharactUUID]: Set private UUID")
+    else:
+      print("Error: [setCharactUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number)")
+      return false
+    
+    propertyName := ""
+    CHAR_PROPS.filter:
+      if CHAR_PROPS[it] == property:
+        propertyName = it
+
+    if(propertyName == ""):
+      print("Error: [setCharactUUID] received unknown property $property")
+      return false
+    
+    sendCommand "$DEFINE_CHARACT_UUID,$uuid,$property,$octetLen"  
     return (expectedResult AOK_RESP)
