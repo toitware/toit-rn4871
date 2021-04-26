@@ -71,7 +71,7 @@ class RN4871:
         answerLen = recMessage.size
     
     if(exception != null):  
-      print "Exception raised: Answer timeout"
+      debugPrint "Exception raised: Answer timeout"
       return false
 
     return true
@@ -779,7 +779,7 @@ class RN4871:
 
   expectedResult resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
     result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    if result == AOK_RESP:
+    if result == resp:
       return true
     else:
       return false
@@ -798,4 +798,40 @@ class RN4871:
   killConnection:
     debugPrint("[killConnection]")
     sendCommand(KILL_CONNECTION) ;
-    return (extractResult AOK_RESP)
+    return (expectedResult AOK_RESP)
+
+// *********************************************************************************
+// Get the RSSI level
+// *********************************************************************************
+// Get the signal strength in dBm of the last communication with the peer device. 
+// The signal strength is used to estimate the distance between the device and its
+// remote peer.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  getRSSI -> string:
+    debugPrint("[getRSSI]") ;
+    sendCommand GET_RSSI_LEVEL
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+    debugPrint "Received RSSI is: $result"
+    return result
+
+// *********************************************************************************
+// Reboot the module
+// *********************************************************************************
+// Forces a complete device reboot (similar to a power cycle).
+// After rebooting RN487x, all prior made setting changes takes effect.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  reboot -> bool:
+    debugPrint("[reboot]")
+    sendCommand(REBOOT)
+    if (expectedResult REBOOTING_RESP):
+      sleep --ms=STATUS_CHANGE_TIMEOUT
+      debugPrint "[reboot] Software reboot succesful"
+      return true
+    else:
+      sleep --ms=STATUS_CHANGE_TIMEOUT
+      debugPrint "[reboot] Software reboot failed"
+      return false
