@@ -835,3 +835,26 @@ class RN4871:
       sleep --ms=STATUS_CHANGE_TIMEOUT
       debugPrint "[reboot] Software reboot failed"
       return false
+
+// *********************************************************************************
+// Sets the service UUID
+// *********************************************************************************
+// Sets the UUID of the public or the private service.
+// This method must be called before the setCharactUUID() method.
+// 
+// Input : const char *uuid 
+//         can be either a 16-bit UUID for public service
+//         or a 128-bit UUID for private service
+// Output: bool true if successfully executed
+// *********************************************************************************
+  setServiceUUID uuid/string -> bool:
+    
+    if (uuid.size == 4):
+      debugPrint("[setServiceUUID]: Set public UUID")
+    else if (uuid.size == 32):
+      debugPrint("[setServiceUUID]: Set private UUID")
+    else:
+      print("Error: [setServiceUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
+      return false
+    sendCommand "$DEFINE_SERVICE_UUID,$uuid"  
+    return (expectedResult AOK_RESP)
