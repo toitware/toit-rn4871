@@ -898,3 +898,33 @@ class RN4871:
     
     sendCommand "$DEFINE_CHARACT_UUID,$uuid,$property,$octetLen"  
     return (expectedResult AOK_RESP)
+
+// *********************************************************************************
+// Write local characteristic value as server
+// *********************************************************************************
+// Writes content of characteristic in Server Service to local device by addressing
+// its handle
+// Input : uint16_t handle which corresponds to the characteristic of the server service
+//         const unsigned char value[] is the content to be written to the characteristic
+// Output: bool true if successfully executed
+// *********************************************************************************
+  writeLocalCharacteristic --handle --value -> bool:
+    debugPrint("[writeLocalCharacteristic]")
+    sendCommand "$WRITE_LOCAL_CHARACT,$handle,$value"
+    return (expectedResult AOK_RESP)
+
+// *********************************************************************************
+// Read local characteristic value as server
+// *********************************************************************************
+// Reads the content of the server service characteristic on the local device
+// by addresiing its handle. 
+// This method is effective with or without an active connection.
+// Input : uint16_t handle which corresponds to the characteristic of the server service
+// Output: string with result
+// *********************************************************************************
+
+  readLocalCharacteristic --handle/string -> string:
+    debugPrint("[readLocalCharacteristic]")
+    sendCommand "$READ_LOCAL_CHARACT,$handle"
+    result := extractResult(readForTime)
+    return result
