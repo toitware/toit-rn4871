@@ -17,6 +17,5 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  device.setSupFeatures FEATURE_MLDP_SUPPORT
-  print device.devInfo
-  //device.listenToUart --ms=20000
+  device.addMacAddrWhiteList PUBLIC_ADDRESS_TYPE 123456
+  device.addBondedWhiteList

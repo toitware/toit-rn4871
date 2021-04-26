@@ -766,3 +766,67 @@ class RN4871:
       return true
     else:
       return false
+
+  
+// *********************************************************************************
+// Add a MAC address to the white list
+// *********************************************************************************
+// Once one device is added to the white list, the white list feature is enabled.
+// With the white list feature enabled, when performing a scan, any device not
+// included in the white list does not appear in the scan results.
+// As a peripheral, any device not listed in the white list cannot be connected
+// with a local device. RN4870/71 supports up to 16 addresses in the white list.
+// A random address stored in the white list cannot be resolved. If the peer 
+// device does not change the random address, it is valid in the white list. 
+// If the random address is changed, this device is no longer considered to be on 
+// the white list.
+// Input : bool addrType = 0 if following address is public (=1 for private)
+//         const char *addr 6-byte address in hex format
+// Output: bool true if successfully executed
+// *********************************************************************************
+
+  addMacAddrWhiteList addrType adData ->bool:    
+    typeName := ""
+    PUBLIC_ADDRESS_TYPE
+    PRIVATE_ADDRESS_TYPE
+    is_correct := false
+    catch:
+      try:
+        addrType = addrType.to_string
+      finally:
+        [PUBLIC_ADDRESS_TYPE, PRIVATE_ADDRESS_TYPE].do:
+          if (it == addrType):
+            is_correct = true
+    if is_correct:
+      sendCommand "$ADD_WHITE_LIST,$addrType,$adData"
+    else:
+      print "Error: [addMacAddrWhiteList] received faulty input"
+      return false
+    
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+      
+// *********************************************************************************
+// Add all currently bonded devices to the white list
+// *********************************************************************************
+// The random address in the white list can be resolved with this method for 
+// connection purpose. If the peer device changes its resolvable random address, 
+// the RN4870/71 is still able to detect that the different random addresses are 
+// from the same physical device, therefore, allows connection from such peer 
+// device. This feature is particularly useful if the peer device is a iOS or 
+// Android device which uses resolvable random.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  addBondedWhiteList:
+    print("[addBondedWhiteList]")
+    
+    sendCommand(ADD_BONDED_WHITE_LIST) ;
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
