@@ -329,99 +329,6 @@ class RN4871:
     print "Address assigned to $address"
     return true
 
-// ---------------------------------------- Private section ----------------------------------------
-
-// *********************************************************************************
-// Configures the Beacon Feature
-// *********************************************************************************
-// Input : 
-// Output: return true if successfully executed
-// *********************************************************************************
-
-  setBeaconFeatures value:
-    setting := ""
-    catch:
-      try:
-        value = value.stringify
-      finally:
-        BEACON_SETTINGS.filter:
-          if BEACON_SETTINGS[it] == value:
-            setting = it
-      
-    if(setting == ""):
-      print "Error: Value: $value is not in beacon commands set"
-      return false
-    else:
-      debugPrint "[setBeaconFeatures]: set the Beacon Feature to $setting"
-      sendCommand SET_BEACON_FEATURES+value
-      answerOrTimeout
-      if readData == AOK_RESP:
-        return true
-      else:
-        return false
-
-
-  getSettings addr/string -> string:
-    uartBuffer = GET_SETTINGS + addr
-    sendCommand uartBuffer
-    answerOrTimeout
-    return popData
-
-  setSettings addr/string value/string:
-    // Manual insertion of settings
-    uartBuffer = SET_SETTINGS + addr + "," + value
-    sendCommand uartBuffer
-    answerOrTimeout
-    result := popData
-    result = extractResult result
-    debugPrint "setSettings response: $result"
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
-  
-  setAdvPower value/int:
-    if value > MAX_POWER_OUTPUT:
-      value = MAX_POWER_OUTPUT
-    else if value < MIN_POWER_OUTPUT:
-      value = MIN_POWER_OUTPUT
-
-    sendCommand SET_ADV_POWER + "$value"
-    answerOrTimeout
-    result := extractResult popData
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
-
-  setConnPower value/int:
-    if value > MAX_POWER_OUTPUT:
-      value = MAX_POWER_OUTPUT
-    else if value < MIN_POWER_OUTPUT:
-      value = MIN_POWER_OUTPUT
-
-    sendCommand SET_CONN_POWER + "$value"
-    answerOrTimeout
-    result := extractResult popData
-    if result == AOK_RESP:
-      return true
-    else:
-      return false
-
-
-// *********************************************************************************
-// Set the module to Dormant
-// *********************************************************************************
-// Immediately forces the device into lowest power mode possible.
-// Removing the device from Dormant mode requires power reset.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
-  dormantMode -> none:
-    debugPrint "[dormantMode]"
-    sendCommand(SET_DORMANT_MODE)
-    sleep --ms=INTERNAL_CMD_TIMEOUT
-
   readForTime --ms/int=INTERNAL_CMD_TIMEOUT ->string:
     dur := Duration --ms=ms
     start := Time.now
@@ -961,3 +868,96 @@ class RN4871:
     else if(result == ""):
       print "Error: [getConnectionStatus] connection timeout"
     return result
+
+// ---------------------------------------- Private section ----------------------------------------
+
+// *********************************************************************************
+// Configures the Beacon Feature
+// *********************************************************************************
+// Input : 
+// Output: return true if successfully executed
+// *********************************************************************************
+
+  setBeaconFeatures value:
+    setting := ""
+    catch:
+      try:
+        value = value.stringify
+      finally:
+        BEACON_SETTINGS.filter:
+          if BEACON_SETTINGS[it] == value:
+            setting = it
+      
+    if(setting == ""):
+      print "Error: Value: $value is not in beacon commands set"
+      return false
+    else:
+      debugPrint "[setBeaconFeatures]: set the Beacon Feature to $setting"
+      sendCommand SET_BEACON_FEATURES+value
+      answerOrTimeout
+      if readData == AOK_RESP:
+        return true
+      else:
+        return false
+
+
+  getSettings addr/string -> string:
+    uartBuffer = GET_SETTINGS + addr
+    sendCommand uartBuffer
+    answerOrTimeout
+    return popData
+
+  setSettings addr/string value/string:
+    // Manual insertion of settings
+    uartBuffer = SET_SETTINGS + addr + "," + value
+    sendCommand uartBuffer
+    answerOrTimeout
+    result := popData
+    result = extractResult result
+    debugPrint "setSettings response: $result"
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+  
+  setAdvPower value/int:
+    if value > MAX_POWER_OUTPUT:
+      value = MAX_POWER_OUTPUT
+    else if value < MIN_POWER_OUTPUT:
+      value = MIN_POWER_OUTPUT
+
+    sendCommand SET_ADV_POWER + "$value"
+    answerOrTimeout
+    result := extractResult popData
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+  setConnPower value/int:
+    if value > MAX_POWER_OUTPUT:
+      value = MAX_POWER_OUTPUT
+    else if value < MIN_POWER_OUTPUT:
+      value = MIN_POWER_OUTPUT
+
+    sendCommand SET_CONN_POWER + "$value"
+    answerOrTimeout
+    result := extractResult popData
+    if result == AOK_RESP:
+      return true
+    else:
+      return false
+
+
+// *********************************************************************************
+// Set the module to Dormant
+// *********************************************************************************
+// Immediately forces the device into lowest power mode possible.
+// Removing the device from Dormant mode requires power reset.
+// Input : void
+// Output: bool true if successfully executed
+// *********************************************************************************
+  dormantMode -> none:
+    debugPrint "[dormantMode]"
+    sendCommand(SET_DORMANT_MODE)
+    sleep --ms=INTERNAL_CMD_TIMEOUT
