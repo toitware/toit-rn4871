@@ -71,7 +71,6 @@ class RN4871:
         answerLen = recMessage.size
     
     if(exception != null):  
-      debugPrint "Exception raised: Answer timeout"
       return false
 
     return true
@@ -927,4 +926,29 @@ class RN4871:
     debugPrint("[readLocalCharacteristic]")
     sendCommand "$READ_LOCAL_CHARACT,$handle"
     result := extractResult(readForTime)
+    return result
+
+// *********************************************************************************
+// Get the current connection status
+// *********************************************************************************
+// If the RN4870/71 is not connected, the output is none.
+// If the RN4870/71 is connected, the buffer must contains the information:
+// <Peer BT Address>,<Address Type>,<Connection Type>
+// where <Peer BT Address> is the 6-byte hex address of the peer device; 
+//       <Address Type> is either 0 for public address or 1 for random address; 
+//       <Connection Type> specifies if the connection enables UART Transparent 
+// feature, where 1 indicates UART Transparent is enabled and 0 indicates 
+// UART Transparent is disabled
+// Input : void
+// Output: int true if connected, (-1) if timeout occured, false if not connected
+// *********************************************************************************
+
+  getConnectionStatus:
+    sendCommand GET_CONNECTION_STATUS
+    result := extractResult (readForTime --ms=10000)
+    if(result == "none"):
+      debugPrint "[getConnectionStatus]: none"
+    else if(result == ""):
+      print "Error: [getConnectionStatus] connection timeout"
+
     return result
