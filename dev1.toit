@@ -3,8 +3,8 @@ import gpio
 import .rn4871 show *
 import .constants show *
 
-RX_PIN ::= 32
-TX_PIN ::= 33
+RX_PIN ::= 33
+TX_PIN ::= 32
 RESET_PIN ::= 25
 
 
@@ -17,7 +17,5 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  print "Set beacon adv feature: $(device.setBeaconFeatures BEACON_ADV_ON)"
-  print "Set UART transp feature: $(device.setSupFeatures NO_BEACON_SCAN_BMP)"
-  print "Set def servies: $(device.setDefServices UART_TRANSP_SERVICE)"
-  print device.devInfo
+  device.addMacAddrWhiteList PUBLIC_ADDRESS_TYPE 123456
+  device.addBondedWhiteList
