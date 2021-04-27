@@ -329,26 +329,36 @@ class RN4871:
     print "Address assigned to $address"
     return true
 
+// ---------------------------------------- Private section ----------------------------------------
+
+// *********************************************************************************
+// Configures the Beacon Feature
+// *********************************************************************************
+// Input : 
+// Output: return true if successfully executed
+// *********************************************************************************
+
   setBeaconFeatures value:
-    is_correct := false
+    setting := ""
     catch:
       try:
-        value = value.to_string
+        value = value.stringify
       finally:
-        [BEACON_OFF, BEACON_ON, BEACON_ADV_ON].do:
-          if (it == value):
-            is_correct = true
-    
-    if(is_correct == false):
+        BEACON_SETTINGS.filter:
+          if BEACON_SETTINGS[it] == value:
+            setting = it
+      
+    if(setting == ""):
       print "Error: Value: $value is not in beacon commands set"
       return false
-    
-    sendCommand SET_BEACON_FEATURES+value
-    answerOrTimeout
-    if readData == AOK_RESP:
-      return true
     else:
-      return false
+      debugPrint "[setBeaconFeatures]: set the Beacon Feature to $setting"
+      sendCommand SET_BEACON_FEATURES+value
+      answerOrTimeout
+      if readData == AOK_RESP:
+        return true
+      else:
+        return false
 
 
   getSettings addr/string -> string:
@@ -733,7 +743,7 @@ class RN4871:
     is_correct := false
     catch:
       try:
-        addrType = addrType.to_string
+        addrType = addrType.stringify
       finally:
         [PUBLIC_ADDRESS_TYPE, PRIVATE_ADDRESS_TYPE].do:
           if (it == addrType):
@@ -858,7 +868,7 @@ class RN4871:
     sendCommand "$DEFINE_SERVICE_UUID,$uuid"  
     return (expectedResult AOK_RESP)
 
-// Input : const char *uuid 
+// Input : string uuid 
 //         can be either a 16-bit UUID for public service
 //         or a 128-bit UUID for private service
 //         uint8_t property is a 8-bit property bitmap of the characteristics
@@ -870,7 +880,7 @@ class RN4871:
   setCharactUUID --uuid/string --property/string --octetLen-> bool:
     catch:
       try:
-        octetLen = octetLen.to_string
+        octetLen = octetLen.stringify
       finally:
         tab := ["1", octetLen, "20"].sort
         if(tab.first != "1" or tab.last != "20"):
@@ -940,7 +950,7 @@ class RN4871:
 // feature, where 1 indicates UART Transparent is enabled and 0 indicates 
 // UART Transparent is disabled
 // Input : void
-// Output: int true if connected, (-1) if timeout occured, false if not connected
+// Output: string with result
 // *********************************************************************************
 
   getConnectionStatus:
@@ -950,5 +960,4 @@ class RN4871:
       debugPrint "[getConnectionStatus]: none"
     else if(result == ""):
       print "Error: [getConnectionStatus] connection timeout"
-
     return result
