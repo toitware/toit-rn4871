@@ -17,5 +17,5 @@ main:
   device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 
   device.pinReboot
   device.enterConfigurationMode
-  device.addMacAddrWhiteList PUBLIC_ADDRESS_TYPE 123456
-  device.addBondedWhiteList
+  // Fill in commands you'd like to use
+  print device.getName

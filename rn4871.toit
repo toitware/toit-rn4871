@@ -46,7 +46,7 @@ class RN4871:
     reset_pin_.set 1
     result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     if(result == REBOOT_EVENT):
-      sleep --ms=INTERNAL_CMD_TIMEOUT
+      sleep --ms=STATUS_CHANGE_TIMEOUT
       print "Reboot successfull"
       return true
     else:
@@ -171,6 +171,7 @@ class RN4871:
       return "Error: Not in the CONFMODE"
     sendCommand GET_DEVICE_NAME
     answerOrTimeout
+    debugPrint readData
     actualResult := extractResult popData
     return actualResult
   
