@@ -170,10 +170,7 @@ class RN4871:
     if status != ENUM_CONFMODE:
       return "Error: Not in the CONFMODE"
     sendCommand GET_DEVICE_NAME
-    answerOrTimeout
-    debugPrint readData
-    actualResult := extractResult popData
-    return actualResult
+    return extractResult readForTime
   
   extractResult name/string="" lis/List=[] firstIteration=true-> string:
     if firstIteration:
