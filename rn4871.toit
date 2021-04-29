@@ -77,13 +77,13 @@ class RN4871:
     
 
   startBLE userRA=null:
-    if this.enterConfigurationMode == false:
+    if enterConfigurationMode == false:
       return false
 
-    if (this.assignRandomAddress userRA) == false:
+    if assignRandomAddress userRA == false:
       return false
 
-    if this.enterDataMode == false:
+    if enterDataMode == false:
       return false
 
     return true
@@ -131,7 +131,7 @@ class RN4871:
       if not enterConfigurationMode:
         return false
     sendCommand FACTORY_RESET
-    result := (answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT)
+    result := answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
     sleep --ms=STATUS_CHANGE_TIMEOUT
     return result
 
@@ -141,7 +141,6 @@ class RN4871:
       if null == userRA:
         sendCommand AUTO_RANDOM_ADDRESS
       else:
-        //Would be nice to be able to choose specific but they didn't have it in the original project either
         sendCommand AUTO_RANDOM_ADDRESS
       
       if answerOrTimeout == true:
@@ -149,7 +148,6 @@ class RN4871:
         return true
       else:
         return false
-
     else:
       return false
 
@@ -165,13 +163,8 @@ class RN4871:
     if newName.size > MAX_DEVICE_NAME_LEN:
       print "Error: The name is too long"
       return false
-    this.uartBuffer = SET_NAME + newName
-    sendCommand uartBuffer
-    result := answerOrTimeout
-    if popData != AOK_RESP:
-      result = false
-    answerOrTimeout
-    return result
+    sendCommand SET_NAME + newName
+    return expectedResult AOK_RESP
 
   getName:
     if status != ENUM_CONFMODE:
@@ -192,7 +185,7 @@ class RN4871:
       return ""
         
     elem := lis.remove_last.trim
-    if  (elem != "CMD>" and elem != "," and elem !=""):
+    if  elem != "CMD>" and elem != "," and elem !="":
       return elem
     return extractResult "" lis false
 
@@ -281,11 +274,9 @@ class RN4871:
   getPowerSave:
     if status != ENUM_CONFMODE:
         return false
-
     sendCommand GET_POWERSAVE
     answerOrTimeout
-    recMessage = popData
-    return recMessage
+    return popData
 
   sendCommand stream/string->none:
     answerLen = 0
@@ -301,13 +292,9 @@ class RN4871:
       if recMessage[0] == PROMPT_FIRST_CHAR and recMessage[recMessage.size-1] == PROMPT_LAST_CHAR:
         setStatus ENUM_DATAMODE
         return true
-
     return false
 
-
   setStatus statusToSet:
-
-
     if ENUM_ENTER_DATMODE == statusToSet:
       print "Status set to: ENTER_DATMODE"
     else if ENUM_DATAMODE == statusToSet:
@@ -319,9 +306,7 @@ class RN4871:
     else:
       print "Error: Not able to update status. Mode: $statusToSet is unknown"
       return false
-    
     status = statusToSet
-  
     return true
 
   setAddress address:
@@ -340,8 +325,7 @@ class RN4871:
 
   devInfo -> string:
     sendCommand GET_DEVICE_INFO
-    result := readForTime
-    return result
+    return readForTime
 
   setSupFeatures value:
     is_correct := false
@@ -353,8 +337,7 @@ class RN4871:
       print "Error: Value: $value is not in supported features set"
       return false
     sendCommand SET_SUPPORTED_FEATURES+value
-    answerOrTimeout
-    return popData == AOK_RESP
+    return expectedResult AOK_RESP
 
   setDefServices value:
     is_correct := false
@@ -374,14 +357,11 @@ class RN4871:
     start := Time.now
     print "Begin to listen to UART\n"
     while start.to_now < dur:
-      antenna.write "test"
       exception := catch: 
         with_timeout --ms=ms: 
           uartBuffer = antenna.read
           recMessage = uartBuffer.to_string.trim  
-      if(exception != null):  
-        //
-      else:
+      if(exception == null):  
         print popData
   
   // *********************************************************************************
@@ -882,11 +862,7 @@ class RN4871:
     else:
       debugPrint "[setBeaconFeatures]: set the Beacon Feature to $setting"
       sendCommand SET_BEACON_FEATURES+value
-      answerOrTimeout
-      if readData == AOK_RESP:
-        return true
-      else:
-        return false
+      return expectedResult AOK_RESP
 
 
   getSettings addr/string -> string:
@@ -897,13 +873,8 @@ class RN4871:
 
   setSettings addr/string value/string:
     // Manual insertion of settings
-    uartBuffer = SET_SETTINGS + addr + "," + value
-    sendCommand uartBuffer
-    answerOrTimeout
-    result := popData
-    result = extractResult result
-    debugPrint "setSettings response: $result"
-    return result == AOK_RESP
+    sendCommand SET_SETTINGS+addr+","+value
+    return expectedResult AOK_RESP
   
   setAdvPower value/int:
     if value > MAX_POWER_OUTPUT:
@@ -912,9 +883,7 @@ class RN4871:
       value = MIN_POWER_OUTPUT
 
     sendCommand SET_ADV_POWER + "$value"
-    answerOrTimeout
-    result := extractResult popData
-    return result == AOK_RESP
+    return expectedResult AOK_RESP
 
   setConnPower value/int:
     if value > MAX_POWER_OUTPUT:
@@ -923,9 +892,7 @@ class RN4871:
       value = MIN_POWER_OUTPUT
 
     sendCommand SET_CONN_POWER + "$value"
-    answerOrTimeout
-    result := extractResult popData
-    return result == AOK_RESP
+    return expectedResult AOK_RESP
 
 
 // *********************************************************************************
