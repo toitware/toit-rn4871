@@ -924,3 +924,8 @@ class RN4871:
         key = it
     return key
     
+  convertWordToHexString input/string -> string:
+    output := ""
+    input.to_byte_array.do:
+      output = output + it.stringify
+    return output
