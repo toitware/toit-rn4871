@@ -149,26 +149,26 @@ START_IMMEDIATE_BEACON ::="IB,"
 START_PERMANENT_BEACON ::="NB,"
 
 AD_TYPES := {
-    "FLAGS":"1",
-    "INCOMPLETE_16_UUID":"2",
-    "COMPLETE_16_UUID":"3",
-    "INCOMPLETE_32_UUID":"4",
-    "COMPLETE_32_UUID":"5",
-    "INCOMPLETE_128_UUID":"6",
-    "COMPLETE_128_UUID":"7",
-    "SHORTENED_LOCAL_NAME":"8",
-    "COMPLETE_LOCAL_NAME":"9",
-    "TX_POWER_LEVEL":"10",
-    "CLASS_OF_DEVICE":"13",
-    "SIMPLE_PAIRING_HASH":"14",
-    "SIMPLE_PAIRING_RANDOMIZER":"15",
-    "TK_VALUE":"16",
-    "SECURITY_OOB_FLAG":"17",
-    "SLAVE_CONNECTION_INTERVAL":"18",
-    "LIST_16_SERVICE_UUID":"20",
-    "LIST_128_SERVICE_UUID":"21",
-    "SERVICE_DATA":"22",
-    "MANUFACTURE_SPECIFIC_DATA":"255"}
+    "FLAGS"                     :"1",
+    "INCOMPLETE_16_UUID"        :"2",
+    "COMPLETE_16_UUID"          :"3",
+    "INCOMPLETE_32_UUID"        :"4",
+    "COMPLETE_32_UUID"          :"5",
+    "INCOMPLETE_128_UUID"       :"6",
+    "COMPLETE_128_UUID"         :"7",
+    "SHORTENED_LOCAL_NAME"      :"8",
+    "COMPLETE_LOCAL_NAME"       :"9",
+    "TX_POWER_LEVEL"            :"0A",
+    "CLASS_OF_DEVICE"           :"0D",
+    "SIMPLE_PAIRING_HASH"       :"0E",
+    "SIMPLE_PAIRING_RANDOMIZER" :"0F",
+    "TK_VALUE"                  :"10",
+    "SECURITY_OOB_FLAG"         :"11",
+    "SLAVE_CONNECTION_INTERVAL" :"12",
+    "LIST_16_SERVICE_UUID"      :"14",
+    "LIST_128_SERVICE_UUID"     :"15",
+    "SERVICE_DATA"              :"16",
+    "MANUFACTURE_SPECIFIC_DATA" :"FF"}
 
 
 
