@@ -212,14 +212,13 @@ class RN4871:
     answerOrTimeout
     return popData
 
-// *********************************************************************************
-// Set UART communication baudrate
-// *********************************************************************************
-// Selects the UART communication baudrate from the list of available settings.
-// Input : value from BAUDRATE map
-// Output: bool true if successfully executed
-// *********************************************************************************
-
+  // *********************************************************************************
+  // Set UART communication baudrate
+  // *********************************************************************************
+  // Selects the UART communication baudrate from the list of available settings.
+  // Input : value from BAUDRATE map
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   setBaudRate param/string -> bool:
     if status != ENUM_CONFMODE:
       return false    
@@ -239,8 +238,7 @@ class RN4871:
 
     sendCommand GET_BAUDRATE
     answerOrTimeout
-    result := popData
-    return result
+    return popData
 
   getSN -> string:
     if status != ENUM_CONFMODE:
@@ -249,8 +247,7 @@ class RN4871:
 
     sendCommand GET_SERIALNUM
     answerOrTimeout
-    result := popData
-    return result
+    return popData
 
   setPowerSave powerSave/bool:
     // if not in configuration mode enter immediately
@@ -277,8 +274,7 @@ class RN4871:
 
     sendCommand GET_CONNECTION_STATUS
     answerOrTimeout
-    result := popData
-    return result
+    return popData
 
   getPowerSave:
     if status != ENUM_CONFMODE:
@@ -336,13 +332,13 @@ class RN4871:
     sendCommand GET_DEVICE_INFO
     return readForTime
 
-// *********************************************************************************
-// Set supported features
-// *********************************************************************************
-// Selects the features that are supported by the device
-// Input : string value from FEATURES map
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Set supported features
+  // *********************************************************************************
+  // Selects the features that are supported by the device
+  // Input : string value from FEATURES map
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   setSupFeatures feature/string:
     key := lookupKey FEATURES feature
     if key == "":
@@ -352,14 +348,14 @@ class RN4871:
     sendCommand SET_SUPPORTED_FEATURES+feature
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Set default services
-// *********************************************************************************
-// This command sets the default services to be supported by the RN4870 in the GAP
-// server role.
-// Input : string value from SERVICES map
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Set default services
+  // *********************************************************************************
+  // This command sets the default services to be supported by the RN4870 in the GAP
+  // server role.
+  // Input : string value from SERVICES map
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   setDefServices service:
     key := lookupKey SERVICES service
     if key == "":
@@ -369,6 +365,13 @@ class RN4871:
     sendCommand SET_DEFAULT_SERVICES+service
     return expectedResult AOK_RESP
 
+  // *********************************************************************************
+  // Listen to UART line for specific time
+  // *********************************************************************************
+  // Prints to the console the data from UART line that comes from RN4871 device
+  // Input : int value representing amount of ms that the MCU should be listening
+  // Output: none
+  // *********************************************************************************
   listenToUart --ms/int=INTERNAL_CMD_TIMEOUT -> none:
     dur := Duration --ms=ms
     start := Time.now
