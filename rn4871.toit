@@ -45,7 +45,7 @@ class RN4871:
     sleep --ms=50
     reset_pin_.set 1
     result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    if(result == REBOOT_EVENT):
+    if result == REBOOT_EVENT:
       sleep --ms=STATUS_CHANGE_TIMEOUT
       print "Reboot successfull"
       return true
@@ -92,8 +92,8 @@ class RN4871:
     // Command mode
     setStatus ENUM_ENTER_CONFMODE
     sendData CONF_COMMAND
-    result := readForTime --ms=INTERNAL_CMD_TIMEOUT
-    if(result == PROMPT or result == "CMD"):
+    result := readForTime --ms=STATUS_CHANGE_TIMEOUT
+    if result == PROMPT or result == "CMD":
       print "Command mode set up"
       setStatus ENUM_CONFMODE
       return true   
@@ -135,7 +135,7 @@ class RN4871:
     sleep --ms=STATUS_CHANGE_TIMEOUT
     return result
 
-  assignRandomAddress userRA ->bool:
+  assignRandomAddress userRA=null ->bool:
     if status == ENUM_CONFMODE:
       timeout := 0
       if null == userRA:
@@ -193,8 +193,7 @@ class RN4871:
 
     sendCommand DISPLAY_FW_VERSION
     answerOrTimeout
-    result := popData
-    return result
+    return popData
 
   getSwVersion:
     if status != ENUM_CONFMODE:
@@ -202,8 +201,7 @@ class RN4871:
 
     sendCommand GET_SWVERSION
     answerOrTimeout
-    result := popData
-    return result
+    return popData
 
   getHwVersion:
     if status != ENUM_CONFMODE:
@@ -211,8 +209,7 @@ class RN4871:
 
     sendCommand GET_HWVERSION
     answerOrTimeout
-    result := popData
-    return result
+    return popData
 
   setBaudRate param/int -> bool:
     if status != ENUM_CONFMODE:
