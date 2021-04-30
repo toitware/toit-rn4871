@@ -929,3 +929,24 @@ class RN4871:
     input.to_byte_array.do:
       output = output + it.stringify
     return output
+
+  convertNumberToHexString num/int -> string:
+    if num < 0:
+      print "Error: [convertNumberToHexString] the number is negative"
+      return ""
+    else if num < 10:
+      return "$num"
+    else if num == 10:
+      return "A"
+    else if num == 11:
+      return "B"
+    else if num == 12:
+      return "C"
+    else if num == 13:
+      return "D"
+    else if num == 14:
+      return "E"
+    else if num == 15:
+      return "F"
+    else:      
+      return (convertNumberToHexString num/16) +(num % 16).stringify
