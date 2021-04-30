@@ -336,30 +336,38 @@ class RN4871:
     sendCommand GET_DEVICE_INFO
     return readForTime
 
-  setSupFeatures value:
-    is_correct := false
-    [FEATURE_NO_BEACON_SCAN, FEATURE_NO_CONNECT_SCAN, FEATURE_NO_DUPLICATE_SCAN, FEATURE_PASSIVE_SCAN, FEATURE_UART_TRANSP_NO_ACK, FEATURE_MLDP_SUPPORT, SERVICE_UART_AND_BEACON].do:
-      if it == value:
-        is_correct = true
-        
-    if is_correct == false:
-      print "Error: Value: $value is not in supported features set"
+// *********************************************************************************
+// Set supported features
+// *********************************************************************************
+// Selects the features that are supported by the device
+// Input : string value from FEATURES map
+// Output: bool true if successfully executed
+// *********************************************************************************
+  setSupFeatures feature/string:
+    key := lookupKey FEATURES feature
+    if key == "":
+      print "Error: Feature: $feature is not in supported features set"
       return false
-    sendCommand SET_SUPPORTED_FEATURES+value
+    debugPrint "[setSupFeatures]: The supported feature $key is set with the command: $SET_SUPPORTED_FEATURES$feature"
+    sendCommand SET_SUPPORTED_FEATURES+feature
     return expectedResult AOK_RESP
 
-  setDefServices value:
-    is_correct := false
-    [SERVICE_NO_SERVICE, SERVICE_DEVICE_INFO_SERVICE, SERVICE_UART_TRANSP_SERVICE, SERVICE_BEACON_SERVICE, SERVICE_AIRPATCH_SERVICE, SERVICE_UART_AND_BEACON].do:
-      if it == value:
-        is_correct = true
-        
-    if is_correct == false:
-      print "Error: Value: $value is not a default service"
+// *********************************************************************************
+// Set default services
+// *********************************************************************************
+// This command sets the default services to be supported by the RN4870 in the GAP
+// server role.
+// Input : string value from SERVICES map
+// Output: bool true if successfully executed
+// *********************************************************************************
+  setDefServices service:
+    key := lookupKey SERVICES service
+    if key == "":
+      print "Error: Value: $service is not a default service"
       return false
-    sendCommand SET_DEFAULT_SERVICES+value
-    answerOrTimeout
-    return popData == AOK_RESP
+    debugPrint "[setDefServices]: The default service $key is set with the command: $SET_DEFAULT_SERVICES$service"
+    sendCommand SET_DEFAULT_SERVICES+service
+    return expectedResult AOK_RESP
 
   listenToUart --ms/int=INTERNAL_CMD_TIMEOUT -> none:
     dur := Duration --ms=ms
@@ -855,15 +863,8 @@ class RN4871:
 // Output: return true if successfully executed
 // *********************************************************************************
 
-  setBeaconFeatures value:
-    setting := ""
-    catch:
-      try:
-        value = value.stringify
-      finally:
-        BEACON_SETTINGS.filter:
-          if BEACON_SETTINGS[it] == value:
-            setting = it
+  setBeaconFeatures value/string:
+    setting := lookupKey BEACON_SETTINGS value
       
     if setting == "":
       print "Error: Value: $value is not in beacon commands set"
@@ -932,7 +933,7 @@ class RN4871:
 
   convertNumberToHexString num/int -> string:
     if num < 0:
-      print "Error: [convertNumberToHexString] the number is negative"
+      print "Error: [convertNumberToHexString] the number $num is negative"
       return ""
     else if num < 10:
       return "$num"
