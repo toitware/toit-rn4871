@@ -554,49 +554,47 @@ class RN4871:
     sendCommand "$START_PERMANENT_BEACON$adType,$adData" 
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Start Scanning
-// *********************************************************************************
-// Method available only when the module is set as a Central (GAP) device and is
-// ready for scan before establishing connection.
-// By default, scan interval of 375 milliseconds and scan window of 250 milliseconds
-// Use stopScanning() method to stop an active scan
-// The user has the option to specify the scan interval and scan window as first 
-// and second parameter, respectively. Each unit is 0.625 millisecond. Scan interval
-// must be larger or equal to scan window. The scan interval and the scan window
-// values can range from 2.5 milliseconds to 10.24 seconds.
-// Input1 : void
-// or
-// Input2 : uint16_t scan interval value (must be >= scan window)
-//         uint16_t scan window value
-// Output: bool true if successfully executed
-// *********************************************************************************
-  startScanning --scanInterval_ms/int=0 --scanWindow_ms/int=0:
+  // *********************************************************************************
+  // Start Scanning
+  // *********************************************************************************
+  // Method available only when the module is set as a Central (GAP) device and is
+  // ready for scan before establishing connection.
+  // By default, scan interval of 375 milliseconds and scan window of 250 milliseconds
+  // Use stopScanning() method to stop an active scan
+  // The user has the option to specify the scan interval and scan window as first 
+  // and second parameter, respectively. Each unit is 0.625 millisecond. Scan interval
+  // must be larger or equal to scan window. The scan interval and the scan window
+  // values can range from 2.5 milliseconds to 10.24 seconds.
+  // Input1 : void
+  // or
+  // Input2 : int scan interval value (must be >= scan window)
+  //          int scan window value
+  // Output: bool true if successfully executed
+  // *********************************************************************************
+  startScanning --scanInterval_ms/int=0 --scanWindow_ms/int=0 -> bool:
     if scanInterval_ms*scanWindow_ms != 0:
-      values := [2.5, scanInterval_ms, scanInterval_ms, 10.24].sort
+      values := [2.5, scanInterval_ms, scanInterval_ms, 1024].sort
 
-      if values.first == 2.5 and values.last == 10.24:
-        scanInterval := (scanInterval_ms / 0.625).to_int
-        scanWindow := (scanWindow_ms / 0.625).to_int
-        debugPrint "[startScanning] Custom scanning"
+      if values.first == 2.5 and values.last == 1024:
+        scanInterval := convertNumberToHexString (scanInterval_ms / 0.625).to_int
+        scanWindow := convertNumberToHexString (scanWindow_ms / 0.625).to_int
+        debugPrint "[startScanning] Custom scanning\nSend Command: $START_CUSTOM_SCAN$scanInterval,$scanWindow"
         sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
       else:
         print "Error: [startScanning] input values out of range"
     else:
       debugPrint "[startScanning] Default scanning"
       sendCommand START_DEFAULT_SCAN
-    
-    answerOrTimeout
-    return popData == SCANNING_RESP
+    return expectedResult SCANNING_RESP
 
-// *********************************************************************************
-// Stop Scanning
-// *********************************************************************************
-// Stops scan process started by startScanning() method
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
-  stopScanning:
+  // *********************************************************************************
+  // Stop Scanning
+  // *********************************************************************************
+  // Stops scan process started by startScanning() method
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
+  stopScanning -> bool:
     debugPrint "[stopScanning]"
     sendCommand STOP_SCAN
     return expectedResult AOK_RESP
@@ -938,4 +936,4 @@ class RN4871:
     else if num == 15:
       return "F"
     else:      
-      return (convertNumberToHexString num/16) +(num % 16).stringify
+      return (convertNumberToHexString num/16) + (convertNumberToHexString (num % 16))
