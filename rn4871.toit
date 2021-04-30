@@ -212,25 +212,23 @@ class RN4871:
     answerOrTimeout
     return popData
 
-  setBaudRate param/int -> bool:
+// *********************************************************************************
+// Set UART communication baudrate
+// *********************************************************************************
+// Selects the UART communication baudrate from the list of available settings.
+// Input : value from BAUDRATE map
+// Output: bool true if successfully executed
+// *********************************************************************************
+
+  setBaudRate param/string -> bool:
     if status != ENUM_CONFMODE:
-      return false
-    
-    setting := ""
-    //param = encoding.encode 
-    catch:
-      try:
-        print param
-        // if param == 1:
-        //   param = "$param"
-      finally:
-        BAUDRATES.filter:
-          if BAUDRATES[it] == param:
-            setting = it
+      return false    
+    setting := lookupKey BAUDRATES param
+
     if setting == "":
       print "Error: Value: $param is not in BAUDRATE commands set"
       return false
-    debugPrint "[setBaudRate]: The baudrate is being set to $setting with the command:\n$SET_BAUDRATE$param"
+    debugPrint "[setBaudRate]: The baudrate is being set to $setting with the command: $SET_BAUDRATE$param"
     sendCommand "$SET_BAUDRATE$param"
     return expectedResult AOK_RESP
 
@@ -918,3 +916,11 @@ class RN4871:
     debugPrint "[dormantMode]"
     sendCommand SET_DORMANT_MODE
     sleep --ms=INTERNAL_CMD_TIMEOUT
+
+  lookupKey paramsMap/Map param/string -> string:
+    key := ""
+    paramsMap.filter:
+      if paramsMap[it] == param:
+        key = it
+    return key
+    
