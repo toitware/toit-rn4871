@@ -475,49 +475,42 @@ class RN4871:
   // *********************************************************************************
   // Start Advertising immediatly
   // *********************************************************************************
-  // Input : uint8_t adType  Bluetooth SIG defines AD types in the assigned number list
-  //         in the Core Specification
-  //         const char adData[] has various lengths and follows the format defined
-  //         by Bluetooth SIG Supplement to the Bluetooth Core specification
+  // Input : value from AD_TYPES map -Bluetooth SIG defines AD types in the assigned 
+  //         number list in the Core Specification 
+  //         string adData is the string message to be advertised. The message is 
+  //         converted to the chain of hex ASCII values
   // Output: bool true if successfully executed
   // *********************************************************************************
-
   startImmediateAdvertising adType/string adData/string ->bool:    
-    typeName := ""
-    AD_TYPES.filter:
-      if AD_TYPES[it] == adType:
-        typeName = it
-
+    typeName := lookupKey AD_TYPES adType
     if typeName == "":
       print "startImmediateAdvertising failed: adType $adType is not one of accepted types"
       return false
-
     debugPrint "[startImmediateAdvertising]: type $typeName, data $adData "
-    sendCommand(START_IMMEDIATE_ADV+adType+","+adData)
+    adData = convertWordToHexString adData
+    debugPrint "Send command: $START_IMMEDIATE_ADV$adType,$adData"
+    sendCommand "$START_IMMEDIATE_ADV$adType,$adData"
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Start Advertising permanently
-// *********************************************************************************
-// A reboot is needed after issuing this method
-// Input : uint8_t adType  Bluetooth SIG defines AD types in the assigned number list
-//         in the Core Specification
-//         const char adData[] has various lengths and follows the format defined
-//         by Bluetooth SIG Supplement to the Bluetooth Core specification
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Start Advertising permanently
+  // *********************************************************************************
+  // A reboot is needed after issuing this method
+  // Input : value from AD_TYPES map -Bluetooth SIG defines AD types in the assigned 
+  //         number list in the Core Specification 
+  //         string adData is the string message to be advertised. The message is 
+  //         converted to the chain of hex ASCII values
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   startPermanentAdvertising adType/string adData/string ->bool:    
-    typeName := ""
-    AD_TYPES.filter:
-      if AD_TYPES[it] == adType:
-        typeName = it
-
+    typeName := lookupKey AD_TYPES adType
     if typeName == "":
       print "startPermanentAdvertising failed: adType $adType is not one of accepted types"
       return false
-
     debugPrint "[startPermanentAdvertising]: type $typeName, data $adData "
-    sendCommand START_PERMANENT_ADV+adType+","+adData
+    adData = convertWordToHexString adData
+    debugPrint "Send command: $START_PERMANENT_ADV$adType,$adData"
+    sendCommand "$START_PERMANENT_ADV$adType,$adData"
     return expectedResult AOK_RESP
 
 // *********************************************************************************
@@ -931,7 +924,7 @@ class RN4871:
   convertWordToHexString input/string -> string:
     output := ""
     input.to_byte_array.do:
-      output = output + it.stringify
+      output = output + (convertNumberToHexString it)
     return output
 
   convertNumberToHexString num/int -> string:
