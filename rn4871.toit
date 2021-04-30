@@ -8,6 +8,7 @@ import serial.registers
 import serial.ports.uart
 import gpio
 import .constants show *
+import serialization
 
 
 class RN4871:
@@ -214,9 +215,24 @@ class RN4871:
   setBaudRate param/int -> bool:
     if status != ENUM_CONFMODE:
       return false
-
-    sendCommand SET_BAUDRATE+",$param"
-    return answerOrTimeout
+    
+    setting := ""
+    //param = encoding.encode 
+    catch:
+      try:
+        print param
+        // if param == 1:
+        //   param = "$param"
+      finally:
+        BAUDRATES.filter:
+          if BAUDRATES[it] == param:
+            setting = it
+    if setting == "":
+      print "Error: Value: $param is not in BAUDRATE commands set"
+      return false
+    debugPrint "[setBaudRate]: The baudrate is being set to $setting with the command:\n$SET_BAUDRATE$param"
+    sendCommand "$SET_BAUDRATE$param"
+    return expectedResult AOK_RESP
 
   getBaudRate -> string:
     if status != ENUM_CONFMODE:
@@ -324,7 +340,7 @@ class RN4871:
 
   setSupFeatures value:
     is_correct := false
-    [FEATURE_NO_BEACON_SCAN, FEATURE_NO_CONNECT_SCAN, FEATURE_NO_DUPLICATE_SCAN, FEATURE_PASSIVE_SCAN, FEATURE_UART_TRANSP_NO_ACK, FEATURE_MLDP_SUPPORT].do:
+    [FEATURE_NO_BEACON_SCAN, FEATURE_NO_CONNECT_SCAN, FEATURE_NO_DUPLICATE_SCAN, FEATURE_PASSIVE_SCAN, FEATURE_UART_TRANSP_NO_ACK, FEATURE_MLDP_SUPPORT, SERVICE_UART_AND_BEACON].do:
       if it == value:
         is_correct = true
         
@@ -336,7 +352,7 @@ class RN4871:
 
   setDefServices value:
     is_correct := false
-    [SERVICE_NO_SERVICE, SERVICE_DEVICE_INFO_SERVICE, SERVICE_UART_TRANSP_SERVICE, SERVICE_BEACON_SERVICE, SERVICE_AIRPATCH_SERVICE].do:
+    [SERVICE_NO_SERVICE, SERVICE_DEVICE_INFO_SERVICE, SERVICE_UART_TRANSP_SERVICE, SERVICE_BEACON_SERVICE, SERVICE_AIRPATCH_SERVICE, SERVICE_UART_AND_BEACON].do:
       if it == value:
         is_correct = true
         

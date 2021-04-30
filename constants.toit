@@ -64,19 +64,20 @@ ENUM_COMPLETE_ANSWER ::= 3
 ENUM_DATA_ANSWER ::= 4
 
 // Baudrate settings
-ENUM_BAUDRATE_460800 ::= 1
-ENUM_BAUDRATE_921600 ::= 0
-ENUM_BAUDRATE_230400 ::= 2
-ENUM_BAUDRATE_115200 ::= 3
-ENUM_BAUDRATE_57600 ::= 4
-ENUM_BAUDRATE_38400 ::= 5
-ENUM_BAUDRATE_28800 ::= 6
-ENUM_BAUDRATE_19200 ::= 7
-ENUM_BAUDRATE_14400 ::= 8
-ENUM_BAUDRATE_9600 ::= 9
-ENUM_BAUDRATE_4800 ::= 10
-ENUM_BAUDRATE_2400 ::= 11
-
+BAUDRATES :={
+    "460800" : "01",
+    "921600" : "00",
+    "230400" : "02",
+    "115200" : "03",
+    "57600"  : "04",
+    "38400"  : "05",
+    "28800"  : "06",
+    "19200"  : "07",
+    "14400"  : "08",
+    "9600"   : "09",
+    "4800"   : "0A",
+    "2400"   : "0B"
+    }
 // Added from new repo
 // ------------------- Commands -----------------------
 
@@ -112,11 +113,12 @@ FEATURE_MLDP_SUPPORT::=   "32"
 
 SET_DEFAULT_SERVICES::="SS,"
 // > Bitmap of services
+SERVICE_UART_AND_BEACON::=     "C0"
 SERVICE_NO_SERVICE::=          "0"
-SERVICE_DEVICE_INFO_SERVICE::= "128"//0x80
-SERVICE_UART_TRANSP_SERVICE::= "64"//0x40
-SERVICE_BEACON_SERVICE::=      "32"//0x20
-SERVICE_AIRPATCH_SERVICE::=    "16"//0x10
+SERVICE_DEVICE_INFO_SERVICE::= "80"//0x80
+SERVICE_UART_TRANSP_SERVICE::= "40"//0x40
+SERVICE_BEACON_SERVICE::=      "20"//0x20
+SERVICE_AIRPATCH_SERVICE::=    "10"//0x10
 
 //-- Get Commands
 GET_SETTINGS::=        "G"
