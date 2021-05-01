@@ -18,9 +18,6 @@ class RN4871:
   status/int := ENUM_DATAMODE
   answerLen/int := 0
   uartBuffer := []
-  uartBufferLen := 10
-  endStreamChar := PROMPT_LAST_CHAR
-
   rx_pin_/gpio.Pin
   tx_pin_/gpio.Pin
   reset_pin_/gpio.Pin
@@ -258,23 +255,6 @@ class RN4871:
     if readData == PROMPT_END:
       setStatus ENUM_DATAMODE
     return result
-
-/*
-  hasAnswer:
-    uartBuffer = recMessage.to_byte_array
-    
-    if status != ENUM_DATAMODE:
-      if uartBuffer.last == endStreamChar:
-        validateAnswer
-        return ENUM_COMPLETE_ANSWER
-    else:
-      return ENUM_DATA_ANSWER
-
-    if recMessage.size > uartBufferLen:
-      return ENUM_PARTIAL_ANSWER
-
-    return ENUM_NO_ANSWER
-*/
 
   factoryReset: 
     // if not in configuration mode enter immediately
@@ -864,7 +844,6 @@ class RN4871:
       print "Error: [setCharactUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number)"
       return false
 
-
     debugPrint "[setCharactUUID]: Send command: $DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"    
     sendCommand "$DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"  
     return expectedResult AOK_RESP
@@ -874,13 +853,13 @@ class RN4871:
   // *********************************************************************************
   // Writes content of characteristic in Server Service to local device by addressing
   // its handle
-  // Input : uint16_t handle which corresponds to the characteristic of the server service
-  //         const unsigned char value[] is the content to be written to the characteristic
+  // Input :  string handle which corresponds to the characteristic of the server service
+  //          string value is the content to be written to the characteristic
   // Output: bool true if successfully executed
   // *********************************************************************************
-  writeLocalCharacteristic --handle --value -> bool:
-    debugPrint "[writeLocalCharacteristic]"
-    sendCommand "$WRITE_LOCAL_CHARACT,$handle,$value"
+  writeLocalCharacteristic --handle/string --value/string -> bool:
+    debugPrint "[writeLocalCharacteristic]: Send command $WRITE_LOCAL_CHARACT$handle,$value"
+    sendCommand "$WRITE_LOCAL_CHARACT$handle,$value"
     return expectedResult AOK_RESP
 
   // *********************************************************************************
@@ -889,12 +868,12 @@ class RN4871:
   // Reads the content of the server service characteristic on the local device
   // by addresiing its handle. 
   // This method is effective with or without an active connection.
-  // Input : uint16_t handle which corresponds to the characteristic of the server service
+  // Input : string handle which corresponds to the characteristic of the server service
   // Output: string with result
   // *********************************************************************************
   readLocalCharacteristic --handle/string -> string:
-    debugPrint "[readLocalCharacteristic]"
-    sendCommand "$READ_LOCAL_CHARACT,$handle"
+    debugPrint "[readLocalCharacteristic]: Send command $READ_LOCAL_CHARACT$handle "
+    sendCommand "$READ_LOCAL_CHARACT$handle"
     result := extractResult readForTime
     return result
 
@@ -909,14 +888,15 @@ class RN4871:
   //       <Connection Type> specifies if the connection enables UART Transparent 
   // feature, where 1 indicates UART Transparent is enabled and 0 indicates 
   // UART Transparent is disabled
-  // Input : void
+  // Input : *time_ms - istening time for UART, 10000 by default
   // Output: string with result
   // *********************************************************************************
-  getConnectionStatus:
+  getConnectionStatus --time_ms=10000 -> string:
+    debugPrint "[getConnectionStatus]: Send command $GET_CONNECTION_STATUS"
     sendCommand GET_CONNECTION_STATUS
-    result := extractResult (readForTime --ms=10000)
-    if result == "none":
-      debugPrint "[getConnectionStatus]: none"
+    result := extractResult (readForTime --ms=time_ms)
+    if result == NONE_RESP:
+      debugPrint "[getConnectionStatus]: $NONE_RESP"
     else if result == "":
       print "Error: [getConnectionStatus] connection timeout"
     return result
@@ -929,9 +909,8 @@ class RN4871:
   // Input : 
   // Output: return true if successfully executed
   // *********************************************************************************
-  setBeaconFeatures value/string:
+  setBeaconFeatures value/string -> bool:
     setting := lookupKey BEACON_SETTINGS value
-      
     if setting == "":
       print "Error: Value: $value is not in beacon commands set"
       return false
@@ -947,27 +926,27 @@ class RN4871:
     answerOrTimeout
     return popData
 
-  setSettings addr/string value/string:
+  setSettings addr/string value/string -> bool:
     // Manual insertion of settings
-    sendCommand SET_SETTINGS+addr+","+value
+    sendCommand "$SET_SETTINGS$addr,$value"
     return expectedResult AOK_RESP
   
-  setAdvPower value/int:
+  setAdvPower value/int -> bool:
     if value > MAX_POWER_OUTPUT:
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
 
-    sendCommand SET_ADV_POWER + "$value"
+    sendCommand "$SET_ADV_POWER$value"
     return expectedResult AOK_RESP
 
-  setConnPower value/int:
+  setConnPower value/int -> bool:
     if value > MAX_POWER_OUTPUT:
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
 
-    sendCommand SET_CONN_POWER + "$value"
+    sendCommand "$SET_CONN_POWER$value"
     return expectedResult AOK_RESP
 
 
