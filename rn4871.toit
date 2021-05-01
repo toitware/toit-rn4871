@@ -175,22 +175,22 @@ class RN4871:
 
   setStatus statusToSet:
     if ENUM_ENTER_DATMODE == statusToSet:
-      print "Status set to: ENTER_DATMODE"
+      print "[setStatus]Status set to: ENTER_DATMODE"
     else if ENUM_DATAMODE == statusToSet:
-      print "Status set to: DATAMODE"
+      print "[setStatus]Status set to: DATAMODE"
     else if ENUM_ENTER_CONFMODE == statusToSet:
-      print "Status set to: ENTER_CONFMODE"
+      print "[setStatus]Status set to: ENTER_CONFMODE"
     else if ENUM_CONFMODE == statusToSet:
-      print "Status set to: CONFMODE"
+      print "[setStatus]Status set to: CONFMODE"
     else:
-      print "Error: Not able to update status. Mode: $statusToSet is unknown"
+      print "Error [setStatus]: Not able to update status. Mode: $statusToSet is unknown"
       return false
     status = statusToSet
     return true
 
   setAddress address:
     bleAddress  = address
-    print "Address assigned to $address"
+    debugPrint "[setAddress] Address assigned to $address"
     return true
 
   validateInputHexData data/string -> bool:
@@ -217,10 +217,10 @@ class RN4871:
     result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
     if result == REBOOT_EVENT:
       sleep --ms=STATUS_CHANGE_TIMEOUT
-      print "Reboot successfull"
+      print "[pinReboot] Reboot successfull"
       return true
     else:
-      print "Reboot failure"
+      print "[pinReboot] Reboot failure"
       return false    
 
   startBLE userRA=null:
@@ -241,11 +241,11 @@ class RN4871:
     sendData CONF_COMMAND
     result := readForTime --ms=STATUS_CHANGE_TIMEOUT
     if result == PROMPT or result == "CMD":
-      print "Command mode set up"
+      print "[enterConfigurationMode] Command mode set up"
       setStatus ENUM_CONFMODE
       return true   
     else:
-      print "Failed to set command mode"
+      print "[enterConfigurationMode] Failed to set command mode"
       return false
   
   enterDataMode ->bool:
@@ -287,14 +287,14 @@ class RN4871:
       return false
 
     if newName.size > MAX_DEVICE_NAME_LEN:
-      print "Error: The name is too long"
+      print "Error [setName]: The name is too long"
       return false
     sendCommand SET_NAME + newName
     return expectedResult AOK_RESP
 
   getName:
     if status != ENUM_CONFMODE:
-      return "Error: Not in the CONFMODE"
+      return "Error [getName]: Not in the CONFMODE"
     sendCommand GET_DEVICE_NAME
     return extractResult readForTime
 
@@ -352,7 +352,7 @@ class RN4871:
 
   getSN -> string:
     if status != ENUM_CONFMODE:
-      print "Error: Not in Configuration mode"
+      print "Error [getSN]: Not in Configuration mode"
       return ""
 
     sendCommand GET_SERIALNUM
@@ -363,23 +363,23 @@ class RN4871:
     // if not in configuration mode enter immediately
     if status != ENUM_CONFMODE:
       if not enterConfigurationMode:
-        print "Error: Cannot enter Configuration mode"
+        print "Error [setPowerSave]: Cannot enter Configuration mode"
         return ""
 
     // write command to buffer
     if powerSave:
       sendCommand SET_LOW_POWER_ON
-      print "Low power ON"
+      print "[setPowerSave] Low power ON"
     else:
       sendCommand SET_LOW_POWER_OFF
-      print "Low power OFF"
+      print "[setPowerSave] Low power OFF"
 
     result := answerOrTimeout
     return result
   
   getConStatus -> string:
     if status != ENUM_CONFMODE:
-      print "Error: Not in Configuration mode"
+      print "Error [getConStatus]: Not in Configuration mode"
       return ""
 
     sendCommand GET_CONNECTION_STATUS
@@ -407,7 +407,7 @@ class RN4871:
   setSupFeatures feature/string:
     key := lookupKey FEATURES feature
     if key == "":
-      print "Error: Feature: $feature is not in supported features set"
+      print "Error [setSupFeatures]: Feature: $feature is not in supported features set"
       return false
     debugPrint "[setSupFeatures]: The supported feature $key is set with the command: $SET_SUPPORTED_FEATURES$feature"
     sendCommand SET_SUPPORTED_FEATURES+feature
@@ -424,7 +424,7 @@ class RN4871:
   setDefServices service:
     key := lookupKey SERVICES service
     if key == "":
-      print "Error: Value: $service is not a default service"
+      print "Error [setDefServices]: Value: $service is not a default service"
       return false
     debugPrint "[setDefServices]: The default service $key is set with the command: $SET_DEFAULT_SERVICES$service"
     sendCommand SET_DEFAULT_SERVICES+service
@@ -530,7 +530,7 @@ class RN4871:
   startImmediateAdvertising adType/string adData/string ->bool:    
     typeName := lookupKey AD_TYPES adType
     if typeName == "":
-      print "Error: startImmediateAdvertising failed: adType $adType is not one of accepted types"
+      print "Error [startImmediateAdvertising]: adType $adType is not one of accepted types"
       return false
     debugPrint "[startImmediateAdvertising]: type $typeName, data $adData "
     adData = convertWordToHexString adData
@@ -551,7 +551,7 @@ class RN4871:
   startPermanentAdvertising adType/string adData/string ->bool:    
     typeName := lookupKey AD_TYPES adType
     if typeName == "":
-      print "Error: startPermanentAdvertising failed: adType $adType is not one of accepted types"
+      print "Error [startImmediateAdvertising]: adType $adType is not one of accepted types"
       return false
     debugPrint "[startPermanentAdvertising]: type $typeName, data $adData "
     adData = convertWordToHexString adData
@@ -571,7 +571,7 @@ class RN4871:
   startImmediateBeacon adType/string adData/string ->bool:
     typeName := lookupKey AD_TYPES adType
     if typeName == "":
-      print "Error: startImmediateBeacon failed: adType $adType is not one of accepted types"
+      print "Error [startImmediateBeacon]: adType $adType is not one of accepted types"
       return false
     debugPrint "[startImmediateBeacon]: type $typeName, data $adData "
     adData = convertWordToHexString adData
@@ -592,7 +592,7 @@ class RN4871:
   startPermanentBeacon adType/string adData/string ->bool:
     typeName := lookupKey AD_TYPES adType
     if typeName == "":
-      print "Error: startPermanentBeacon failed: adType $adType is not one of accepted types"
+      print "Error [startPermanentBeacon]: adType $adType is not one of accepted types"
       return false
     debugPrint "[startPermanentBeacon]: type $typeName, data $adData "
     adData = convertWordToHexString adData
@@ -627,7 +627,7 @@ class RN4871:
         debugPrint "[startScanning] Custom scanning\nSend Command: $START_CUSTOM_SCAN$scanInterval,$scanWindow"
         sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
       else:
-        print "Error: [startScanning] input values out of range"
+        print "Error [startScanning]: input values out of range"
     else:
       debugPrint "[startScanning] Default scanning"
       sendCommand START_DEFAULT_SCAN
@@ -670,7 +670,7 @@ class RN4871:
         sendCommand "$ADD_WHITE_LIST$addrType,$adData"
         return expectedResult AOK_RESP
       else:
-        print "Error: [addMacAddrWhiteList] received faulty input, $ADD_WHITE_LIST$addrType,$adData"
+        print "Error [addMacAddrWhiteList]: received faulty input, $ADD_WHITE_LIST$addrType,$adData"
     return false
       
   // *********************************************************************************
@@ -770,7 +770,7 @@ class RN4871:
     else if (uuid.size == PUBLIC_SERVICE_LEN):
       debugPrint("[setServiceUUID]: Set private UUID")
     else:
-      print("Error: [setServiceUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
+      print("Error [setServiceUUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
       return false
     debugPrint "[setServiceUUID] Send command: $DEFINE_SERVICE_UUID$uuid"  
     sendCommand "$DEFINE_SERVICE_UUID$uuid"  
@@ -818,7 +818,7 @@ class RN4871:
     tempProp := 0
     propertyList.do:
       if (lookupKey CHAR_PROPS it) == "":
-        print "Error: [setCharactUUID] received unknown property $it"
+        print "Error [setCharactUUID]: received unknown property $it"
         return false
       else:    
         tempProp = tempProp + it
@@ -830,7 +830,7 @@ class RN4871:
         return false
   
     if octetLenInt < 1 or octetLenInt > 20:
-      print "Error: [setCharactUUID] octetLenHex 0x$octetLenHex is out of range, should be between 0x1 and 0x14 in hex format " 
+      print "Error [setCharactUUID]: octetLenHex 0x$octetLenHex is out of range, should be between 0x1 and 0x14 in hex format " 
       return false
     else if not validateInputHexData uuid:
       print "Error [setCharactUUID]: $uuid is not a valid hex value"
@@ -841,10 +841,10 @@ class RN4871:
     else if uuid.size == PUBLIC_SERVICE_LEN:
       debugPrint "[setCharactUUID]: Set private UUID"
     else:
-      print "Error: [setCharactUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number)"
+      print "Error [setCharactUUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number)"
       return false
 
-    debugPrint "[setCharactUUID]: Send command: $DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"    
+    debugPrint "[setCharactUUID]: Send command $DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"    
     sendCommand "$DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"  
     return expectedResult AOK_RESP
 
@@ -929,7 +929,7 @@ class RN4871:
   setBeaconFeatures value/string -> bool:
     setting := lookupKey BEACON_SETTINGS value
     if setting == "":
-      print "Error: Value: $value is not in beacon commands set"
+      print "Error [setBeaconFeatures]: Value $value is not in beacon commands set"
       return false
     else:
       debugPrint "[setBeaconFeatures]: set the Beacon Feature to $setting"
