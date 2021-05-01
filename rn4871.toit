@@ -600,42 +600,35 @@ class RN4871:
     return expectedResult AOK_RESP
 
   
-// *********************************************************************************
-// Add a MAC address to the white list
-// *********************************************************************************
-// Once one device is added to the white list, the white list feature is enabled.
-// With the white list feature enabled, when performing a scan, any device not
-// included in the white list does not appear in the scan results.
-// As a peripheral, any device not listed in the white list cannot be connected
-// with a local device. RN4870/71 supports up to 16 addresses in the white list.
-// A random address stored in the white list cannot be resolved. If the peer 
-// device does not change the random address, it is valid in the white list. 
-// If the random address is changed, this device is no longer considered to be on 
-// the white list.
-// Input : bool addrType = 0 if following address is public (=1 for private)
-//         const char *addr 6-byte address in hex format
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Add a MAC address to the white list
+  // *********************************************************************************
+  // Once one device is added to the white list, the white list feature is enabled.
+  // With the white list feature enabled, when performing a scan, any device not
+  // included in the white list does not appear in the scan results.
+  // As a peripheral, any device not listed in the white list cannot be connected
+  // with a local device. RN4870/71 supports up to 16 addresses in the white list.
+  // A random address stored in the white list cannot be resolved. If the peer 
+  // device does not change the random address, it is valid in the white list. 
+  // If the random address is changed, this device is no longer considered to be on 
+  // the white list.
+  // Input : string addrType = 0 if following address is public (=1 for private)
+  //         string addr 6-byte address in hex format
+  // Output: bool true if successfully executed
+  // *********************************************************************************
 
-  addMacAddrWhiteList addrType adData ->bool:    
-    typeName := ""
-    PUBLIC_ADDRESS_TYPE
-    PRIVATE_ADDRESS_TYPE
-    is_correct := false
-    catch:
-      try:
-        addrType = addrType.stringify
-      finally:
-        [PUBLIC_ADDRESS_TYPE, PRIVATE_ADDRESS_TYPE].do:
-          if it == addrType:
-            is_correct = true
-    if is_correct:
-      sendCommand "$ADD_WHITE_LIST,$addrType,$adData"
-    else:
-      print "Error: [addMacAddrWhiteList] received faulty input"
-      return false
+  addMacAddrWhiteList --addrType/string --adData/string ->bool:    
+    [PUBLIC_ADDRESS_TYPE, PRIVATE_ADDRESS_TYPE].do:
+      if it == addrType:
+        debugPrint "[addMacAddrWhiteList]: Send Command: $ADD_WHITE_LIST$addrType,$adData"
+        sendCommand "$ADD_WHITE_LIST$addrType,$adData"
+        return expectedResult AOK_RESP
+      else:
+        print "Error: [addMacAddrWhiteList] received faulty input, $ADD_WHITE_LIST$addrType,$adData"
+    return false
     
-    return expectedResult AOK_RESP
+    
+    
       
 // *********************************************************************************
 // Add all currently bonded devices to the white list
