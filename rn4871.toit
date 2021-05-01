@@ -180,7 +180,7 @@ class RN4871:
     print "Address assigned to $address"
     return true
 
-  vaildateInputHexData data/string -> bool:
+  validateInputHexData data/string -> bool:
     range := [[48, 57], [65, 70], [97, 102]]
     char := ""
     out_of_range := true
@@ -766,6 +766,9 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   setServiceUUID uuid/string -> bool:
+    if not validateInputHexData uuid:
+      print "Error [setServiceUUID]: $uuid is not a valid hex value"
+      return false
     if (uuid.size == PRIVATE_SERVICE_LEN):
       debugPrint("[setServiceUUID]: Set public UUID")
     else if (uuid.size == PUBLIC_SERVICE_LEN):
@@ -773,7 +776,8 @@ class RN4871:
     else:
       print("Error: [setServiceUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
       return false
-    sendCommand "$DEFINE_SERVICE_UUID,$uuid"  
+    debugPrint "[setServiceUUID] Send command: $DEFINE_SERVICE_UUID$uuid"  
+    sendCommand "$DEFINE_SERVICE_UUID$uuid"  
     return expectedResult AOK_RESP
 
   // Input : string uuid 
