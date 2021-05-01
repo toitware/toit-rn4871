@@ -8,7 +8,7 @@ import serial.registers
 import serial.ports.uart
 import gpio
 import .constants show *
-import serialization
+import encoding.hex
 
 
 class RN4871:
@@ -106,7 +106,7 @@ class RN4871:
   popData -> string:
     result := recMessage
     recMessage = ""
-    answerLen = 0
+    answerLen =0
     return result
   
   readData -> string:
@@ -178,6 +178,20 @@ class RN4871:
   setAddress address:
     bleAddress  = address
     print "Address assigned to $address"
+    return true
+
+  vaildateInputHexData data/string -> bool:
+    range := [[48, 57], [65, 70], [97, 102]]
+    char := ""
+    out_of_range := true
+    data.do:
+      char = it
+      out_of_range = true
+      range.do:
+        if it[0] <= char and char <= it[1]:
+          out_of_range = false
+      if out_of_range:
+        return false
     return true
 
 // ---------------------------------------- Public section ----------------------------------------    
@@ -729,8 +743,8 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   reboot -> bool:
-    debugPrint("[reboot]")
-    sendCommand(REBOOT)
+    debugPrint "[reboot]"
+    sendCommand REBOOT
     if expectedResult REBOOTING_RESP:
       sleep --ms=STATUS_CHANGE_TIMEOUT
       debugPrint "[reboot] Software reboot succesful"
@@ -746,13 +760,12 @@ class RN4871:
   // Sets the UUID of the public or the private service.
   // This method must be called before the setCharactUUID() method.
   // 
-  // Input : const char *uuid 
+  // Input : string uuid containing hex ID
   //         can be either a 16-bit UUID for public service
   //         or a 128-bit UUID for private service
   // Output: bool true if successfully executed
   // *********************************************************************************
   setServiceUUID uuid/string -> bool:
-    
     if (uuid.size == PRIVATE_SERVICE_LEN):
       debugPrint("[setServiceUUID]: Set public UUID")
     else if (uuid.size == PUBLIC_SERVICE_LEN):
