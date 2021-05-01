@@ -40,7 +40,7 @@ class RN4871:
 
 // ---------------------------------------Utility Methods ----------------------------------------
 
-  lookupKey paramsMap/Map param/string -> string:
+  lookupKey paramsMap/Map param/any -> string:
     key := ""
     paramsMap.filter:
       if paramsMap[it] == param:
@@ -73,6 +73,22 @@ class RN4871:
       return "F"
     else:      
       return (convertNumberToHexString num/16) + (convertNumberToHexString (num % 16))
+
+  convertHexStringToNumber data/string -> int:
+    value := data[data.size - 1].to_int
+    if 48 <= value and value <= 57:
+      value = value - 48
+    else if 65 <= value and value <= 70:
+      value = value - 55
+    else if 97 <= value and value <= 102:
+      value = value - 87
+    else:
+      print "Error [convertHexStringToNumber]: $data is not a correct hex value"
+      return -1
+    if data.size == 1:
+      return value
+    else:
+      return (convertHexStringToNumber (data.copy 0 data.size-1))*16+value
 
   expectedResult resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
     result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
@@ -780,25 +796,65 @@ class RN4871:
     sendCommand "$DEFINE_SERVICE_UUID$uuid"  
     return expectedResult AOK_RESP
 
-  // Input : string uuid 
+  // *********************************************************************************
+  // Sets the private characteristic.
+  // *********************************************************************************
+  // Command PC must be called after service UUID is set by command PS.“PS,<hex16/hex128>” 
+  // for command PS. If service UUID is set to be a 16-bit public UUID in command PS, 
+  // then the UUID input parameter for command PC must also be a 16-bit public UUID. 
+  // Similarly, if service UUID is set to be a 128-bit privateUUID by command PS, 
+  // then the UUID input parameter must also be a 128-bit private UUID by command PC. 
+  // Calling this command adds one characteristic to the service at
+  // a time. Calling this command later does not overwrite the previous settings, but adds
+  // another characteristic instead.
+  // *********************************************************************************
+  // Input : string uuid:
   //         can be either a 16-bit UUID for public service
   //         or a 128-bit UUID for private service
-  //         uint8_t property is a 8-bit property bitmap of the characteristics
-  //         uint8_t octetLen is an 8-bit value that indicates the maximum data size
+  //         list propertyList:
+  //         is a list of hex values from CHAR_PROPS map, they can be put
+  //         in any order 
+  //         octetLenInt is an integer value that indicates the maximum data size
   //         in octet where the value of the characteristics holds in the range
   //         from 1 to 20 (0x01 to 0x14)
+  //         *string propertyHex:
+  //         can be used instead of the list by inputing the hex value directly (not recommended)
+  //         *string ocetetLenHex:
+  //         can be used instead of the integer value (not recommended)
   // Output: bool true if successfully executed
   // *********************************************************************************
-  setCharactUUID --uuid/string --property/string --octetLen-> bool:
-    catch:
-      try:
-        octetLen = octetLen.stringify
-      finally:
-        tab := ["1", octetLen, "20"].sort
-        if tab.first != "1" or tab.last != "20":
-          print "Error: [setCharactUUID] octetLen is too long, should be between 1 and 20" 
-          return false
-        
+  setCharactUUID --uuid/string --octetLenInt/int=-1 --propertyList/List--propertyHex/string="00" --octetLenHex/string="EMPTY"-> bool:
+    if octetLenHex=="EMPTY" and octetLenInt!=-1:
+      octetLenHex = (convertNumberToHexString octetLenInt)
+      if octetLenHex.size == 1:
+        octetLenHex = "0"+octetLenHex
+  
+    else if octetLenHex!="EMPTY" and octetLenInt==-1:
+      octetLenInt = (convertHexStringToNumber octetLenHex)
+    else:
+      print "Error [setCharactUUID]: You have to input either integer or hex value, not both of them"
+      return false
+    
+    tempProp := 0
+    propertyList.do:
+      if (lookupKey CHAR_PROPS it) == "":
+        print "Error: [setCharactUUID] received unknown property $it"
+        return false
+      else:    
+        tempProp = tempProp + it
+    propertyHex = convertNumberToHexString tempProp
+
+    [uuid, propertyHex, octetLenHex].do:
+      if not validateInputHexData it:
+        print "Error [setCharactUUID]: Value $it is not in correct hex format"
+        return false
+  
+    if octetLenInt < 1 or octetLenInt > 20:
+      print "Error: [setCharactUUID] octetLenHex 0x$octetLenHex is out of range, should be between 0x1 and 0x14 in hex format " 
+      return false
+    else if not validateInputHexData uuid:
+      print "Error [setCharactUUID]: $uuid is not a valid hex value"
+      return false
     
     if uuid.size == PRIVATE_SERVICE_LEN:
       debugPrint "[setCharactUUID]: Set public UUID"
@@ -807,17 +863,10 @@ class RN4871:
     else:
       print "Error: [setCharactUUID] received wrong UUID length. Should be 16 or 128 bit hexidecimal number)"
       return false
-    
-    propertyName := ""
-    CHAR_PROPS.filter:
-      if CHAR_PROPS[it] == property:
-        propertyName = it
 
-    if(propertyName == ""):
-      print "Error: [setCharactUUID] received unknown property $property"
-      return false
-    
-    sendCommand "$DEFINE_CHARACT_UUID,$uuid,$property,$octetLen"  
+
+    debugPrint "[setCharactUUID]: Send command: $DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"    
+    sendCommand "$DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"  
     return expectedResult AOK_RESP
 
   // *********************************************************************************
