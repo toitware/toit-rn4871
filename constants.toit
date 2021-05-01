@@ -1,70 +1,69 @@
-DELAY_INTERNAL_CMD ::= 5
-INTERNAL_CMD_TIMEOUT ::= 300 // 1000 mSec = 1Sec.
-STATUS_CHANGE_TIMEOUT ::= 1000
-SMALL_ANSWER_DATA_LEN::= 20
+DELAY_INTERNAL_CMD      ::= 5
+INTERNAL_CMD_TIMEOUT    ::= 300 // 1000 mSec = 1Sec.
+STATUS_CHANGE_TIMEOUT   ::= 1000
+SMALL_ANSWER_DATA_LEN   ::= 20
 
 
 // ------------------- Response -----------------------
-PROMPT          ::=      "CMD>"  // exact prompt is "CMD> " (last char is a space)
-PROMPT_END      ::=      "END"
+PROMPT                  ::= "CMD>"  // exact prompt is "CMD> " (last char is a space)
+PROMPT_END              ::= "END"
 
 //-- Response
-AOK_RESP          ::=    "AOK"
-ERR_RESP          ::=    "Err"
-FACTORY_RESET_RESP  ::=  "Reboot after Factory Reset"
-DEVICE_MODEL      ::=    "RN"
-REBOOTING_RESP     ::=   "Rebooting"
-NONE_RESP          ::=   "none"
-SCANNING_RESP      ::=   "Scanning"		
+AOK_RESP                ::= "AOK"
+ERR_RESP                ::= "Err"
+FACTORY_RESET_RESP      ::= "Reboot after Factory Reset"
+DEVICE_MODEL            ::= "RN"
+REBOOTING_RESP          ::= "Rebooting"
+NONE_RESP               ::= "none"
+SCANNING_RESP           ::= "Scanning"		
 
 //-- Events
-REBOOT_EVENT      ::=    "%REBOOT%"
-PROMPT_FIRST_CHAR::= 'C'
-PROMPT_LAST_CHAR ::= '>'
-PROMPT_LEN ::= 4
-PROMPT_END_FIST_CHAR ::= 'E'
-PROMPT_END_LAST_CHAR ::= 'D'
-PROMPT_ERROR ::= "Err"
+REBOOT_EVENT            ::= "%REBOOT%"
+PROMPT_FIRST_CHAR       ::= 'C'
+PROMPT_LAST_CHAR        ::= '>'
+PROMPT_LEN              ::=  4
+PROMPT_END_FIST_CHAR    ::= 'E'
+PROMPT_END_LAST_CHAR    ::= 'D'
+PROMPT_ERROR            ::= "Err"
 
-CRLF  ::=                "\r\n"
-CR ::=                   "\r"
-LF ::=                   "\n"
-
-CONF_COMMAND::= "\$\$\$"
+CRLF                    ::= "\r\n"
+CR                      ::= "\r"
+LF                      ::= "\n"
+CONF_COMMAND            ::= "\$\$\$"
 
 // commands
-FACTORY_RESET::= "SF,1"
-EXIT_CONF ::="---\r"
+FACTORY_RESET           ::= "SF,1"
+EXIT_CONF               ::= "---\r"
 
-AUTO_RANDOM_ADDRESS::= "&R"
-USER_RANDOM_ADDRESS::= "&,"
+AUTO_RANDOM_ADDRESS     ::= "&R"
+USER_RANDOM_ADDRESS     ::= "&,"
 
-SET_NAME ::="SN,"
-GET_MODEL_NUMBER ::="GDM"
-
-SET_BAUDRATE ::="SB,"
-GET_BAUDRATE ::="GB"
-
-GET_POWERSAVE ::="GO"
-
-GET_HWVERSION ::="GDH"
-GET_SWVERSION ::="GDR"
-GET_SERIALNUM ::="GDS"
-GET_DEVICE_INFO ::= "D"
+SET_NAME                ::= "SN,"
+GET_MODEL_NUMBER        ::= "GDM"
+ 
+SET_BAUDRATE            ::= "SB,"
+GET_BAUDRATE            ::= "GB"
+ 
+GET_POWERSAVE           ::= "GO"
+ 
+GET_HWVERSION           ::= "GDH"
+GET_SWVERSION           ::= "GDR"
+GET_SERIALNUM           ::= "GDS"
+GET_DEVICE_INFO         ::= "D"
 // Status enums
-ENUM_ENTER_DATMODE ::= 0
-ENUM_DATAMODE ::= 1
-ENUM_ENTER_CONFMODE ::= 2
-ENUM_CONFMODE ::= 3
+ENUM_ENTER_DATMODE      ::= 0
+ENUM_DATAMODE           ::= 1
+ENUM_ENTER_CONFMODE     ::= 2
+ENUM_CONFMODE           ::= 3
 
-// Answers enums
-ENUM_NO_ANSWER ::= 1
-ENUM_PARTIAL_ANSWER ::= 2
-ENUM_COMPLETE_ANSWER ::= 3
-ENUM_DATA_ANSWER ::= 4
+// Answers enums    
+ENUM_NO_ANSWER          ::= 1
+ENUM_PARTIAL_ANSWER     ::= 2
+ENUM_COMPLETE_ANSWER    ::= 3
+ENUM_DATA_ANSWER        ::= 4
 
 // Baudrate settings
-BAUDRATES :={
+BAUDRATES ::={
     "460800" : "01",
     "921600" : "00",
     "230400" : "02",
@@ -78,29 +77,27 @@ BAUDRATES :={
     "4800"   : "0A",
     "2400"   : "0B"
     }
-// Added from new repo
-// ------------------- Commands -----------------------
 
 // --- Set Commands
 SET_BEACON_FEATURES  ::= "SC,"
 
-BEACON_SETTINGS := {
-    "OFF"  :  "0",
+BEACON_SETTINGS ::= {
+    "OFF"   :  "0",
     "ON"    :  "1",
     "ADV_ON":  "2"}
 
-SET_ADV_POWER  ::=       "SGA,"
-SET_CONN_POWER  ::=      "SGC,"
-MIN_POWER_OUTPUT::=  0
-MAX_POWER_OUTPUT::= 5
-SET_SERIALIZED_NAME::="S-,"
-MAX_SERIALIZED_NAME_LEN ::= 15
-SET_DEVICE_NAME::="SN,"
-MAX_DEVICE_NAME_LEN::=20
-SET_LOW_POWER_ON::=   "SO,1"
-SET_LOW_POWER_OFF::=  "SO,0"
-SET_DORMANT_MODE::=   "O,0"
-SET_SETTINGS::=       "S"
+SET_ADV_POWER           ::=  "SGA,"
+SET_CONN_POWER          ::=  "SGC,"
+MIN_POWER_OUTPUT        ::=   0
+MAX_POWER_OUTPUT        ::=   5
+SET_SERIALIZED_NAME     ::=  "S-,"
+MAX_SERIALIZED_NAME_LEN ::=  15
+SET_DEVICE_NAME         ::= "SN,"
+MAX_DEVICE_NAME_LEN     ::=  20
+SET_LOW_POWER_ON        ::= "SO,1"
+SET_LOW_POWER_OFF       ::= "SO,0"
+SET_DORMANT_MODE        ::= "O,0"
+SET_SETTINGS            ::= "S"
 
 SET_SUPPORTED_FEATURES ::= "SR,"
 // > Map of supported features
@@ -131,24 +128,24 @@ SERVICES := {
     }
 
 //-- Get Commands
-GET_SETTINGS::=        "G"
-GET_DEVICE_NAME::=     "GN"
-GET_CONNECTION_STATUS::="GK"
+GET_SETTINGS          ::= "G"
+GET_DEVICE_NAME       ::= "GN"
+GET_CONNECTION_STATUS ::= "GK"
 
 //--- Action Commands
-START_DEFAULT_ADV::=   "A"
-START_CUSTOM_ADV::=    "A,"
-STOP_ADV::=            "Y"
-CLEAR_IMMEDIATE_ADV::= "IA,Z"
-CLEAR_PERMANENT_ADV::=   "NA,Z"
-CLEAR_IMMEDIATE_BEACON ::="IB,Z"
-CLEAR_PERMANENT_BEACON::= "NB,Z"
-START_IMMEDIATE_ADV ::=  "IA,"
-START_PERMANENT_ADV ::=  "NA,"
-START_IMMEDIATE_BEACON ::="IB,"
-START_PERMANENT_BEACON ::="NB,"
+START_DEFAULT_ADV       ::= "A"
+START_CUSTOM_ADV        ::= "A,"
+STOP_ADV                ::= "Y"
+CLEAR_IMMEDIATE_ADV     ::= "IA,Z"
+CLEAR_PERMANENT_ADV     ::= "NA,Z"
+CLEAR_IMMEDIATE_BEACON  ::= "IB,Z"
+CLEAR_PERMANENT_BEACON  ::= "NB,Z"
+START_IMMEDIATE_ADV     ::= "IA,"
+START_PERMANENT_ADV     ::= "NA,"
+START_IMMEDIATE_BEACON  ::= "IB,"
+START_PERMANENT_BEACON  ::= "NB,"
 
-AD_TYPES := {
+AD_TYPES ::= {
     "FLAGS"                     :"01",
     "INCOMPLETE_16_UUID"        :"02",
     "COMPLETE_16_UUID"          :"03",
@@ -173,40 +170,40 @@ AD_TYPES := {
 
 
 START_DEFAULT_SCAN   ::= "F"
-START_CUSTOM_SCAN  ::=   "F,"
-STOP_SCAN          ::=   "X"
-ADD_WHITE_LIST     ::=   "JA,"
-MAX_WHITE_LIST_SIZE  ::= 16
-MAC_ADDRESS_LEN     ::=  12
+START_CUSTOM_SCAN    ::= "F,"
+STOP_SCAN            ::= "X"
+ADD_WHITE_LIST       ::= "JA,"
+MAX_WHITE_LIST_SIZE  ::=  16
+MAC_ADDRESS_LEN      ::=  12
 PUBLIC_ADDRESS_TYPE  ::= "0"
 PRIVATE_ADDRESS_TYPE ::= "1"
 ADD_BONDED_WHITE_LIST::= "JB"
-CLEAR_WHITE_LIST  ::=    "JC"
-KILL_CONNECTION   ::=    "K,1"
-GET_RSSI_LEVEL    ::=    "M"
-REBOOT            ::=    "R,1"
-DISPLAY_FW_VERSION  ::=  "V"
+CLEAR_WHITE_LIST     ::= "JC"
+KILL_CONNECTION      ::= "K,1"
+GET_RSSI_LEVEL       ::= "M"
+REBOOT               ::= "R,1"
+DISPLAY_FW_VERSION   ::= "V"
 
 // --- List Commands
 
 // --- Service Definition
-DEFINE_CHARACT_UUID ::=  "PC,"
-DEFINE_SERVICE_UUID ::=  "PS,"
-CLEAR_ALL_SERVICES  ::=  "PZ"
-PRIVATE_SERVICE_LEN  ::= 32  // 128-bit
-PUBLIC_SERVICE_LEN   ::= 4   // 16-bit
+DEFINE_CHARACT_UUID  ::= "PC,"
+DEFINE_SERVICE_UUID  ::= "PS,"
+CLEAR_ALL_SERVICES   ::= "PZ"
+PRIVATE_SERVICE_LEN  ::=  32  // 128-bit
+PUBLIC_SERVICE_LEN   ::=  4   // 16-bit
 //Characteristic properties
-CHAR_PROPS := {
-    "INDICATE"      :0x20,
-    "NOTIFY"        :0x10,
-    "WRITE"         :0x08,
-    "WRITE_NO_RESP" :0x04,
-    "READ"          :0x02
+CHAR_PROPS ::= {
+    "INDICATE"      : 0x20,
+    "NOTIFY"        : 0x10,
+    "WRITE"         : 0x08,
+    "WRITE_NO_RESP" : 0x04,
+    "READ"          : 0x02
     }
 
 // --- Characteristic Access
 READ_REMOTE_CHARACT  ::= "CHR,"
 WRITE_REMOTE_CHARACT ::= "CHW,"
-DISCOVER_REMOTE    ::=   "CI"  // start client role
-READ_LOCAL_CHARACT  ::=  "SHR,"
-WRITE_LOCAL_CHARACT ::=  "SHW,"
+DISCOVER_REMOTE      ::= "CI"  // start client role
+READ_LOCAL_CHARACT   ::= "SHR,"
+WRITE_LOCAL_CHARACT  ::= "SHW,"
