@@ -904,6 +904,23 @@ class RN4871:
 // ---------------------------------------- Private section ----------------------------------------
 
   // *********************************************************************************
+  // Set and get settings
+  // *********************************************************************************
+  // The Set command starts with character “S” and followed by one or two character 
+  // configuration identifier. All Set commands take at least one parameter 
+  // that is separated from the command by a comma. Set commands change configurations 
+  // and take effect after rebooting either via R,1 command, Hard Reset, or power cycle.
+  // Most Set commands have a corresponding Get command to retrieve and output the
+  // current configurations via the UART. Get commands have the same command
+  // identifiers as Set commands but without parameters.
+  // *********************************************************************************
+  setSettings --addr/string --value/string -> bool:
+    // Manual insertion of settings
+    debugPrint "[setSettings]: Send command $SET_SETTINGS$addr,$value"
+    sendCommand "$SET_SETTINGS$addr,$value"
+    return expectedResult AOK_RESP
+
+  // *********************************************************************************
   // Configures the Beacon Feature
   // *********************************************************************************
   // Input : 
@@ -919,24 +936,19 @@ class RN4871:
       sendCommand SET_BEACON_FEATURES+value
       return expectedResult AOK_RESP
 
-
   getSettings addr/string -> string:
-    uartBuffer = GET_SETTINGS + addr
-    sendCommand uartBuffer
+    // Manual insertion of setting address
+    debugPrint "[getSettings]: Send command $GET_SETTINGS$addr"
+    sendCommand GET_SETTINGS + addr
     answerOrTimeout
     return popData
-
-  setSettings addr/string value/string -> bool:
-    // Manual insertion of settings
-    sendCommand "$SET_SETTINGS$addr,$value"
-    return expectedResult AOK_RESP
   
   setAdvPower value/int -> bool:
     if value > MAX_POWER_OUTPUT:
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
-
+    debugPrint "[setAdvPower]: Send command $SET_ADV_POWER$value"
     sendCommand "$SET_ADV_POWER$value"
     return expectedResult AOK_RESP
 
@@ -945,10 +957,9 @@ class RN4871:
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
-
+    debugPrint "[setAdvPower]: Send command $SET_CONN_POWER$value"
     sendCommand "$SET_CONN_POWER$value"
     return expectedResult AOK_RESP
-
 
   // *********************************************************************************
   // Set the module to Dormant
