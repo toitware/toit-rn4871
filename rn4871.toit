@@ -27,8 +27,6 @@ class RN4871:
   bleAddress := []
   debug := false
 
-
-
   // UART constructor
   constructor --tx/gpio.Pin --rx/gpio.Pin --reset_pin/gpio.Pin --baud_rate/int --debug_mode/bool=false:
     rx_pin_ = rx
@@ -39,6 +37,150 @@ class RN4871:
     answerLen = 0
     debug = debug_mode
     print "Device object created"
+
+// ---------------------------------------Utility Methods ----------------------------------------
+
+  lookupKey paramsMap/Map param/string -> string:
+    key := ""
+    paramsMap.filter:
+      if paramsMap[it] == param:
+        key = it
+    return key
+    
+  convertWordToHexString input/string -> string:
+    output := ""
+    input.to_byte_array.do:
+      output = output + (convertNumberToHexString it)
+    return output
+
+  convertNumberToHexString num/int -> string:
+    if num < 0:
+      print "Error: [convertNumberToHexString] the number $num is negative"
+      return ""
+    else if num < 10:
+      return "$num"
+    else if num == 10:
+      return "A"
+    else if num == 11:
+      return "B"
+    else if num == 12:
+      return "C"
+    else if num == 13:
+      return "D"
+    else if num == 14:
+      return "E"
+    else if num == 15:
+      return "F"
+    else:      
+      return (convertNumberToHexString num/16) + (convertNumberToHexString (num % 16))
+
+  expectedResult resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
+    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+    return result == resp
+
+  debugPrint text/string:
+    if (debug == true):
+      print text
+
+  readForTime --ms/int=INTERNAL_CMD_TIMEOUT ->string:
+    dur := Duration --ms=ms
+    start := Time.now
+    result := ""
+    while start.to_now < dur:
+      answerOrTimeout
+      result = result + popData
+    return result
+
+  listenToUart --ms/int=INTERNAL_CMD_TIMEOUT -> none:
+    dur := Duration --ms=ms
+    start := Time.now
+    print "Begin listening to UART\n"
+    while start.to_now < dur:
+      exception := catch: 
+        with_timeout --ms=ms: 
+          uartBuffer = antenna.read
+          recMessage = uartBuffer.to_string.trim  
+      if(exception == null):  
+        print popData
+
+  popData -> string:
+    result := recMessage
+    recMessage = ""
+    answerLen = 0
+    return result
+  
+  readData -> string:
+    return recMessage
+
+  answerOrTimeout --timeout=INTERNAL_CMD_TIMEOUT-> bool:
+    exception := catch: 
+      with_timeout --ms=timeout: 
+        uartBuffer = antenna.read
+        recMessage = uartBuffer.to_string.trim
+        answerLen = recMessage.size
+    
+    if exception != null:  
+      return false
+
+    return true
+
+  extractResult name/string="" lis/List=[] firstIteration=true-> string:
+    if firstIteration:
+      if name == "":
+        return name
+      tempList := name.split "\n"
+      tempList.map:
+        lis = lis + (it.split " ")
+    if lis == []:
+      return ""
+        
+    elem := lis.remove_last.trim
+    if  elem != "CMD>" and elem != "," and elem !="":
+      return elem
+    return extractResult "" lis false
+
+  sendData message/string:
+    answerLen = 0 // Reset Answer Counter
+    antenna.write message
+    print "Message sent: $message" 
+
+  sendCommand stream/string->none:
+    answerLen = 0
+    antenna.write (stream.trim+CR)
+
+  validateAnswer:
+    if status == ENUM_ENTER_CONFMODE:
+      if recMessage[0] == PROMPT_FIRST_CHAR and recMessage[recMessage.size-1] == PROMPT_LAST_CHAR:
+        setStatus ENUM_CONFMODE
+        return true
+
+    if status == ENUM_ENTER_DATMODE:
+      if recMessage[0] == PROMPT_FIRST_CHAR and recMessage[recMessage.size-1] == PROMPT_LAST_CHAR:
+        setStatus ENUM_DATAMODE
+        return true
+    return false
+
+  setStatus statusToSet:
+    if ENUM_ENTER_DATMODE == statusToSet:
+      print "Status set to: ENTER_DATMODE"
+    else if ENUM_DATAMODE == statusToSet:
+      print "Status set to: DATAMODE"
+    else if ENUM_ENTER_CONFMODE == statusToSet:
+      print "Status set to: ENTER_CONFMODE"
+    else if ENUM_CONFMODE == statusToSet:
+      print "Status set to: CONFMODE"
+    else:
+      print "Error: Not able to update status. Mode: $statusToSet is unknown"
+      return false
+    status = statusToSet
+    return true
+
+  setAddress address:
+    bleAddress  = address
+    print "Address assigned to $address"
+    return true
+
+// ---------------------------------------- Public section ----------------------------------------    
     
   // Reset
   pinReboot ->bool:
@@ -52,30 +194,7 @@ class RN4871:
       return true
     else:
       print "Reboot failure"
-      return false
-  
-  popData -> string:
-    result := recMessage
-    recMessage = ""
-    answerLen = 0
-    return result
-  
-  readData -> string:
-    return recMessage
-
-
-  answerOrTimeout --timeout=INTERNAL_CMD_TIMEOUT-> bool:
-    exception := catch: 
-      with_timeout --ms=timeout: 
-        uartBuffer = antenna.read
-        recMessage = uartBuffer.to_string.trim
-        answerLen = recMessage.size
-    
-    if exception != null:  
-      return false
-
-    return true
-    
+      return false    
 
   startBLE userRA=null:
     if enterConfigurationMode == false:
@@ -110,7 +229,7 @@ class RN4871:
       setStatus ENUM_DATAMODE
     return result
 
-
+/*
   hasAnswer:
     uartBuffer = recMessage.to_byte_array
     
@@ -125,6 +244,7 @@ class RN4871:
       return ENUM_PARTIAL_ANSWER
 
     return ENUM_NO_ANSWER
+*/
 
   factoryReset: 
     // if not in configuration mode enter immediately
@@ -152,11 +272,6 @@ class RN4871:
     else:
       return false
 
-  sendData message/string:
-    answerLen = 0 // Reset Answer Counter
-    antenna.write message
-    print "Message sent: $message" 
-
   setName newName:
     if status != ENUM_CONFMODE:
       return false
@@ -172,21 +287,6 @@ class RN4871:
       return "Error: Not in the CONFMODE"
     sendCommand GET_DEVICE_NAME
     return extractResult readForTime
-  
-  extractResult name/string="" lis/List=[] firstIteration=true-> string:
-    if firstIteration:
-      if name == "":
-        return name
-      tempList := name.split "\n"
-      tempList.map:
-        lis = lis + (it.split " ")
-    if lis == []:
-      return ""
-        
-    elem := lis.remove_last.trim
-    if  elem != "CMD>" and elem != "," and elem !="":
-      return elem
-    return extractResult "" lis false
 
   getFwVersion:
     if status != ENUM_CONFMODE:
@@ -283,51 +383,6 @@ class RN4871:
     answerOrTimeout
     return popData
 
-  sendCommand stream/string->none:
-    answerLen = 0
-    antenna.write (stream.trim+CR)
-
-  validateAnswer:
-    if status == ENUM_ENTER_CONFMODE:
-      if recMessage[0] == PROMPT_FIRST_CHAR and recMessage[recMessage.size-1] == PROMPT_LAST_CHAR:
-        setStatus ENUM_CONFMODE
-        return true
-
-    if status == ENUM_ENTER_DATMODE:
-      if recMessage[0] == PROMPT_FIRST_CHAR and recMessage[recMessage.size-1] == PROMPT_LAST_CHAR:
-        setStatus ENUM_DATAMODE
-        return true
-    return false
-
-  setStatus statusToSet:
-    if ENUM_ENTER_DATMODE == statusToSet:
-      print "Status set to: ENTER_DATMODE"
-    else if ENUM_DATAMODE == statusToSet:
-      print "Status set to: DATAMODE"
-    else if ENUM_ENTER_CONFMODE == statusToSet:
-      print "Status set to: ENTER_CONFMODE"
-    else if ENUM_CONFMODE == statusToSet:
-      print "Status set to: CONFMODE"
-    else:
-      print "Error: Not able to update status. Mode: $statusToSet is unknown"
-      return false
-    status = statusToSet
-    return true
-
-  setAddress address:
-    this.bleAddress  = address
-    print "Address assigned to $address"
-    return true
-
-  readForTime --ms/int=INTERNAL_CMD_TIMEOUT ->string:
-    dur := Duration --ms=ms
-    start := Time.now
-    result := ""
-    while start.to_now < dur:
-      answerOrTimeout
-      result = result + popData
-    return result
-
   devInfo -> string:
     sendCommand GET_DEVICE_INFO
     return readForTime
@@ -364,25 +419,6 @@ class RN4871:
     debugPrint "[setDefServices]: The default service $key is set with the command: $SET_DEFAULT_SERVICES$service"
     sendCommand SET_DEFAULT_SERVICES+service
     return expectedResult AOK_RESP
-
-  // *********************************************************************************
-  // Listen to UART line for specific time
-  // *********************************************************************************
-  // Prints to the console the data from UART line that comes from RN4871 device
-  // Input : int value representing amount of ms that the MCU should be listening
-  // Output: none
-  // *********************************************************************************
-  listenToUart --ms/int=INTERNAL_CMD_TIMEOUT -> none:
-    dur := Duration --ms=ms
-    start := Time.now
-    print "Begin to listen to UART\n"
-    while start.to_now < dur:
-      exception := catch: 
-        with_timeout --ms=ms: 
-          uartBuffer = antenna.read
-          recMessage = uartBuffer.to_string.trim  
-      if(exception == null):  
-        print popData
   
   // *********************************************************************************
   // Clear all services
@@ -458,14 +494,14 @@ class RN4871:
     sendCommand CLEAR_IMMEDIATE_BEACON
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Clear the Beacon structure in a permanent way
-// *********************************************************************************
-// The changes are saved into NVM only if other procedures require permanent
-// configuration changes. A reboot is requested after executing this method.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Clear the Beacon structure in a permanent way
+  // *********************************************************************************
+  // The changes are saved into NVM only if other procedures require permanent
+  // configuration changes. A reboot is requested after executing this method.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   clearPermanentBeacon:
     debugPrint "[clearPermanentBeacon]"
     sendCommand CLEAR_PERMANENT_BEACON
@@ -626,69 +662,57 @@ class RN4871:
       else:
         print "Error: [addMacAddrWhiteList] received faulty input, $ADD_WHITE_LIST$addrType,$adData"
     return false
-    
-    
-    
       
-// *********************************************************************************
-// Add all currently bonded devices to the white list
-// *********************************************************************************
-// The random address in the white list can be resolved with this method for 
-// connection purpose. If the peer device changes its resolvable random address, 
-// the RN4870/71 is still able to detect that the different random addresses are 
-// from the same physical device, therefore, allows connection from such peer 
-// device. This feature is particularly useful if the peer device is a iOS or 
-// Android device which uses resolvable random.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Add all currently bonded devices to the white list
+  // *********************************************************************************
+  // The random address in the white list can be resolved with this method for 
+  // connection purpose. If the peer device changes its resolvable random address, 
+  // the RN4870/71 is still able to detect that the different random addresses are 
+  // from the same physical device, therefore, allows connection from such peer 
+  // device. This feature is particularly useful if the peer device is a iOS or 
+  // Android device which uses resolvable random.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   addBondedWhiteList:
-    print("[addBondedWhiteList]")
-    
+    debugPrint "[addBondedWhiteList]"
     sendCommand ADD_BONDED_WHITE_LIST
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Clear the white list
-// *********************************************************************************
-// Once the white list is cleared, white list feature is disabled.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Clear the white list
+  // *********************************************************************************
+  // Once the white list is cleared, white list feature is disabled.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   clearWhiteList:
-    print "clearWhiteList"
+    debugPrint "[clearWhiteList]"
     sendCommand CLEAR_WHITE_LIST
     return expectedResult AOK_RESP
 
-  expectedResult resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    return result == resp
-
-  debugPrint text/string:
-    if (debug == true):
-      print text
-
-// *********************************************************************************
-// Kill the active connection
-// *********************************************************************************
-// Disconnect the active BTLE link. It can be used in central or peripheral role.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Kill the active connection
+  // *********************************************************************************
+  // Disconnect the active BTLE link. It can be used in central or peripheral role.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   killConnection:
     debugPrint "[killConnection]"
     sendCommand KILL_CONNECTION
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Get the RSSI level
-// *********************************************************************************
-// Get the signal strength in dBm of the last communication with the peer device. 
-// The signal strength is used to estimate the distance between the device and its
-// remote peer.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Get the RSSI level
+  // *********************************************************************************
+  // Get the signal strength in dBm of the last communication with the peer device. 
+  // The signal strength is used to estimate the distance between the device and its
+  // remote peer.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   getRSSI -> string:
     debugPrint "[getRSSI]"
     sendCommand GET_RSSI_LEVEL
@@ -696,14 +720,14 @@ class RN4871:
     debugPrint "Received RSSI is: $result"
     return result
 
-// *********************************************************************************
-// Reboot the module
-// *********************************************************************************
-// Forces a complete device reboot (similar to a power cycle).
-// After rebooting RN487x, all prior made setting changes takes effect.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Reboot the module
+  // *********************************************************************************
+  // Forces a complete device reboot (similar to a power cycle).
+  // After rebooting RN487x, all prior made setting changes takes effect.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   reboot -> bool:
     debugPrint("[reboot]")
     sendCommand(REBOOT)
@@ -716,17 +740,17 @@ class RN4871:
       debugPrint "[reboot] Software reboot failed"
       return false
 
-// *********************************************************************************
-// Sets the service UUID
-// *********************************************************************************
-// Sets the UUID of the public or the private service.
-// This method must be called before the setCharactUUID() method.
-// 
-// Input : const char *uuid 
-//         can be either a 16-bit UUID for public service
-//         or a 128-bit UUID for private service
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Sets the service UUID
+  // *********************************************************************************
+  // Sets the UUID of the public or the private service.
+  // This method must be called before the setCharactUUID() method.
+  // 
+  // Input : const char *uuid 
+  //         can be either a 16-bit UUID for public service
+  //         or a 128-bit UUID for private service
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   setServiceUUID uuid/string -> bool:
     
     if (uuid.size == PRIVATE_SERVICE_LEN):
@@ -739,15 +763,15 @@ class RN4871:
     sendCommand "$DEFINE_SERVICE_UUID,$uuid"  
     return expectedResult AOK_RESP
 
-// Input : string uuid 
-//         can be either a 16-bit UUID for public service
-//         or a 128-bit UUID for private service
-//         uint8_t property is a 8-bit property bitmap of the characteristics
-//         uint8_t octetLen is an 8-bit value that indicates the maximum data size
-//         in octet where the value of the characteristics holds in the range
-//         from 1 to 20 (0x01 to 0x14)
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // Input : string uuid 
+  //         can be either a 16-bit UUID for public service
+  //         or a 128-bit UUID for private service
+  //         uint8_t property is a 8-bit property bitmap of the characteristics
+  //         uint8_t octetLen is an 8-bit value that indicates the maximum data size
+  //         in octet where the value of the characteristics holds in the range
+  //         from 1 to 20 (0x01 to 0x14)
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   setCharactUUID --uuid/string --property/string --octetLen-> bool:
     catch:
       try:
@@ -779,51 +803,49 @@ class RN4871:
     sendCommand "$DEFINE_CHARACT_UUID,$uuid,$property,$octetLen"  
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Write local characteristic value as server
-// *********************************************************************************
-// Writes content of characteristic in Server Service to local device by addressing
-// its handle
-// Input : uint16_t handle which corresponds to the characteristic of the server service
-//         const unsigned char value[] is the content to be written to the characteristic
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Write local characteristic value as server
+  // *********************************************************************************
+  // Writes content of characteristic in Server Service to local device by addressing
+  // its handle
+  // Input : uint16_t handle which corresponds to the characteristic of the server service
+  //         const unsigned char value[] is the content to be written to the characteristic
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   writeLocalCharacteristic --handle --value -> bool:
     debugPrint "[writeLocalCharacteristic]"
     sendCommand "$WRITE_LOCAL_CHARACT,$handle,$value"
     return expectedResult AOK_RESP
 
-// *********************************************************************************
-// Read local characteristic value as server
-// *********************************************************************************
-// Reads the content of the server service characteristic on the local device
-// by addresiing its handle. 
-// This method is effective with or without an active connection.
-// Input : uint16_t handle which corresponds to the characteristic of the server service
-// Output: string with result
-// *********************************************************************************
-
+  // *********************************************************************************
+  // Read local characteristic value as server
+  // *********************************************************************************
+  // Reads the content of the server service characteristic on the local device
+  // by addresiing its handle. 
+  // This method is effective with or without an active connection.
+  // Input : uint16_t handle which corresponds to the characteristic of the server service
+  // Output: string with result
+  // *********************************************************************************
   readLocalCharacteristic --handle/string -> string:
     debugPrint "[readLocalCharacteristic]"
     sendCommand "$READ_LOCAL_CHARACT,$handle"
     result := extractResult readForTime
     return result
 
-// *********************************************************************************
-// Get the current connection status
-// *********************************************************************************
-// If the RN4870/71 is not connected, the output is none.
-// If the RN4870/71 is connected, the buffer must contains the information:
-// <Peer BT Address>,<Address Type>,<Connection Type>
-// where <Peer BT Address> is the 6-byte hex address of the peer device; 
-//       <Address Type> is either 0 for public address or 1 for random address; 
-//       <Connection Type> specifies if the connection enables UART Transparent 
-// feature, where 1 indicates UART Transparent is enabled and 0 indicates 
-// UART Transparent is disabled
-// Input : void
-// Output: string with result
-// *********************************************************************************
-
+  // *********************************************************************************
+  // Get the current connection status
+  // *********************************************************************************
+  // If the RN4870/71 is not connected, the output is none.
+  // If the RN4870/71 is connected, the buffer must contains the information:
+  // <Peer BT Address>,<Address Type>,<Connection Type>
+  // where <Peer BT Address> is the 6-byte hex address of the peer device; 
+  //       <Address Type> is either 0 for public address or 1 for random address; 
+  //       <Connection Type> specifies if the connection enables UART Transparent 
+  // feature, where 1 indicates UART Transparent is enabled and 0 indicates 
+  // UART Transparent is disabled
+  // Input : void
+  // Output: string with result
+  // *********************************************************************************
   getConnectionStatus:
     sendCommand GET_CONNECTION_STATUS
     result := extractResult (readForTime --ms=10000)
@@ -835,13 +857,12 @@ class RN4871:
 
 // ---------------------------------------- Private section ----------------------------------------
 
-// *********************************************************************************
-// Configures the Beacon Feature
-// *********************************************************************************
-// Input : 
-// Output: return true if successfully executed
-// *********************************************************************************
-
+  // *********************************************************************************
+  // Configures the Beacon Feature
+  // *********************************************************************************
+  // Input : 
+  // Output: return true if successfully executed
+  // *********************************************************************************
   setBeaconFeatures value/string:
     setting := lookupKey BEACON_SETTINGS value
       
@@ -884,49 +905,15 @@ class RN4871:
     return expectedResult AOK_RESP
 
 
-// *********************************************************************************
-// Set the module to Dormant
-// *********************************************************************************
-// Immediately forces the device into lowest power mode possible.
-// Removing the device from Dormant mode requires power reset.
-// Input : void
-// Output: bool true if successfully executed
-// *********************************************************************************
+  // *********************************************************************************
+  // Set the module to Dormant
+  // *********************************************************************************
+  // Immediately forces the device into lowest power mode possible.
+  // Removing the device from Dormant mode requires power reset.
+  // Input : void
+  // Output: bool true if successfully executed
+  // *********************************************************************************
   dormantMode -> none:
     debugPrint "[dormantMode]"
     sendCommand SET_DORMANT_MODE
     sleep --ms=INTERNAL_CMD_TIMEOUT
-
-  lookupKey paramsMap/Map param/string -> string:
-    key := ""
-    paramsMap.filter:
-      if paramsMap[it] == param:
-        key = it
-    return key
-    
-  convertWordToHexString input/string -> string:
-    output := ""
-    input.to_byte_array.do:
-      output = output + (convertNumberToHexString it)
-    return output
-
-  convertNumberToHexString num/int -> string:
-    if num < 0:
-      print "Error: [convertNumberToHexString] the number $num is negative"
-      return ""
-    else if num < 10:
-      return "$num"
-    else if num == 10:
-      return "A"
-    else if num == 11:
-      return "B"
-    else if num == 12:
-      return "C"
-    else if num == 13:
-      return "D"
-    else if num == 14:
-      return "E"
-    else if num == 15:
-      return "F"
-    else:      
-      return (convertNumberToHexString num/16) + (convertNumberToHexString (num % 16))
