@@ -13,15 +13,15 @@ import encoding.hex
 
 class RN4871:
   
-  recMessage := ""
+  rec_message := ""
   antenna/serial.Port
   status/int := ENUM_DATAMODE
-  answerLen/int := 0
-  uartBuffer := []
+  answer_len/int := 0
+  uart_buffer := []
   rx_pin_/gpio.Pin
   tx_pin_/gpio.Pin
   reset_pin_/gpio.Pin
-  bleAddress := []
+  ble_address := []
   debug := false
 
   // UART constructor
@@ -31,40 +31,39 @@ class RN4871:
     reset_pin_ = reset_pin
     antenna = serial.Port --tx=tx --rx=rx --baud_rate=baud_rate
     status = ENUM_DATAMODE
-    answerLen = 0
+    answer_len = 0
     debug = debug_mode
     print "Device object created"
 
 // ---------------------------------------Utility Methods ----------------------------------------
 
-  lookupKey paramsMap/Map param/any -> string:
-    paramsMap.do:
-      if paramsMap[it] == param:
+  lookup_key params_map/Map param/any -> string:
+    params_map.do:
+      if params_map[it] == param:
         return it
     return ""
     
-  convertWordToHexString input/string -> string:
+  convert_string_to_hex input/string -> string:
     output := ""
     input.to_byte_array.do:
-      //output += convertNumberToHexString it
       output += it.stringify 16
     return output
 
-  expectedResult resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+  expected_result resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
+    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT)
     return result == resp
 
-  debugPrint text/string:
+  debug_print text/string:
     if (debug == true):
       print text
 
-  readForTime --ms/int=INTERNAL_CMD_TIMEOUT -> string:
+  read_for_time --ms/int=INTERNAL_CMD_TIMEOUT -> string:
     dur := Duration --ms=ms
     start := Time.now
     result := ""
     while start.to_now < dur:
-      answerOrTimeout
-      result = result + popData
+      answer_or_timeout
+      result = result + pop_data
     return result
 
   listenToUart --ms/int=INTERNAL_CMD_TIMEOUT -> none:
@@ -74,38 +73,38 @@ class RN4871:
     while start.to_now < dur:
       exception := catch: 
         with_timeout --ms=ms: 
-          uartBuffer = antenna.read
-          recMessage = uartBuffer.to_string.trim  
+          uart_buffer = antenna.read
+          rec_message = uart_buffer.to_string.trim  
       if(exception == null):  
-        print popData
+        print pop_data
 
-  popData -> string:
-    result := recMessage
-    recMessage = ""
-    answerLen =0
+  pop_data -> string:
+    result := rec_message
+    rec_message = ""
+    answer_len =0
     return result
   
-  readData -> string:
-    return recMessage
+  read_data -> string:
+    return rec_message
 
-  answerOrTimeout --timeout=INTERNAL_CMD_TIMEOUT-> bool:
+  answer_or_timeout --timeout=INTERNAL_CMD_TIMEOUT-> bool:
     exception := catch: 
       with_timeout --ms=timeout: 
-        uartBuffer = antenna.read
-        recMessage = uartBuffer.to_string.trim
-        answerLen = recMessage.size
+        uart_buffer = antenna.read
+        rec_message = uart_buffer.to_string.trim
+        answer_len = rec_message.size
     
     if exception != null:  
       return false
 
     return true
 
-  extractResult name/string="" lis/List=[] firstIteration=true-> string:
-    if firstIteration:
+  extract_result name/string="" lis/List=[] first_iteration=true-> string:
+    if first_iteration:
       if name == "":
         return name
-      tempList := name.split "\n"
-      tempList.map:
+      temp_list := name.split "\n"
+      temp_list.map:
         lis = lis + (it.split " ")
     if lis == []:
       return ""
@@ -113,50 +112,50 @@ class RN4871:
     elem := lis.remove_last.trim
     if  elem != "CMD>" and elem != "," and elem !="":
       return elem
-    return extractResult "" lis false
+    return extract_result "" lis false
 
-  sendData message/string:
-    answerLen = 0 // Reset Answer Counter
+  send_data message/string:
+    answer_len = 0 // Reset Answer Counter
     antenna.write message
     print "Message sent: $message" 
 
-  sendCommand stream/string->none:
-    answerLen = 0
+  send_command stream/string->none:
+    answer_len = 0
     antenna.write (stream.trim+CR)
 
-  validateAnswer:
+  validate_answer:
     if status == ENUM_ENTER_CONFMODE:
-      if recMessage[0] == PROMPT_FIRST_CHAR and recMessage[recMessage.size-1] == PROMPT_LAST_CHAR:
-        setStatus ENUM_CONFMODE
+      if rec_message[0] == PROMPT_FIRST_CHAR and rec_message[rec_message.size-1] == PROMPT_LAST_CHAR:
+        set_status ENUM_CONFMODE
         return true
 
     if status == ENUM_ENTER_DATMODE:
-      if recMessage[0] == PROMPT_FIRST_CHAR and recMessage[recMessage.size-1] == PROMPT_LAST_CHAR:
-        setStatus ENUM_DATAMODE
+      if rec_message[0] == PROMPT_FIRST_CHAR and rec_message[rec_message.size-1] == PROMPT_LAST_CHAR:
+        set_status ENUM_DATAMODE
         return true
     return false
 
-  setStatus statusToSet:
-    if ENUM_ENTER_DATMODE == statusToSet:
-      print "[setStatus]Status set to: ENTER_DATMODE"
-    else if ENUM_DATAMODE == statusToSet:
-      print "[setStatus]Status set to: DATAMODE"
-    else if ENUM_ENTER_CONFMODE == statusToSet:
-      print "[setStatus]Status set to: ENTER_CONFMODE"
-    else if ENUM_CONFMODE == statusToSet:
-      print "[setStatus]Status set to: CONFMODE"
+  set_status status_to_set:
+    if ENUM_ENTER_DATMODE == status_to_set:
+      print "[set_status]Status set to: ENTER_DATMODE"
+    else if ENUM_DATAMODE == status_to_set:
+      print "[set_status]Status set to: DATAMODE"
+    else if ENUM_ENTER_CONFMODE == status_to_set:
+      print "[set_status]Status set to: ENTER_CONFMODE"
+    else if ENUM_CONFMODE == status_to_set:
+      print "[set_status]Status set to: CONFMODE"
     else:
-      print "Error [setStatus]: Not able to update status. Mode: $statusToSet is unknown"
+      print "Error [set_status]: Not able to update status. Mode: $status_to_set is unknown"
       return false
-    status = statusToSet
+    status = status_to_set
     return true
 
-  setAddress address:
-    bleAddress  = address
-    debugPrint "[setAddress] Address assigned to $address"
+  set_address address:
+    ble_address  = address
+    debug_print "[set_address] Address assigned to $address"
     return true
 
-  validateInputHexData data/string -> bool:
+  validate_input_hex_data data/string -> bool:
     range := [[48, 57], [65, 70], [97, 102]]
     char := ""
     out_of_range := true
@@ -173,117 +172,117 @@ class RN4871:
 // ---------------------------------------- Public section ----------------------------------------    
     
   // Reset
-  pinReboot ->bool:
+  pin_reboot ->bool:
     reset_pin_.set 0
     sleep --ms=50
     reset_pin_.set 1
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
+    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT)
     if result == REBOOT_EVENT:
       sleep --ms=STATUS_CHANGE_TIMEOUT
-      print "[pinReboot] Reboot successfull"
+      print "[pin_reboot] Reboot successfull"
       return true
     else:
-      print "[pinReboot] Reboot failure"
+      print "[pin_reboot] Reboot failure"
       return false    
 
-  startBLE userRA=null:
-    if enterConfigurationMode == false:
+  start_BLE user_RA=null:
+    if enter_configuration_mode == false:
       return false
 
-    if assignRandomAddress userRA == false:
+    if assign_random_address user_RA == false:
       return false
 
-    if enterDataMode == false:
+    if enter_data_mode == false:
       return false
 
     return true
 
-  enterConfigurationMode ->bool:
+  enter_configuration_mode ->bool:
     // Command mode
-    setStatus ENUM_ENTER_CONFMODE
-    sendData CONF_COMMAND
-    result := readForTime --ms=STATUS_CHANGE_TIMEOUT
+    set_status ENUM_ENTER_CONFMODE
+    send_data CONF_COMMAND
+    result := read_for_time --ms=STATUS_CHANGE_TIMEOUT
     if result == PROMPT or result == "CMD":
-      print "[enterConfigurationMode] Command mode set up"
-      setStatus ENUM_CONFMODE
+      print "[enter_configuration_mode] Command mode set up"
+      set_status ENUM_CONFMODE
       return true   
     else:
-      print "[enterConfigurationMode] Failed to set command mode"
+      print "[enter_configuration_mode] Failed to set command mode"
       return false
   
-  enterDataMode ->bool:
-    setStatus ENUM_ENTER_DATMODE
+  enter_data_mode ->bool:
+    set_status ENUM_ENTER_DATMODE
     antenna.write EXIT_CONF
-    result := answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
-    if readData == PROMPT_END:
-      setStatus ENUM_DATAMODE
+    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT
+    if read_data == PROMPT_END:
+      set_status ENUM_DATAMODE
     return result
 
-  factoryReset: 
+  factory_reset: 
     // if not in configuration mode enter immediately
     if status != ENUM_CONFMODE:
-      if not enterConfigurationMode:
+      if not enter_configuration_mode:
         return false
-    sendCommand FACTORY_RESET
-    result := answerOrTimeout --timeout=STATUS_CHANGE_TIMEOUT
+    send_command FACTORY_RESET
+    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT
     sleep --ms=STATUS_CHANGE_TIMEOUT
     return result
 
-  assignRandomAddress userRA=null -> bool:
+  assign_random_address user_RA=null -> bool:
     if status == ENUM_CONFMODE:
       timeout := 0
-      if userRA == null:
-        sendCommand AUTO_RANDOM_ADDRESS
+      if user_RA == null:
+        send_command AUTO_RANDOM_ADDRESS
       else:
-        sendCommand AUTO_RANDOM_ADDRESS
+        send_command AUTO_RANDOM_ADDRESS
       
-      if answerOrTimeout == true:
-        setAddress popData.trim.to_byte_array
+      if answer_or_timeout == true:
+        set_address pop_data.trim.to_byte_array
         return true
       else:
         return false
     else:
       return false
 
-  setName newName:
+  set_name new_name:
     if status != ENUM_CONFMODE:
       return false
 
-    if newName.size > MAX_DEVICE_NAME_LEN:
-      print "Error [setName]: The name is too long"
+    if new_name.size > MAX_DEVICE_NAME_LEN:
+      print "Error [set_name]: The name is too long"
       return false
-    sendCommand SET_NAME + newName
-    return expectedResult AOK_RESP
+    send_command SET_NAME + new_name
+    return expected_result AOK_RESP
 
-  getName:
+  get_name:
     if status != ENUM_CONFMODE:
-      return "Error [getName]: Not in the CONFMODE"
-    sendCommand GET_DEVICE_NAME
-    return extractResult readForTime
+      return "Error [get_name]: Not in the CONFMODE"
+    send_command GET_DEVICE_NAME
+    return extract_result read_for_time
 
-  getFwVersion:
-    if status != ENUM_CONFMODE:
-      return false
-
-    sendCommand DISPLAY_FW_VERSION
-    answerOrTimeout
-    return popData
-
-  getSwVersion:
+  get_fw_version:
     if status != ENUM_CONFMODE:
       return false
 
-    sendCommand GET_SWVERSION
-    answerOrTimeout
-    return popData
+    send_command DISPLAY_FW_VERSION
+    answer_or_timeout
+    return pop_data
 
-  getHwVersion:
+  get_sw_version:
     if status != ENUM_CONFMODE:
       return false
 
-    sendCommand GET_HWVERSION
-    answerOrTimeout
-    return popData
+    send_command GET_SWVERSION
+    answer_or_timeout
+    return pop_data
+
+  get_hw_version:
+    if status != ENUM_CONFMODE:
+      return false
+
+    send_command GET_HWVERSION
+    answer_or_timeout
+    return pop_data
 
   // *********************************************************************************
   // Set UART communication baudrate
@@ -292,73 +291,73 @@ class RN4871:
   // Input : value from BAUDRATE map
   // Output: bool true if successfully executed
   // *********************************************************************************
-  setBaudRate param/string -> bool:
+  set_baud_rate param/string -> bool:
     if status != ENUM_CONFMODE:
       return false    
-    setting := lookupKey BAUDRATES param
+    setting := lookup_key BAUDRATES param
 
     if setting == "":
       print "Error: Value: $param is not in BAUDRATE commands set"
       return false
-    debugPrint "[setBaudRate]: The baudrate is being set to $setting with the command: $SET_BAUDRATE$param"
-    sendCommand "$SET_BAUDRATE$param"
-    return expectedResult AOK_RESP
+    debug_print "[set_baud_rate]: The baudrate is being set to $setting with the command: $SET_BAUDRATE$param"
+    send_command "$SET_BAUDRATE$param"
+    return expected_result AOK_RESP
 
-  getBaudRate -> string:
+  get_baud_rate -> string:
     if status != ENUM_CONFMODE:
       print "Error: Not in Configuration mode"
       return ""
 
-    sendCommand GET_BAUDRATE
-    answerOrTimeout
-    return popData
+    send_command GET_BAUDRATE
+    answer_or_timeout
+    return pop_data
 
-  getSN -> string:
+  get_serial_number -> string:
     if status != ENUM_CONFMODE:
-      print "Error [getSN]: Not in Configuration mode"
+      print "Error [get_serial_number]: Not in Configuration mode"
       return ""
 
-    sendCommand GET_SERIALNUM
-    answerOrTimeout
-    return popData
+    send_command GET_SERIALNUM
+    answer_or_timeout
+    return pop_data
 
-  setPowerSave powerSave/bool:
+  set_power_save power_save/bool:
     // if not in configuration mode enter immediately
     if status != ENUM_CONFMODE:
-      if not enterConfigurationMode:
-        print "Error [setPowerSave]: Cannot enter Configuration mode"
+      if not enter_configuration_mode:
+        print "Error [set_power_save]: Cannot enter Configuration mode"
         return ""
 
     // write command to buffer
-    if powerSave:
-      sendCommand SET_LOW_POWER_ON
-      print "[setPowerSave] Low power ON"
+    if power_save:
+      send_command SET_LOW_POWER_ON
+      print "[set_power_save] Low power ON"
     else:
-      sendCommand SET_LOW_POWER_OFF
-      print "[setPowerSave] Low power OFF"
+      send_command SET_LOW_POWER_OFF
+      print "[set_power_save] Low power OFF"
 
-    result := answerOrTimeout
+    result := answer_or_timeout
     return result
   
-  getConStatus -> string:
+  get_con_status -> string:
     if status != ENUM_CONFMODE:
-      print "Error [getConStatus]: Not in Configuration mode"
+      print "Error [get_con_status]: Not in Configuration mode"
       return ""
 
-    sendCommand GET_CONNECTION_STATUS
-    answerOrTimeout
-    return popData
+    send_command GET_CONNECTION_STATUS
+    answer_or_timeout
+    return pop_data
 
-  getPowerSave:
+  get_power_save:
     if status != ENUM_CONFMODE:
         return false
-    sendCommand GET_POWERSAVE
-    answerOrTimeout
-    return popData
+    send_command GET_POWERSAVE
+    answer_or_timeout
+    return pop_data
 
-  devInfo -> string:
-    sendCommand GET_DEVICE_INFO
-    return readForTime
+  dev_info -> string:
+    send_command GET_DEVICE_INFO
+    return read_for_time
 
   // *********************************************************************************
   // Set supported features
@@ -367,14 +366,14 @@ class RN4871:
   // Input : string value from FEATURES map
   // Output: bool true if successfully executed
   // *********************************************************************************
-  setSupFeatures feature/string:
-    key := lookupKey FEATURES feature
+  set_sup_features feature/string:
+    key := lookup_key FEATURES feature
     if key == "":
-      print "Error [setSupFeatures]: Feature: $feature is not in supported features set"
+      print "Error [set_sup_features]: Feature: $feature is not in supported features set"
       return false
-    debugPrint "[setSupFeatures]: The supported feature $key is set with the command: $SET_SUPPORTED_FEATURES$feature"
-    sendCommand SET_SUPPORTED_FEATURES+feature
-    return expectedResult AOK_RESP
+    debug_print "[set_sup_features]: The supported feature $key is set with the command: $SET_SUPPORTED_FEATURES$feature"
+    send_command SET_SUPPORTED_FEATURES+feature
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Set default services
@@ -384,14 +383,14 @@ class RN4871:
   // Input : string value from SERVICES map
   // Output: bool true if successfully executed
   // *********************************************************************************
-  setDefServices service:
-    key := lookupKey SERVICES service
+  set_def_services service:
+    key := lookup_key SERVICES service
     if key == "":
-      print "Error [setDefServices]: Value: $service is not a default service"
+      print "Error [set_def_services]: Value: $service is not a default service"
       return false
-    debugPrint "[setDefServices]: The default service $key is set with the command: $SET_DEFAULT_SERVICES$service"
-    sendCommand SET_DEFAULT_SERVICES+service
-    return expectedResult AOK_RESP
+    debug_print "[set_def_services]: The default service $key is set with the command: $SET_DEFAULT_SERVICES$service"
+    send_command SET_DEFAULT_SERVICES+service
+    return expected_result AOK_RESP
   
   // *********************************************************************************
   // Clear all services
@@ -401,10 +400,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  clearAllServices:
-    debugPrint "[cleanAllServices]"
-    sendCommand CLEAR_ALL_SERVICES
-    return expectedResult AOK_RESP
+  clear_all_services:
+    debug_print "[clear_all_services]"
+    send_command CLEAR_ALL_SERVICES
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Start Advertisement
@@ -413,22 +412,22 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  startAdvertising:
-    debugPrint "[startAdvertising]"
-    sendCommand(START_DEFAULT_ADV)
-    return expectedResult AOK_RESP
+  start_advertising:
+    debug_print "[start_advertising]"
+    send_command(START_DEFAULT_ADV)
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Stops Advertisement
   // *********************************************************************************
-  // Stops advertisement started by the startAdvertising method.
+  // Stops advertisement started by the start_advertising method.
   // Input : void
   // Output: bool true if successfully executed
   //*********************************************************************************
-  stopAdvertising:
-    debugPrint "[stopAdvertising]"
-    sendCommand(STOP_ADV)
-    return expectedResult AOK_RESP
+  stop_advertising:
+    debug_print "[stop_advertising]"
+    send_command(STOP_ADV)
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Clear the advertising structure Immediately
@@ -437,10 +436,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  clearImmediateAdvertising:
-    debugPrint "[clearImmediateAdvertising]"
-    sendCommand(CLEAR_IMMEDIATE_ADV)
-    return expectedResult AOK_RESP
+  clear_immediate_advertising:
+    debug_print "[clear_immediate_advertising]"
+    send_command(CLEAR_IMMEDIATE_ADV)
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Clear the advertising structure in a permanent way
@@ -450,10 +449,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  clearPermanentAdvertising:
-    debugPrint "[clearPermanentAdvertising]"
-    sendCommand CLEAR_PERMANENT_ADV
-    return expectedResult AOK_RESP
+  clear_permanent_advertising:
+    debug_print "[clear_permanent_advertising]"
+    send_command CLEAR_PERMANENT_ADV
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Clear the Beacon structure Immediately
@@ -462,10 +461,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  clearImmediateBeacon:
-    debugPrint "[clearImmediateBeacon]"
-    sendCommand CLEAR_IMMEDIATE_BEACON
-    return expectedResult AOK_RESP
+  clear_immediate_beacon:
+    debug_print "[clear_immediate_beacon]"
+    send_command CLEAR_IMMEDIATE_BEACON
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Clear the Beacon structure in a permanent way
@@ -475,10 +474,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  clearPermanentBeacon:
-    debugPrint "[clearPermanentBeacon]"
-    sendCommand CLEAR_PERMANENT_BEACON
-    return expectedResult AOK_RESP
+  clear_permanent_beacon:
+    debug_print "[clear_permanent_beacon]"
+    send_command CLEAR_PERMANENT_BEACON
+    return expected_result AOK_RESP
 
 
   // *********************************************************************************
@@ -486,20 +485,20 @@ class RN4871:
   // *********************************************************************************
   // Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
   //         number list in the Core Specification 
-  //         string adData is the string message to be advertised. The message is 
+  //         string ad_data is the string message to be advertised. The message is 
   //         converted to the chain of hex ASCII values
   // Output: bool true if successfully executed
   // *********************************************************************************
-  startImmediateAdvertising adType/string adData/string ->bool:    
-    typeName := lookupKey AD_TYPES adType
-    if typeName == "":
-      print "Error [startImmediateAdvertising]: adType $adType is not one of accepted types"
+  start_immediate_advertising ad_type/string ad_data/string ->bool:    
+    type_name := lookup_key AD_TYPES ad_type
+    if type_name == "":
+      print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
-    debugPrint "[startImmediateAdvertising]: type $typeName, data $adData "
-    adData = convertWordToHexString adData
-    debugPrint "Send command: $START_IMMEDIATE_ADV$adType,$adData"
-    sendCommand "$START_IMMEDIATE_ADV$adType,$adData"
-    return expectedResult AOK_RESP
+    debug_print "[start_immediate_advertising]: type $type_name, data $ad_data "
+    ad_data = convert_string_to_hex ad_data
+    debug_print "Send command: $START_IMMEDIATE_ADV$ad_type,$ad_data"
+    send_command "$START_IMMEDIATE_ADV$ad_type,$ad_data"
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Start Advertising permanently
@@ -507,40 +506,40 @@ class RN4871:
   // A reboot is needed after issuing this method
   // Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
   //         number list in the Core Specification 
-  //         string adData is the string message to be advertised. The message is 
+  //         string ad_data is the string message to be advertised. The message is 
   //         converted to the chain of hex ASCII values
   // Output: bool true if successfully executed
   // *********************************************************************************
-  startPermanentAdvertising adType/string adData/string ->bool:    
-    typeName := lookupKey AD_TYPES adType
-    if typeName == "":
-      print "Error [startImmediateAdvertising]: adType $adType is not one of accepted types"
+  start_permanent_advertising ad_type/string ad_data/string ->bool:    
+    type_name := lookup_key AD_TYPES ad_type
+    if type_name == "":
+      print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
-    debugPrint "[startPermanentAdvertising]: type $typeName, data $adData "
-    adData = convertWordToHexString adData
-    debugPrint "Send command: $START_PERMANENT_ADV$adType,$adData"
-    sendCommand "$START_PERMANENT_ADV$adType,$adData"
-    return expectedResult AOK_RESP
+    debug_print "[start_permanent_advertising]: type $type_name, data $ad_data "
+    ad_data = convert_string_to_hex ad_data
+    debug_print "Send command: $START_PERMANENT_ADV$ad_type,$ad_data"
+    send_command "$START_PERMANENT_ADV$ad_type,$ad_data"
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Start Beacon adv immediatly
   // *********************************************************************************
   // Input : Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
   //         number list in the Core Specification 
-  //         string adData is the string message to be advertised. The message is 
+  //         string ad_data is the string message to be advertised. The message is 
   //         converted to the chain of hex ASCII values
   // Output: bool true if successfully executed
   // *********************************************************************************
-  startImmediateBeacon adType/string adData/string ->bool:
-    typeName := lookupKey AD_TYPES adType
-    if typeName == "":
-      print "Error [startImmediateBeacon]: adType $adType is not one of accepted types"
+  start_immediate_beacon ad_type/string ad_data/string ->bool:
+    type_name := lookup_key AD_TYPES ad_type
+    if type_name == "":
+      print "Error [start_immediate_beacon]: ad_type $ad_type is not one of accepted types"
       return false
-    debugPrint "[startImmediateBeacon]: type $typeName, data $adData "
-    adData = convertWordToHexString adData
-    debugPrint "Send command: $START_IMMEDIATE_BEACON$adType,$adData"
-    sendCommand "$START_IMMEDIATE_BEACON$adType,$adData"    
-    return expectedResult AOK_RESP
+    debug_print "[start_immediate_beacon]: type $type_name, data $ad_data "
+    ad_data = convert_string_to_hex ad_data
+    debug_print "Send command: $START_IMMEDIATE_BEACON$ad_type,$ad_data"
+    send_command "$START_IMMEDIATE_BEACON$ad_type,$ad_data"    
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Start Beacon adv permanently
@@ -548,20 +547,20 @@ class RN4871:
   // A reboot is needed after issuing this method
   // Input : Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
   //         number list in the Core Specification 
-  //         string adData is the string message to be advertised. The message is 
+  //         string ad_data is the string message to be advertised. The message is 
   //         converted to the chain of hex ASCII values
   // Output: bool true if successfully executed
   // *********************************************************************************
-  startPermanentBeacon adType/string adData/string ->bool:
-    typeName := lookupKey AD_TYPES adType
-    if typeName == "":
-      print "Error [startPermanentBeacon]: adType $adType is not one of accepted types"
+  start_permanent_beacon ad_type/string ad_data/string ->bool:
+    type_name := lookup_key AD_TYPES ad_type
+    if type_name == "":
+      print "Error [start_permanent_beacon]: ad_type $ad_type is not one of accepted types"
       return false
-    debugPrint "[startPermanentBeacon]: type $typeName, data $adData "
-    adData = convertWordToHexString adData
-    debugPrint "Send command: $START_PERMANENT_BEACON$adType,$adData"
-    sendCommand "$START_PERMANENT_BEACON$adType,$adData" 
-    return expectedResult AOK_RESP
+    debug_print "[start_permanent_beacon]: type $type_name, data $ad_data "
+    ad_data = convert_string_to_hex ad_data
+    debug_print "Send command: $START_PERMANENT_BEACON$ad_type,$ad_data"
+    send_command "$START_PERMANENT_BEACON$ad_type,$ad_data" 
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Start Scanning
@@ -569,7 +568,7 @@ class RN4871:
   // Method available only when the module is set as a Central (GAP) device and is
   // ready for scan before establishing connection.
   // By default, scan interval of 375 milliseconds and scan window of 250 milliseconds
-  // Use stopScanning() method to stop an active scan
+  // Use stop_scanning() method to stop an active scan
   // The user has the option to specify the scan interval and scan window as first 
   // and second parameter, respectively. Each unit is 0.625 millisecond. Scan interval
   // must be larger or equal to scan window. The scan interval and the scan window
@@ -580,33 +579,33 @@ class RN4871:
   //          int scan window value
   // Output: bool true if successfully executed
   // *********************************************************************************
-  startScanning --scanInterval_ms/int=0 --scanWindow_ms/int=0 -> bool:
-    if scanInterval_ms*scanWindow_ms != 0:
-      values := [2.5, scanInterval_ms, scanInterval_ms, 1024].sort
+  start_scanning --scan_interval_ms/int=0 --scan_window_ms/int=0 -> bool:
+    if scan_interval_ms*scan_window_ms != 0:
+      values := [2.5, scan_interval_ms, scan_interval_ms, 1024].sort
 
       if values.first == 2.5 and values.last == 1024:
-        scanInterval :=  (scanInterval_ms / 0.625).to_int.stringify 16
-        scanWindow :=  (scanWindow_ms / 0.625).to_int.stringify 16
-        debugPrint "[startScanning] Custom scanning\nSend Command: $START_CUSTOM_SCAN$scanInterval,$scanWindow"
-        sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
+        scan_interval :=  (scan_interval_ms / 0.625).to_int.stringify 16
+        scan_window :=  (scan_window_ms / 0.625).to_int.stringify 16
+        debug_print "[start_scanning] Custom scanning\nSend Command: $START_CUSTOM_SCAN$scan_interval,$scan_window"
+        send_command "$START_CUSTOM_SCAN$scan_interval,$scan_window"
       else:
-        print "Error [startScanning]: input values out of range"
+        print "Error [start_scanning]: input values out of range"
     else:
-      debugPrint "[startScanning] Default scanning"
-      sendCommand START_DEFAULT_SCAN
-    return expectedResult SCANNING_RESP
+      debug_print "[start_scanning] Default scanning"
+      send_command START_DEFAULT_SCAN
+    return expected_result SCANNING_RESP
 
   // *********************************************************************************
   // Stop Scanning
   // *********************************************************************************
-  // Stops scan process started by startScanning() method
+  // Stops scan process started by start_scanning() method
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  stopScanning -> bool:
-    debugPrint "[stopScanning]"
-    sendCommand STOP_SCAN
-    return expectedResult AOK_RESP
+  stop_scanning -> bool:
+    debug_print "[stop_scanning]"
+    send_command STOP_SCAN
+    return expected_result AOK_RESP
 
   
   // *********************************************************************************
@@ -621,19 +620,19 @@ class RN4871:
   // device does not change the random address, it is valid in the white list. 
   // If the random address is changed, this device is no longer considered to be on 
   // the white list.
-  // Input : string addrType = 0 if following address is public (=1 for private)
+  // Input : string addr_type = 0 if following address is public (=1 for private)
   //         string addr 6-byte address in hex format
   // Output: bool true if successfully executed
   // *********************************************************************************
 
-  addMacAddrWhiteList --addrType/string --adData/string ->bool:    
+  add_mac_addr_white_list --addr_type/string --ad_data/string ->bool:    
     [PUBLIC_ADDRESS_TYPE, PRIVATE_ADDRESS_TYPE].do:
-      if it == addrType:
-        debugPrint "[addMacAddrWhiteList]: Send Command: $ADD_WHITE_LIST$addrType,$adData"
-        sendCommand "$ADD_WHITE_LIST$addrType,$adData"
-        return expectedResult AOK_RESP
+      if it == addr_type:
+        debug_print "[add_mac_addr_white_list]: Send Command: $ADD_WHITE_LIST$addr_type,$ad_data"
+        send_command "$ADD_WHITE_LIST$addr_type,$ad_data"
+        return expected_result AOK_RESP
       else:
-        print "Error [addMacAddrWhiteList]: received faulty input, $ADD_WHITE_LIST$addrType,$adData"
+        print "Error [add_mac_addr_white_list]: received faulty input, $ADD_WHITE_LIST$addr_type,$ad_data"
     return false
       
   // *********************************************************************************
@@ -648,10 +647,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  addBondedWhiteList:
-    debugPrint "[addBondedWhiteList]"
-    sendCommand ADD_BONDED_WHITE_LIST
-    return expectedResult AOK_RESP
+  add_bonded_white_list:
+    debug_print "[add_bonded_white_list]"
+    send_command ADD_BONDED_WHITE_LIST
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Clear the white list
@@ -660,10 +659,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  clearWhiteList:
-    debugPrint "[clearWhiteList]"
-    sendCommand CLEAR_WHITE_LIST
-    return expectedResult AOK_RESP
+  clear_white_list:
+    debug_print "[clear_white_list]"
+    send_command CLEAR_WHITE_LIST
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Kill the active connection
@@ -672,10 +671,10 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  killConnection:
-    debugPrint "[killConnection]"
-    sendCommand KILL_CONNECTION
-    return expectedResult AOK_RESP
+  kill_connection:
+    debug_print "[kill_connection]"
+    send_command KILL_CONNECTION
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Get the RSSI level
@@ -686,11 +685,11 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  getRSSI -> string:
-    debugPrint "[getRSSI]"
-    sendCommand GET_RSSI_LEVEL
-    result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
-    debugPrint "Received RSSI is: $result"
+  get_RSSI -> string:
+    debug_print "[get_RSSI]"
+    send_command GET_RSSI_LEVEL
+    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT)
+    debug_print "Received RSSI is: $result"
     return result
 
   // *********************************************************************************
@@ -702,42 +701,42 @@ class RN4871:
   // Output: bool true if successfully executed
   // *********************************************************************************
   reboot -> bool:
-    debugPrint "[reboot]"
-    sendCommand REBOOT
-    if expectedResult REBOOTING_RESP:
+    debug_print "[reboot]"
+    send_command REBOOT
+    if expected_result REBOOTING_RESP:
       sleep --ms=STATUS_CHANGE_TIMEOUT
-      debugPrint "[reboot] Software reboot succesful"
+      debug_print "[reboot] Software reboot succesful"
       return true
     else:
       sleep --ms=STATUS_CHANGE_TIMEOUT
-      debugPrint "[reboot] Software reboot failed"
+      debug_print "[reboot] Software reboot failed"
       return false
 
   // *********************************************************************************
   // Sets the service UUID
   // *********************************************************************************
   // Sets the UUID of the public or the private service.
-  // This method must be called before the setCharactUUID() method.
+  // This method must be called before the set_charact_UUID() method.
   // 
   // Input : string uuid containing hex ID
   //         can be either a 16-bit UUID for public service
   //         or a 128-bit UUID for private service
   // Output: bool true if successfully executed
   // *********************************************************************************
-  setServiceUUID uuid/string -> bool:
-    if not validateInputHexData uuid:
-      print "Error [setServiceUUID]: $uuid is not a valid hex value"
+  set_service_UUID uuid/string -> bool:
+    if not validate_input_hex_data uuid:
+      print "Error [set_service_UUID]: $uuid is not a valid hex value"
       return false
     if (uuid.size == PRIVATE_SERVICE_LEN):
-      debugPrint("[setServiceUUID]: Set public UUID")
+      debug_print("[set_service_UUID]: Set public UUID")
     else if (uuid.size == PUBLIC_SERVICE_LEN):
-      debugPrint("[setServiceUUID]: Set private UUID")
+      debug_print("[set_service_UUID]: Set private UUID")
     else:
-      print("Error [setServiceUUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
+      print("Error [set_service_UUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
       return false
-    debugPrint "[setServiceUUID] Send command: $DEFINE_SERVICE_UUID$uuid"  
-    sendCommand "$DEFINE_SERVICE_UUID$uuid"  
-    return expectedResult AOK_RESP
+    debug_print "[set_service_UUID] Send command: $DEFINE_SERVICE_UUID$uuid"  
+    send_command "$DEFINE_SERVICE_UUID$uuid"  
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Sets the private characteristic.
@@ -754,62 +753,62 @@ class RN4871:
   // Input : string uuid:
   //         can be either a 16-bit UUID for public service
   //         or a 128-bit UUID for private service
-  //         list propertyList:
+  //         list property_list:
   //         is a list of hex values from CHAR_PROPS map, they can be put
   //         in any order 
-  //         octetLenInt is an integer value that indicates the maximum data size
+  //         octet_len_int is an integer value that indicates the maximum data size
   //         in octet where the value of the characteristics holds in the range
   //         from 1 to 20 (0x01 to 0x14)
-  //         *string propertyHex:
+  //         *string property_hex:
   //         can be used instead of the list by inputing the hex value directly (not recommended)
   //         *string ocetetLenHex:
   //         can be used instead of the integer value (not recommended)
   // Output: bool true if successfully executed
   // *********************************************************************************
-  setCharactUUID --uuid/string --octetLenInt/int=-1 --propertyList/List --propertyHex/string="00" --octetLenHex/string="EMPTY"-> bool:
-    if octetLenHex=="EMPTY" and octetLenInt!=-1:
-      octetLenHex = octetLenInt.stringify 16
-      if octetLenHex.size == 1:
-        octetLenHex = "0"+octetLenHex
+  set_charact_UUID --uuid/string --octet_len_int/int=-1 --property_list/List --property_hex/string="00" --octet_len_hex/string="EMPTY"-> bool:
+    if octet_len_hex=="EMPTY" and octet_len_int!=-1:
+      octet_len_hex = octet_len_int.stringify 16
+      if octet_len_hex.size == 1:
+        octet_len_hex = "0"+octet_len_hex
   
-    else if octetLenHex!="EMPTY" and octetLenInt==-1:
-      octetLenInt = int.parse octetLenHex --radix=16
+    else if octet_len_hex!="EMPTY" and octet_len_int==-1:
+      octet_len_int = int.parse octet_len_hex --radix=16
     else:
-      print "Error [setCharactUUID]: You have to input either integer or hex value of octetLen"
+      print "Error [set_charact_UUID]: You have to input either integer or hex value of octetLen"
       return false
     
     tempProp := 0
-    propertyList.do:
-      if (lookupKey CHAR_PROPS it) == "":
-        print "Error [setCharactUUID]: received unknown property $it"
+    property_list.do:
+      if (lookup_key CHAR_PROPS it) == "":
+        print "Error [set_charact_UUID]: received unknown property $it"
         return false
       else:    
         tempProp = tempProp + it
-    propertyHex = tempProp.stringify 16
+    property_hex = tempProp.stringify 16
 
-    [uuid, propertyHex, octetLenHex].do:
-      if not validateInputHexData it:
-        print "Error [setCharactUUID]: Value $it is not in correct hex format"
+    [uuid, property_hex, octet_len_hex].do:
+      if not validate_input_hex_data it:
+        print "Error [set_charact_UUID]: Value $it is not in correct hex format"
         return false
   
-    if octetLenInt < 1 or octetLenInt > 20:
-      print "Error [setCharactUUID]: octetLenHex 0x$octetLenHex is out of range, should be between 0x1 and 0x14 in hex format " 
+    if octet_len_int < 1 or octet_len_int > 20:
+      print "Error [set_charact_UUID]: octet_len_hex 0x$octet_len_hex is out of range, should be between 0x1 and 0x14 in hex format " 
       return false
-    else if not validateInputHexData uuid:
-      print "Error [setCharactUUID]: $uuid is not a valid hex value"
+    else if not validate_input_hex_data uuid:
+      print "Error [set_charact_UUID]: $uuid is not a valid hex value"
       return false
     
     if uuid.size == PRIVATE_SERVICE_LEN:
-      debugPrint "[setCharactUUID]: Set public UUID"
+      debug_print "[set_charact_UUID]: Set public UUID"
     else if uuid.size == PUBLIC_SERVICE_LEN:
-      debugPrint "[setCharactUUID]: Set private UUID"
+      debug_print "[set_charact_UUID]: Set private UUID"
     else:
-      print "Error [setCharactUUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number)"
+      print "Error [set_charact_UUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number)"
       return false
 
-    debugPrint "[setCharactUUID]: Send command $DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"    
-    sendCommand "$DEFINE_CHARACT_UUID$uuid,$propertyHex,$octetLenHex"  
-    return expectedResult AOK_RESP
+    debug_print "[set_charact_UUID]: Send command $DEFINE_CHARACT_UUID$uuid,$property_hex,$octet_len_hex"    
+    send_command "$DEFINE_CHARACT_UUID$uuid,$property_hex,$octet_len_hex"  
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Write local characteristic value as server
@@ -820,10 +819,10 @@ class RN4871:
   //          string value is the content to be written to the characteristic
   // Output: bool true if successfully executed
   // *********************************************************************************
-  writeLocalCharacteristic --handle/string --value/string -> bool:
-    debugPrint "[writeLocalCharacteristic]: Send command $WRITE_LOCAL_CHARACT$handle,$value"
-    sendCommand "$WRITE_LOCAL_CHARACT$handle,$value"
-    return expectedResult AOK_RESP
+  write_local_characteristic --handle/string --value/string -> bool:
+    debug_print "[write_local_characteristic]: Send command $WRITE_LOCAL_CHARACT$handle,$value"
+    send_command "$WRITE_LOCAL_CHARACT$handle,$value"
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Read local characteristic value as server
@@ -834,10 +833,10 @@ class RN4871:
   // Input : string handle which corresponds to the characteristic of the server service
   // Output: string with result
   // *********************************************************************************
-  readLocalCharacteristic --handle/string -> string:
-    debugPrint "[readLocalCharacteristic]: Send command $READ_LOCAL_CHARACT$handle "
-    sendCommand "$READ_LOCAL_CHARACT$handle"
-    result := extractResult readForTime
+  read_local_characteristic --handle/string -> string:
+    debug_print "[read_local_characteristic]: Send command $READ_LOCAL_CHARACT$handle "
+    send_command "$READ_LOCAL_CHARACT$handle"
+    result := extract_result read_for_time
     return result
 
   // *********************************************************************************
@@ -854,14 +853,14 @@ class RN4871:
   // Input : *time_ms - istening time for UART, 10000 by default
   // Output: string with result
   // *********************************************************************************
-  getConnectionStatus --time_ms=10000 -> string:
-    debugPrint "[getConnectionStatus]: Send command $GET_CONNECTION_STATUS"
-    sendCommand GET_CONNECTION_STATUS
-    result := extractResult (readForTime --ms=time_ms)
+  get_connection_status --time_ms=10000 -> string:
+    debug_print "[get_connection_status]: Send command $GET_CONNECTION_STATUS"
+    send_command GET_CONNECTION_STATUS
+    result := extract_result (read_for_time --ms=time_ms)
     if result == NONE_RESP:
-      debugPrint "[getConnectionStatus]: $NONE_RESP"
+      debug_print "[get_connection_status]: $NONE_RESP"
     else if result == "":
-      print "Error: [getConnectionStatus] connection timeout"
+      print "Error: [get_connection_status] connection timeout"
     return result
 
 // ---------------------------------------- Private section ----------------------------------------
@@ -877,11 +876,11 @@ class RN4871:
   // current configurations via the UART. Get commands have the same command
   // identifiers as Set commands but without parameters.
   // *********************************************************************************
-  setSettings --addr/string --value/string -> bool:
+  set_settings --addr/string --value/string -> bool:
     // Manual insertion of settings
-    debugPrint "[setSettings]: Send command $SET_SETTINGS$addr,$value"
-    sendCommand "$SET_SETTINGS$addr,$value"
-    return expectedResult AOK_RESP
+    debug_print "[set_settings]: Send command $SET_SETTINGS$addr,$value"
+    send_command "$SET_SETTINGS$addr,$value"
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Configures the Beacon Feature
@@ -889,40 +888,40 @@ class RN4871:
   // Input : 
   // Output: return true if successfully executed
   // *********************************************************************************
-  setBeaconFeatures value/string -> bool:
-    setting := lookupKey BEACON_SETTINGS value
+  set_beacon_features value/string -> bool:
+    setting := lookup_key BEACON_SETTINGS value
     if setting == "":
-      print "Error [setBeaconFeatures]: Value $value is not in beacon commands set"
+      print "Error [set_beacon_features]: Value $value is not in beacon commands set"
       return false
     else:
-      debugPrint "[setBeaconFeatures]: set the Beacon Feature to $setting"
-      sendCommand SET_BEACON_FEATURES+value
-      return expectedResult AOK_RESP
+      debug_print "[set_beacon_features]: set the Beacon Feature to $setting"
+      send_command SET_BEACON_FEATURES+value
+      return expected_result AOK_RESP
 
-  getSettings addr/string -> string:
+  get_settings addr/string -> string:
     // Manual insertion of setting address
-    debugPrint "[getSettings]: Send command $GET_SETTINGS$addr"
-    sendCommand GET_SETTINGS + addr
-    answerOrTimeout
-    return popData
+    debug_print "[get_settings]: Send command $GET_SETTINGS$addr"
+    send_command GET_SETTINGS + addr
+    answer_or_timeout
+    return pop_data
   
-  setAdvPower value/int -> bool:
+  set_adv_power value/int -> bool:
     if value > MAX_POWER_OUTPUT:
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
-    debugPrint "[setAdvPower]: Send command $SET_ADV_POWER$value"
-    sendCommand "$SET_ADV_POWER$value"
-    return expectedResult AOK_RESP
+    debug_print "[set_adv_power]: Send command $SET_ADV_POWER$value"
+    send_command "$SET_ADV_POWER$value"
+    return expected_result AOK_RESP
 
-  setConnPower value/int -> bool:
+  set_conn_power value/int -> bool:
     if value > MAX_POWER_OUTPUT:
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
-    debugPrint "[setAdvPower]: Send command $SET_CONN_POWER$value"
-    sendCommand "$SET_CONN_POWER$value"
-    return expectedResult AOK_RESP
+    debug_print "[set_conn_power]: Send command $SET_CONN_POWER$value"
+    send_command "$SET_CONN_POWER$value"
+    return expected_result AOK_RESP
 
   // *********************************************************************************
   // Set the module to Dormant
@@ -932,7 +931,7 @@ class RN4871:
   // Input : void
   // Output: bool true if successfully executed
   // *********************************************************************************
-  dormantMode -> none:
-    debugPrint "[dormantMode]"
-    sendCommand SET_DORMANT_MODE
+  dormant_mode -> none:
+    debug_print "[dormant_mode]"
+    send_command SET_DORMANT_MODE
     sleep --ms=INTERNAL_CMD_TIMEOUT
