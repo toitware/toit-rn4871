@@ -38,11 +38,10 @@ class RN4871:
 // ---------------------------------------Utility Methods ----------------------------------------
 
   lookupKey paramsMap/Map param/any -> string:
-    key := ""
-    paramsMap.filter:
+    paramsMap.do:
       if paramsMap[it] == param:
-        key = it
-    return key
+        return it
+    return ""
     
   convertWordToHexString input/string -> string:
     output := ""
