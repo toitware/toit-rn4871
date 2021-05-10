@@ -232,7 +232,7 @@ class RN4871:
   assignRandomAddress userRA=null -> bool:
     if status == ENUM_CONFMODE:
       timeout := 0
-      if null == userRA:
+      if userRA == null:
         sendCommand AUTO_RANDOM_ADDRESS
       else:
         sendCommand AUTO_RANDOM_ADDRESS
