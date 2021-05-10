@@ -229,7 +229,7 @@ class RN4871:
     sleep --ms=STATUS_CHANGE_TIMEOUT
     return result
 
-  assignRandomAddress userRA=null ->bool:
+  assignRandomAddress userRA=null -> bool:
     if status == ENUM_CONFMODE:
       timeout := 0
       if null == userRA:
