@@ -19,3 +19,4 @@ main:
   device.enterConfigurationMode
   // Fill in commands you'd like to use
   print device.getName
+  
