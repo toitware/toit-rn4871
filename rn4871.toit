@@ -46,7 +46,7 @@ class RN4871:
   convertWordToHexString input/string -> string:
     output := ""
     input.to_byte_array.do:
-      output = output + (convertNumberToHexString it)
+      output += convertNumberToHexString it
     return output
 
   convertNumberToHexString num/int -> string:
