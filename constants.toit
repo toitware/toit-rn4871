@@ -84,7 +84,8 @@ SET_BEACON_FEATURES  ::= "SC,"
 BEACON_SETTINGS ::= {
     "OFF"   :  "0",
     "ON"    :  "1",
-    "ADV_ON":  "2"}
+    "ADV_ON":  "2"
+    }
 
 SET_ADV_POWER           ::=  "SGA,"
 SET_CONN_POWER          ::=  "SGC,"
@@ -165,7 +166,8 @@ AD_TYPES ::= {
     "LIST_16_SERVICE_UUID"      :"14",
     "LIST_128_SERVICE_UUID"     :"15",
     "SERVICE_DATA"              :"16",
-    "MANUFACTURE_SPECIFIC_DATA" :"FF"}
+    "MANUFACTURE_SPECIFIC_DATA" :"FF"
+    }
 
 
 
