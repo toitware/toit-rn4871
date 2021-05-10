@@ -49,43 +49,6 @@ class RN4871:
       //output += convertNumberToHexString it
       output += it.stringify 16
     return output
-/*
-  convertNumberToHexString num/int -> string:
-    if num < 0:
-      print "Error: [convertNumberToHexString] the number $num is negative"
-      return ""
-    else if num < 10:
-      return "$num"
-    else if num == 10:
-      return "A"
-    else if num == 11:
-      return "B"
-    else if num == 12:
-      return "C"
-    else if num == 13:
-      return "D"
-    else if num == 14:
-      return "E"
-    else if num == 15:
-      return "F"
-    else:      
-      return (convertNumberToHexString num/16) + (convertNumberToHexString (num % 16))
-*/
-  convertHexStringToNumber data/string -> int:
-    value := data[data.size - 1].to_int
-    if 48 <= value and value <= 57:
-      value = value - 48
-    else if 65 <= value and value <= 70:
-      value = value - 55
-    else if 97 <= value and value <= 102:
-      value = value - 87
-    else:
-      print "Error [convertHexStringToNumber]: $data is not a correct hex value"
-      return -1
-    if data.size == 1:
-      return value
-    else:
-      return (convertHexStringToNumber (data.copy 0 data.size-1))*16+value
 
   expectedResult resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
     result := extractResult(readForTime --ms=INTERNAL_CMD_TIMEOUT)
@@ -810,9 +773,9 @@ class RN4871:
         octetLenHex = "0"+octetLenHex
   
     else if octetLenHex!="EMPTY" and octetLenInt==-1:
-      octetLenInt = (convertHexStringToNumber octetLenHex)
+      octetLenInt = int.parse octetLenHex --radix=16
     else:
-      print "Error [setCharactUUID]: You have to input either integer or hex value, not both of them"
+      print "Error [setCharactUUID]: You have to input either integer or hex value of octetLen"
       return false
     
     tempProp := 0
