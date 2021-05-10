@@ -58,7 +58,7 @@ class RN4871:
     if (debug == true):
       print text
 
-  readForTime --ms/int=INTERNAL_CMD_TIMEOUT ->string:
+  readForTime --ms/int=INTERNAL_CMD_TIMEOUT -> string:
     dur := Duration --ms=ms
     start := Time.now
     result := ""
