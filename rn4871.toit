@@ -46,9 +46,10 @@ class RN4871:
   convertWordToHexString input/string -> string:
     output := ""
     input.to_byte_array.do:
-      output += convertNumberToHexString it
+      //output += convertNumberToHexString it
+      output += it.stringify 16
     return output
-
+/*
   convertNumberToHexString num/int -> string:
     if num < 0:
       print "Error: [convertNumberToHexString] the number $num is negative"
@@ -69,7 +70,7 @@ class RN4871:
       return "F"
     else:      
       return (convertNumberToHexString num/16) + (convertNumberToHexString (num % 16))
-
+*/
   convertHexStringToNumber data/string -> int:
     value := data[data.size - 1].to_int
     if 48 <= value and value <= 57:
@@ -621,8 +622,8 @@ class RN4871:
       values := [2.5, scanInterval_ms, scanInterval_ms, 1024].sort
 
       if values.first == 2.5 and values.last == 1024:
-        scanInterval := convertNumberToHexString (scanInterval_ms / 0.625).to_int
-        scanWindow := convertNumberToHexString (scanWindow_ms / 0.625).to_int
+        scanInterval :=  (scanInterval_ms / 0.625).to_int.stringify 16
+        scanWindow :=  (scanWindow_ms / 0.625).to_int.stringify 16
         debugPrint "[startScanning] Custom scanning\nSend Command: $START_CUSTOM_SCAN$scanInterval,$scanWindow"
         sendCommand "$START_CUSTOM_SCAN$scanInterval,$scanWindow"
       else:
@@ -802,9 +803,9 @@ class RN4871:
   //         can be used instead of the integer value (not recommended)
   // Output: bool true if successfully executed
   // *********************************************************************************
-  setCharactUUID --uuid/string --octetLenInt/int=-1 --propertyList/List--propertyHex/string="00" --octetLenHex/string="EMPTY"-> bool:
+  setCharactUUID --uuid/string --octetLenInt/int=-1 --propertyList/List --propertyHex/string="00" --octetLenHex/string="EMPTY"-> bool:
     if octetLenHex=="EMPTY" and octetLenInt!=-1:
-      octetLenHex = (convertNumberToHexString octetLenInt)
+      octetLenHex = octetLenInt.stringify 16
       if octetLenHex.size == 1:
         octetLenHex = "0"+octetLenHex
   
@@ -821,7 +822,7 @@ class RN4871:
         return false
       else:    
         tempProp = tempProp + it
-    propertyHex = convertNumberToHexString tempProp
+    propertyHex = tempProp.stringify 16
 
     [uuid, propertyHex, octetLenHex].do:
       if not validateInputHexData it:
