@@ -1,3 +1,7 @@
+// Copyright 2021 Krzysztof Mróz. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
 DELAY_INTERNAL_CMD      ::= 5
 INTERNAL_CMD_TIMEOUT    ::= 300 // 1000 mSec = 1Sec.
 STATUS_CHANGE_TIMEOUT   ::= 1000

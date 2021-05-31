@@ -1,6 +1,6 @@
-// Copyright (C) 2021 Toitware ApS. All rights reserved.
-
-// Driver for RN4871 bluetooth module
+// Copyright 2021 Krzysztof Mróz. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
 
 import binary
 import serial.device

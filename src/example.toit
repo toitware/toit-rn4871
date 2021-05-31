@@ -1,3 +1,7 @@
+// Copyright 2021 Krzysztof Mróz. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
 import serial.ports.uart
 import gpio
 import .rn4871 show *
