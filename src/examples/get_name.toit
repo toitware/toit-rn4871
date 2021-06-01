@@ -21,6 +21,6 @@ main:
   device.pin_reboot
   device.enter_configuration_mode
   
-  // Print the device name
+  /// Print the device name
   print device.get_name
   
