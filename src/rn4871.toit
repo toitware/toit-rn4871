@@ -24,7 +24,7 @@ class RN4871:
   ble_address := []
   debug := false
 
-  /// #UART constructor
+  /// # UART constructor
   constructor --tx/gpio.Pin --rx/gpio.Pin --reset_pin/gpio.Pin --baud_rate/int --debug_mode/bool=false:
     rx_pin_ = rx
     tx_pin_ = tx
@@ -171,7 +171,7 @@ class RN4871:
 
 // ---------------------------------------- Public section ----------------------------------------    
     
-  /// #Reset
+  /// # Reset
   pin_reboot ->bool:
     reset_pin_.set 0
     sleep --ms=50
@@ -197,7 +197,7 @@ class RN4871:
 
     return true
 
-  /// #Command mode
+  /// # Command mode
   enter_configuration_mode ->bool:
     set_status ENUM_ENTER_CONFMODE
     send_data CONF_COMMAND
@@ -284,7 +284,7 @@ class RN4871:
     return pop_data
 
   /**
-  #Set UART communication baudrate
+  # Set UART communication baudrate
 
   Selects the UART communication baudrate from the list of available settings.
   Input : value from BAUDRATE map
@@ -358,7 +358,7 @@ class RN4871:
 
   
   /**
-  #Set supported features
+  # Set supported features
 
   Selects the features that are supported by the device
   Input : string value from FEATURES map
@@ -375,7 +375,7 @@ class RN4871:
 
   
   /**
-  #Set default services
+  # Set default services
 
   This command sets the default services to be supported by the RN4870 in the GAP
   server role.
@@ -393,7 +393,7 @@ class RN4871:
   
   
   /**
-  #Clear all services
+  # Clear all services
   
   Clears all settings of services and characteristics.
   A power cycle is required afterwards to make the changes effective.
@@ -407,7 +407,7 @@ class RN4871:
 
   
   /**
-  #Start Advertisement
+  # Start Advertisement
   
   The advertisement is undirect connectable.
   Input : void
@@ -420,7 +420,7 @@ class RN4871:
 
   
   /**
-  #Stops Advertisement
+  # Stops Advertisement
   
   Stops advertisement started by the start_advertising method.
   Input : void
@@ -433,7 +433,7 @@ class RN4871:
 
   
   /**
-  #Clear the advertising structure Immediately
+  # Clear the advertising structure Immediately
   
   Make the changes immediately effective without a reboot.
   Input : void
@@ -446,7 +446,7 @@ class RN4871:
 
   
   /**
-  #Clear the advertising structure in a permanent way
+  # Clear the advertising structure in a permanent way
   
   The changes are saved into NVM only if other procedures require permanent
   configuration changes. A reboot is requested after executing this method.
@@ -460,7 +460,7 @@ class RN4871:
 
   
   /**
-  #Clear the Beacon structure Immediately
+  # Clear the Beacon structure Immediately
   
   Make the changes immediately effective without a reboot.
   Input : void
@@ -473,7 +473,7 @@ class RN4871:
 
   
   /**
-  #Clear the Beacon structure in a permanent way
+  # Clear the Beacon structure in a permanent way
   
   The changes are saved into NVM only if other procedures require permanent
   configuration changes. A reboot is requested after executing this method.
@@ -488,7 +488,7 @@ class RN4871:
 
   
   /**
-  #Start Advertising immediatly
+  # Start Advertising immediatly
   
   Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
           number list in the Core Specification 
@@ -509,7 +509,7 @@ class RN4871:
 
   
   /**
-  #Start Advertising permanently
+  # Start Advertising permanently
   
   A reboot is needed after issuing this method
   Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
@@ -531,7 +531,7 @@ class RN4871:
 
   
   /**
-  #Start Beacon adv immediatly
+  # Start Beacon adv immediatly
   
   Input : Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
           number list in the Core Specification 
@@ -552,7 +552,7 @@ class RN4871:
 
   
   /**
-  #Start Beacon adv permanently
+  # Start Beacon adv permanently
   
   A reboot is needed after issuing this method
   Input : Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
@@ -574,7 +574,7 @@ class RN4871:
 
   
   /**
-  #Start Scanning
+  # Start Scanning
   
   Method available only when the module is set as a Central (GAP) device and is
   ready for scan before establishing connection.
@@ -608,7 +608,7 @@ class RN4871:
 
   
   /**
-  #Stop Scanning
+  # Stop Scanning
   
   Stops scan process started by start_scanning() method
   Input : void
@@ -622,7 +622,7 @@ class RN4871:
   
   
   /**
-  #Add a MAC address to the white list
+  # Add a MAC address to the white list
   
   Once one device is added to the white list, the white list feature is enabled.
   With the white list feature enabled, when performing a scan, any device not
@@ -649,7 +649,7 @@ class RN4871:
       
   
   /**
-  #Add all currently bonded devices to the white list
+  # Add all currently bonded devices to the white list
   
   The random address in the white list can be resolved with this method for 
   connection purpose. If the peer device changes its resolvable random address, 
@@ -667,7 +667,7 @@ class RN4871:
 
   
   /**
-  #Clear the white list
+  # Clear the white list
   
   Once the white list is cleared, white list feature is disabled.
   Input : void
@@ -680,7 +680,7 @@ class RN4871:
 
   
   /**
-  #Kill the active connection
+  # Kill the active connection
   
   Disconnect the active BTLE link. It can be used in central or peripheral role.
   Input : void
@@ -693,7 +693,7 @@ class RN4871:
 
   
   /**
-  #Get the RSSI level
+  # Get the RSSI level
   
   Get the signal strength in dBm of the last communication with the peer device. 
   The signal strength is used to estimate the distance between the device and its
@@ -710,7 +710,7 @@ class RN4871:
 
   
   /**
-  #Reboot the module
+  # Reboot the module
   
   Forces a complete device reboot (similar to a power cycle).
   After rebooting RN487x, all prior made setting changes takes effect.
@@ -731,7 +731,7 @@ class RN4871:
 
   
   /**
-  #Set the service UUID
+  # Set the service UUID
   
   Sets the UUID of the public or the private service.
   This method must be called before the set_charact_UUID() method.
@@ -758,7 +758,7 @@ class RN4871:
 
   
   /**
-  #Set the private characteristic.
+  # Set the private characteristic.
   
   Command PC must be called after service UUID is set by command PS.“PS,<hex16/hex128>” 
   for command PS. If service UUID is set to be a 16-bit public UUID in command PS, 
@@ -830,7 +830,7 @@ class RN4871:
 
   
   /**
-  #Write local characteristic value as server
+  # Write local characteristic value as server
   
   Writes content of characteristic in Server Service to local device by addressing
   its handle
@@ -845,7 +845,7 @@ class RN4871:
 
   
   /**
-  #Read local characteristic value as server
+  # Read local characteristic value as server
   
   Reads the content of the server service characteristic on the local device
   by addresiing its handle. 
@@ -861,7 +861,7 @@ class RN4871:
 
   
   /**
-  #Get the current connection status
+  # Get the current connection status
   
   If the RN4870/71 is not connected, the output is none.
   If the RN4870/71 is connected, the buffer must contains the information:
@@ -888,7 +888,7 @@ class RN4871:
 
   
   /**
-  #Set and get settings
+  # Set and get settings
   
   The Set command starts with character “S” and followed by one or two character 
   configuration identifier. All Set commands take at least one parameter 
@@ -906,7 +906,7 @@ class RN4871:
 
   
   /**
-  #Configures the Beacon Feature
+  # Configures the Beacon Feature
   
   Input : string value from BEACON_SETTINGS map 
   Output: return true if successfully executed
@@ -922,7 +922,7 @@ class RN4871:
       return expected_result AOK_RESP
 
 
-  /// #Get setting from selected address
+  /// # Get setting from selected address
   get_settings addr/string -> string:
     debug_print "[get_settings]: Send command $GET_SETTINGS$addr"
     send_command GET_SETTINGS + addr
@@ -949,7 +949,7 @@ class RN4871:
 
   
   /**
-  #Set the module to Dormant
+  # Set the module to Dormant
   
   Immediately forces the device into lowest power mode possible.
   Removing the device from Dormant mode requires power reset.
