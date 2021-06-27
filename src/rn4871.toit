@@ -813,7 +813,7 @@ class RN4871:
         print "Error [set_charact_UUID]: Value $it is not in correct hex format"
         return false
   
-    if octet_len_int < 1 or octet_len_int > 20:
+    if not  1 <= octet_len_int <= 20:
       print "Error [set_charact_UUID]: octet_len_hex 0x$octet_len_hex is out of range, should be between 0x1 and 0x14 in hex format " 
       return false
     else if not validate_input_hex_data uuid:
