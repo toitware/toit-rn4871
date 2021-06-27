@@ -10,7 +10,7 @@ A simple usage example.
 ```
 import uart
 import gpio
-import .rn4871 show *
+import rn4871 show *
 
 RX_PIN ::= 33
 TX_PIN ::= 32
