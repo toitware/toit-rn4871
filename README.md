@@ -8,7 +8,7 @@ Needs `RX`, `TX` and `RESET` pins to be connected to the ESP32 microcontroller a
 A simple usage example.
 
 ```
-import serial.ports.uart
+import uart
 import gpio
 import .rn4871 show *
 
