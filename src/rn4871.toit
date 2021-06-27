@@ -24,7 +24,11 @@ class RN4871:
   ble_address := []
   debug := false
 
-  /// # UART constructor
+  /**
+  Constructs a RN4871 driver.
+  The RN4871 device must be connected on the UART specified with the $tx and $rx pins.
+  The $reset_pin must be connected to the device's reset pin.
+  */
   constructor --tx/gpio.Pin --rx/gpio.Pin --reset_pin/gpio.Pin --baud_rate/int --debug_mode/bool=false:
     rx_pin_ = rx
     tx_pin_ = tx
