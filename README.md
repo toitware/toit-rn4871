@@ -1,6 +1,8 @@
 # UART based driver for Microchip RN4871 BLE module
 
-Contains all the functionalities of RN4871 Bluetooth module. Needs `RX`, `TX` and `RESET` pins to be connected to ESP32 microcontroller and specified at `RN4871` object creation. Requires using `serial.ports.uart` and `gpio` libraries. Utilises `UART` interface of ESP32.
+Contains all the functionalities of RN4871 Bluetooth module.
+
+Needs `RX`, `TX` and `RESET` pins to be connected to the ESP32 microcontroller and specified at `RN4871` object creation. Uses the `UART` interface of the ESP32.
 
 ## Usage
 A simple usage example.
