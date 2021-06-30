@@ -61,10 +61,10 @@ ENUM_ENTER_CONFMODE     ::= 2
 ENUM_CONFMODE           ::= 3
 
 // -- Answers enums    
-ENUM_NO_ANSWER          ::= 1
-ENUM_PARTIAL_ANSWER     ::= 2
-ENUM_COMPLETE_ANSWER    ::= 3
-ENUM_DATA_ANSWER        ::= 4
+ANSWER_NONE       ::= 1
+ANSWER_PARTIAL    ::= 2
+ANSWER_COMPLETE   ::= 3
+ANSWER_DATA       ::= 4
 
 // Baudrate settings
 BAUDRATES ::={
