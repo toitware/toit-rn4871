@@ -60,7 +60,7 @@ ENUM_DATAMODE           ::= 1
 ENUM_ENTER_CONFMODE     ::= 2
 ENUM_CONFMODE           ::= 3
 
-// Answers enums    
+// -- Answers enums    
 ENUM_NO_ANSWER          ::= 1
 ENUM_PARTIAL_ANSWER     ::= 2
 ENUM_COMPLETE_ANSWER    ::= 3
