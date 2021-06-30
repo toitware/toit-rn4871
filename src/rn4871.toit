@@ -37,7 +37,6 @@ class RN4871:
     status = ENUM_DATAMODE
     answer_len = 0
     debug = debug_mode
-    print "Device object created"
 
 // ---------------------------------------Utility Methods ----------------------------------------
 
