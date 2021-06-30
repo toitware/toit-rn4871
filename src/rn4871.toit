@@ -69,18 +69,6 @@ class RN4871:
       result = result + pop_data
     return result
 
-  listenToUart --ms/int=INTERNAL_CMD_TIMEOUT -> none:
-    dur := Duration --ms=ms
-    start := Time.now
-    print "Begin listening to UART\n"
-    while start.to_now < dur:
-      exception := catch: 
-        with_timeout --ms=ms: 
-          uart_buffer = antenna.read
-          rec_message = uart_buffer.to_string.trim  
-      if(exception == null):  
-        print pop_data
-
   pop_data -> string:
     result := rec_message
     rec_message = ""
