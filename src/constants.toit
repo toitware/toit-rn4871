@@ -53,7 +53,8 @@ GET_HWVERSION           ::= "GDH"
 GET_SWVERSION           ::= "GDR"
 GET_SERIALNUM           ::= "GDS"
 GET_DEVICE_INFO         ::= "D"
-// Status enums
+
+// -- Status enums
 ENUM_ENTER_DATMODE      ::= 0
 ENUM_DATAMODE           ::= 1
 ENUM_ENTER_CONFMODE     ::= 2
