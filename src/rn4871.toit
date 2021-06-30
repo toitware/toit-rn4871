@@ -851,7 +851,7 @@ class RN4871:
   # Reads local characteristic value as server
   
   Reads the content of the server service characteristic on the local device
-  by addresiing its handle. 
+    by addressing its handle. 
   This method is effective with or without an active connection.
   Input : string handle which corresponds to the characteristic of the server service
   Output: string with result
