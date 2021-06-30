@@ -52,7 +52,7 @@ class RN4871:
       output += it.stringify 16
     return output
 
-  expected_result resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
+  is_expected_result_ resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
     result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT)
     return result == resp
 
