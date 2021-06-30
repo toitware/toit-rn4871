@@ -5,7 +5,6 @@
 DELAY_INTERNAL_CMD      ::= 5
 INTERNAL_CMD_TIMEOUT_MS    ::= 300 // 1000 mSec = 1Sec.
 STATUS_CHANGE_TIMEOUT_MS   ::= 1000
-SMALL_ANSWER_DATA_LEN   ::= 20
 
 
 // ------------------- Response -----------------------
