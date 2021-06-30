@@ -34,7 +34,7 @@ CR                      ::= "\r"
 LF                      ::= "\n"
 CONF_COMMAND            ::= "\$\$\$"
 
-// commands
+// -- Commands
 FACTORY_RESET           ::= "SF,1"
 EXIT_CONF               ::= "---\r"
 
