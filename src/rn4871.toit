@@ -15,7 +15,7 @@ class RN4871:
   
   rec_message := ""
   antenna/serial.Port
-  status/int := ENUM_DATAMODE
+  status/int := STATUS_DATAMODE
   answer_len/int := 0
   uart_buffer := []
   rx_pin_/gpio.Pin
@@ -34,7 +34,7 @@ class RN4871:
     tx_pin_ = tx
     reset_pin_ = reset_pin
     antenna = serial.Port --tx=tx --rx=rx --baud_rate=baud_rate
-    status = ENUM_DATAMODE
+    status = STATUS_DATAMODE
     answer_len = 0
     debug = debug_mode
 
@@ -115,25 +115,25 @@ class RN4871:
     antenna.write (stream.trim+CR)
 
   validate_answer:
-    if status == ENUM_ENTER_CONFMODE:
+    if status == STATUS_ENTER_CONFMODE:
       if rec_message[0] == PROMPT_FIRST_CHAR and rec_message[rec_message.size-1] == PROMPT_LAST_CHAR:
-        set_status ENUM_CONFMODE
+        set_status STATUS_CONFMODE
         return true
 
-    if status == ENUM_ENTER_DATMODE:
+    if status == STATUS_ENTER_DATAMODE:
       if rec_message[0] == PROMPT_FIRST_CHAR and rec_message[rec_message.size-1] == PROMPT_LAST_CHAR:
-        set_status ENUM_DATAMODE
+        set_status STATUS_DATAMODE
         return true
     return false
 
   set_status status_to_set:
-    if ENUM_ENTER_DATMODE == status_to_set:
+    if STATUS_ENTER_DATAMODE == status_to_set:
       print "[set_status]Status set to: ENTER_DATMODE"
-    else if ENUM_DATAMODE == status_to_set:
+    else if STATUS_DATAMODE == status_to_set:
       print "[set_status]Status set to: DATAMODE"
-    else if ENUM_ENTER_CONFMODE == status_to_set:
+    else if STATUS_ENTER_CONFMODE == status_to_set:
       print "[set_status]Status set to: ENTER_CONFMODE"
-    else if ENUM_CONFMODE == status_to_set:
+    else if STATUS_CONFMODE == status_to_set:
       print "[set_status]Status set to: CONFMODE"
     else:
       print "Error [set_status]: Not able to update status. Mode: $status_to_set is unknown"
@@ -190,27 +190,27 @@ class RN4871:
 
   /// # Command mode
   enter_configuration_mode ->bool:
-    set_status ENUM_ENTER_CONFMODE
+    set_status STATUS_ENTER_CONFMODE
     send_data CONF_COMMAND
     result := read_for_time --ms=STATUS_CHANGE_TIMEOUT
     if result == PROMPT or result == "CMD":
       print "[enter_configuration_mode] Command mode set up"
-      set_status ENUM_CONFMODE
+      set_status STATUS_CONFMODE
       return true   
     else:
       print "[enter_configuration_mode] Failed to set command mode"
       return false
   
   enter_data_mode ->bool:
-    set_status ENUM_ENTER_DATMODE
+    set_status STATUS_ENTER_DATAMODE
     antenna.write EXIT_CONF
     result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT
     if read_data == PROMPT_END:
-      set_status ENUM_DATAMODE
+      set_status STATUS_DATAMODE
     return result
 
   factory_reset: 
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       if not enter_configuration_mode:
         return false
     send_command FACTORY_RESET
@@ -219,7 +219,7 @@ class RN4871:
     return result
 
   assign_random_address user_RA=null -> bool:
-    if status == ENUM_CONFMODE:
+    if status == STATUS_CONFMODE:
       timeout := 0
       if user_RA == null:
         send_command AUTO_RANDOM_ADDRESS
@@ -235,7 +235,7 @@ class RN4871:
       return false
 
   set_name new_name:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       return false
 
     if new_name.size > MAX_DEVICE_NAME_LEN:
@@ -245,13 +245,13 @@ class RN4871:
     return expected_result AOK_RESP
 
   get_name:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       return "Error [get_name]: Not in the CONFMODE"
     send_command GET_DEVICE_NAME
     return extract_result read_for_time
 
   get_fw_version:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       return false
 
     send_command DISPLAY_FW_VERSION
@@ -259,7 +259,7 @@ class RN4871:
     return pop_data
 
   get_sw_version:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       return false
 
     send_command GET_SWVERSION
@@ -267,7 +267,7 @@ class RN4871:
     return pop_data
 
   get_hw_version:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       return false
 
     send_command GET_HWVERSION
@@ -282,7 +282,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   set_baud_rate param/string -> bool:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       return false    
     setting := lookup_key BAUDRATES param
 
@@ -294,7 +294,7 @@ class RN4871:
     return expected_result AOK_RESP
 
   get_baud_rate -> string:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       print "Error: Not in Configuration mode"
       return ""
 
@@ -303,7 +303,7 @@ class RN4871:
     return pop_data
 
   get_serial_number -> string:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       print "Error [get_serial_number]: Not in Configuration mode"
       return ""
 
@@ -312,7 +312,7 @@ class RN4871:
     return pop_data
 
   set_power_save power_save/bool:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       if not enter_configuration_mode:
         print "Error [set_power_save]: Cannot enter Configuration mode"
         return ""
@@ -328,7 +328,7 @@ class RN4871:
     return result
   
   get_con_status -> string:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
       print "Error [get_con_status]: Not in Configuration mode"
       return ""
 
@@ -337,7 +337,7 @@ class RN4871:
     return pop_data
 
   get_power_save:
-    if status != ENUM_CONFMODE:
+    if status != STATUS_CONFMODE:
         return false
     send_command GET_POWERSAVE
     answer_or_timeout
