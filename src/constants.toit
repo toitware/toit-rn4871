@@ -189,8 +189,6 @@ GET_RSSI_LEVEL       ::= "M"
 REBOOT               ::= "R,1"
 DISPLAY_FW_VERSION   ::= "V"
 
-// --- List Commands
-
 // --- Service Definition
 DEFINE_CHARACT_UUID  ::= "PC,"
 DEFINE_SERVICE_UUID  ::= "PS,"
