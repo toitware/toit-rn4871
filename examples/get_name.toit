@@ -2,15 +2,13 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-import serial.ports.uart
+import uart
 import gpio
-import ..rn4871 show *
+import rn4871 show *
 
 RX_PIN ::= 33
 TX_PIN ::= 32
 RESET_PIN ::= 25
-
-
 
 main:
   tx_pin := gpio.Pin TX_PIN
