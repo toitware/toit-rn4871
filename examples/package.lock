@@ -1,0 +1,5 @@
+prefixes:
+  rn4871: ..
+packages:
+  ..:
+    path: ..
