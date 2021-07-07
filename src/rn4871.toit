@@ -170,11 +170,11 @@ class RN4871:
       print "[pin_reboot] Reboot failure"
       return false    
 
-  start_BLE user_RA=null:
+  start_BLE:
     if enter_configuration_mode == false:
       return false
 
-    if assign_random_address user_RA == false:
+    if assign_random_address == false:
       return false
 
     if enter_data_mode == false:
@@ -212,13 +212,9 @@ class RN4871:
     sleep --ms=STATUS_CHANGE_TIMEOUT_MS
     return result
 
-  assign_random_address user_RA=null -> bool:
+  assign_random_address -> bool:
     if status_ == STATUS_CONFMODE:
-      timeout := 0
-      if user_RA == null:
-        send_command AUTO_RANDOM_ADDRESS
-      else:
-        send_command AUTO_RANDOM_ADDRESS
+      send_command AUTO_RANDOM_ADDRESS
       
       if answer_or_timeout == true:
         set_address pop_data.trim.to_byte_array
