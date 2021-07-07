@@ -52,15 +52,15 @@ class RN4871:
       output += it.stringify 16
     return output
 
-  is_expected_result_ resp/string --ms=INTERNAL_CMD_TIMEOUT -> bool:
-    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT)
+  is_expected_result_ resp/string --ms=INTERNAL_CMD_TIMEOUT_MS -> bool:
+    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT_MS)
     return result == resp
 
   debug_print text/string:
     if (debug == true):
       print text
 
-  read_for_time --ms/int=INTERNAL_CMD_TIMEOUT -> string:
+  read_for_time --ms/int=INTERNAL_CMD_TIMEOUT_MS -> string:
     dur := Duration --ms=ms
     start := Time.now
     result := ""
@@ -78,7 +78,7 @@ class RN4871:
   read_data -> string:
     return rec_message
 
-  answer_or_timeout --timeout=INTERNAL_CMD_TIMEOUT-> bool:
+  answer_or_timeout --timeout=INTERNAL_CMD_TIMEOUT_MS-> bool:
     exception := catch: 
       with_timeout --ms=timeout: 
         uart_buffer = antenna.read
@@ -167,9 +167,9 @@ class RN4871:
     reset_pin_.set 0
     sleep --ms=50
     reset_pin_.set 1
-    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT)
+    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT_MS)
     if result == REBOOT_EVENT:
-      sleep --ms=STATUS_CHANGE_TIMEOUT
+      sleep --ms=STATUS_CHANGE_TIMEOUT_MS
       print "[pin_reboot] Reboot successfull"
       return true
     else:
@@ -192,7 +192,7 @@ class RN4871:
   enter_configuration_mode ->bool:
     set_status STATUS_ENTER_CONFMODE
     send_data CONF_COMMAND
-    result := read_for_time --ms=STATUS_CHANGE_TIMEOUT
+    result := read_for_time --ms=STATUS_CHANGE_TIMEOUT_MS
     if result == PROMPT or result == "CMD":
       print "[enter_configuration_mode] Command mode set up"
       set_status STATUS_CONFMODE
@@ -204,7 +204,7 @@ class RN4871:
   enter_data_mode ->bool:
     set_status STATUS_ENTER_DATAMODE
     antenna.write EXIT_CONF
-    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT
+    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
     if read_data == PROMPT_END:
       set_status STATUS_DATAMODE
     return result
@@ -214,8 +214,8 @@ class RN4871:
       if not enter_configuration_mode:
         return false
     send_command FACTORY_RESET
-    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT
-    sleep --ms=STATUS_CHANGE_TIMEOUT
+    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
+    sleep --ms=STATUS_CHANGE_TIMEOUT_MS
     return result
 
   assign_random_address user_RA=null -> bool:
@@ -242,7 +242,7 @@ class RN4871:
       print "Error [set_name]: The name is too long"
       return false
     send_command SET_NAME + new_name
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   get_name:
     if status != STATUS_CONFMODE:
@@ -291,7 +291,7 @@ class RN4871:
       return false
     debug_print "[set_baud_rate]: The baudrate is being set to $setting with the command: $SET_BAUDRATE$param"
     send_command "$SET_BAUDRATE$param"
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   get_baud_rate -> string:
     if status != STATUS_CONFMODE:
@@ -362,7 +362,7 @@ class RN4871:
       return false
     debug_print "[set_sup_features]: The supported feature $key is set with the command: $SET_SUPPORTED_FEATURES$feature"
     send_command SET_SUPPORTED_FEATURES+feature
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -380,7 +380,7 @@ class RN4871:
       return false
     debug_print "[set_def_services]: The default service $key is set with the command: $SET_DEFAULT_SERVICES$service"
     send_command SET_DEFAULT_SERVICES+service
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
   
   
   /**
@@ -394,7 +394,7 @@ class RN4871:
   clear_all_services:
     debug_print "[clear_all_services]"
     send_command CLEAR_ALL_SERVICES
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -407,7 +407,7 @@ class RN4871:
   start_advertising:
     debug_print "[start_advertising]"
     send_command(START_DEFAULT_ADV)
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -420,7 +420,7 @@ class RN4871:
   stop_advertising:
     debug_print "[stop_advertising]"
     send_command(STOP_ADV)
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -433,7 +433,7 @@ class RN4871:
   clear_immediate_advertising:
     debug_print "[clear_immediate_advertising]"
     send_command(CLEAR_IMMEDIATE_ADV)
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -447,7 +447,7 @@ class RN4871:
   clear_permanent_advertising:
     debug_print "[clear_permanent_advertising]"
     send_command CLEAR_PERMANENT_ADV
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -460,7 +460,7 @@ class RN4871:
   clear_immediate_beacon:
     debug_print "[clear_immediate_beacon]"
     send_command CLEAR_IMMEDIATE_BEACON
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -474,7 +474,7 @@ class RN4871:
   clear_permanent_beacon:
     debug_print "[clear_permanent_beacon]"
     send_command CLEAR_PERMANENT_BEACON
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
 
   
@@ -496,7 +496,7 @@ class RN4871:
     ad_data = convert_string_to_hex ad_data
     debug_print "Send command: $START_IMMEDIATE_ADV$ad_type,$ad_data"
     send_command "$START_IMMEDIATE_ADV$ad_type,$ad_data"
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -518,7 +518,7 @@ class RN4871:
     ad_data = convert_string_to_hex ad_data
     debug_print "Send command: $START_PERMANENT_ADV$ad_type,$ad_data"
     send_command "$START_PERMANENT_ADV$ad_type,$ad_data"
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -539,7 +539,7 @@ class RN4871:
     ad_data = convert_string_to_hex ad_data
     debug_print "Send command: $START_IMMEDIATE_BEACON$ad_type,$ad_data"
     send_command "$START_IMMEDIATE_BEACON$ad_type,$ad_data"    
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -561,7 +561,7 @@ class RN4871:
     ad_data = convert_string_to_hex ad_data
     debug_print "Send command: $START_PERMANENT_BEACON$ad_type,$ad_data"
     send_command "$START_PERMANENT_BEACON$ad_type,$ad_data" 
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -595,7 +595,7 @@ class RN4871:
     else:
       debug_print "[start_scanning] Default scanning"
       send_command START_DEFAULT_SCAN
-    return expected_result SCANNING_RESP
+    return is_expected_result_ SCANNING_RESP
 
   
   /**
@@ -608,7 +608,7 @@ class RN4871:
   stop_scanning -> bool:
     debug_print "[stop_scanning]"
     send_command STOP_SCAN
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   
@@ -633,7 +633,7 @@ class RN4871:
       if it == addr_type:
         debug_print "[add_mac_addr_white_list]: Send Command: $ADD_WHITE_LIST$addr_type,$ad_data"
         send_command "$ADD_WHITE_LIST$addr_type,$ad_data"
-        return expected_result AOK_RESP
+        return is_expected_result_ AOK_RESP
       else:
         print "Error [add_mac_addr_white_list]: received faulty input, $ADD_WHITE_LIST$addr_type,$ad_data"
     return false
@@ -654,7 +654,7 @@ class RN4871:
   add_bonded_white_list:
     debug_print "[add_bonded_white_list]"
     send_command ADD_BONDED_WHITE_LIST
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -667,7 +667,7 @@ class RN4871:
   clear_white_list:
     debug_print "[clear_white_list]"
     send_command CLEAR_WHITE_LIST
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -680,7 +680,7 @@ class RN4871:
   kill_connection:
     debug_print "[kill_connection]"
     send_command KILL_CONNECTION
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -695,7 +695,7 @@ class RN4871:
   get_RSSI -> string:
     debug_print "[get_RSSI]"
     send_command GET_RSSI_LEVEL
-    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT)
+    result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT_MS)
     debug_print "Received RSSI is: $result"
     return result
 
@@ -711,12 +711,12 @@ class RN4871:
   reboot -> bool:
     debug_print "[reboot]"
     send_command REBOOT
-    if expected_result REBOOTING_RESP:
-      sleep --ms=STATUS_CHANGE_TIMEOUT
+    if is_expected_result_ REBOOTING_RESP:
+      sleep --ms=STATUS_CHANGE_TIMEOUT_MS
       debug_print "[reboot] Software reboot succesful"
       return true
     else:
-      sleep --ms=STATUS_CHANGE_TIMEOUT
+      sleep --ms=STATUS_CHANGE_TIMEOUT_MS
       debug_print "[reboot] Software reboot failed"
       return false
 
@@ -745,7 +745,7 @@ class RN4871:
       return false
     debug_print "[set_service_UUID] Send command: $DEFINE_SERVICE_UUID$uuid"  
     send_command "$DEFINE_SERVICE_UUID$uuid"  
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -817,7 +817,7 @@ class RN4871:
 
     debug_print "[set_charact_UUID]: Send command $DEFINE_CHARACT_UUID$uuid,$property_hex,$octet_len_hex"    
     send_command "$DEFINE_CHARACT_UUID$uuid,$property_hex,$octet_len_hex"  
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -832,7 +832,7 @@ class RN4871:
   write_local_characteristic --handle/string --value/string -> bool:
     debug_print "[write_local_characteristic]: Send command $WRITE_LOCAL_CHARACT$handle,$value"
     send_command "$WRITE_LOCAL_CHARACT$handle,$value"
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -893,7 +893,7 @@ class RN4871:
     // Manual insertion of settings
     debug_print "[set_settings]: Send command $SET_SETTINGS$addr,$value"
     send_command "$SET_SETTINGS$addr,$value"
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -910,7 +910,7 @@ class RN4871:
     else:
       debug_print "[set_beacon_features]: set the Beacon Feature to $setting"
       send_command SET_BEACON_FEATURES+value
-      return expected_result AOK_RESP
+      return is_expected_result_ AOK_RESP
 
 
   /// # Gets setting from selected address
@@ -927,7 +927,7 @@ class RN4871:
       value = MIN_POWER_OUTPUT
     debug_print "[set_adv_power]: Send command $SET_ADV_POWER$value"
     send_command "$SET_ADV_POWER$value"
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   set_conn_power value/int -> bool:
     if value > MAX_POWER_OUTPUT:
@@ -936,7 +936,7 @@ class RN4871:
       value = MIN_POWER_OUTPUT
     debug_print "[set_conn_power]: Send command $SET_CONN_POWER$value"
     send_command "$SET_CONN_POWER$value"
-    return expected_result AOK_RESP
+    return is_expected_result_ AOK_RESP
 
   
   /**
@@ -950,4 +950,4 @@ class RN4871:
   dormant_mode -> none:
     debug_print "[dormant_mode]"
     send_command SET_DORMANT_MODE
-    sleep --ms=INTERNAL_CMD_TIMEOUT
+    sleep --ms=INTERNAL_CMD_TIMEOUT_MS

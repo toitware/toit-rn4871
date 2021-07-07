@@ -55,7 +55,7 @@ GET_SERIALNUM           ::= "GDS"
 GET_DEVICE_INFO         ::= "D"
 
 // -- Status enums
-STATUS_ENTER_DATMODE      ::= 0
+STATUS_ENTER_DATAMODE      ::= 0
 STATUS_DATAMODE           ::= 1
 STATUS_ENTER_CONFMODE     ::= 2
 STATUS_CONFMODE           ::= 3
