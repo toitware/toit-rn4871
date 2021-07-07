@@ -199,7 +199,7 @@ class RN4871:
     set_status STATUS_ENTER_DATAMODE
     port_.write EXIT_COMMAND
     result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
-    if read_data == PROMPT_END:
+    if pop_data == PROMPT_END:
       set_status STATUS_DATAMODE
     return result
 
