@@ -171,8 +171,7 @@ class RN4871:
       return false    
 
   start_BLE:
-    if enter_configuration_mode == false:
-      return false
+    if not enter_configuration_mode: return false
 
     if assign_random_address == false:
       return false
