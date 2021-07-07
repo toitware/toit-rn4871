@@ -197,7 +197,8 @@ DEFINE_SERVICE_UUID  ::= "PS,"
 CLEAR_ALL_SERVICES   ::= "PZ"
 PRIVATE_SERVICE_LEN  ::=  32  // 128-bit
 PUBLIC_SERVICE_LEN   ::=  4   // 16-bit
-//Characteristic properties
+
+// -- Characteristic properties
 CHAR_PROPS ::= {
     "INDICATE"      : 0x20,
     "NOTIFY"        : 0x10,
