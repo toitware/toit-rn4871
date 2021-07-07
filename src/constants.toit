@@ -36,7 +36,7 @@ CONF_COMMAND            ::= "\$\$\$"
 
 // -- Commands
 FACTORY_RESET           ::= "SF,1"
-EXIT_CONF               ::= "---\r"
+EXIT_COMMAND            ::= "---\r"
 
 AUTO_RANDOM_ADDRESS     ::= "&R"
 USER_RANDOM_ADDRESS     ::= "&,"
