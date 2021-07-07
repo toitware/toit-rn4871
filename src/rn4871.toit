@@ -14,7 +14,7 @@ import encoding.hex
 class RN4871:
   
   rec_message := ""
-  antenna/serial.Port
+  port/serial.Port
   status/int := STATUS_DATAMODE
   answer_len/int := 0
   uart_buffer := []
@@ -33,7 +33,7 @@ class RN4871:
     rx_pin_ = rx
     tx_pin_ = tx
     reset_pin_ = reset_pin
-    antenna = serial.Port --tx=tx --rx=rx --baud_rate=baud_rate
+    port = serial.Port --tx=tx --rx=rx --baud_rate=baud_rate
     status = STATUS_DATAMODE
     answer_len = 0
     debug = debug_mode
@@ -81,7 +81,7 @@ class RN4871:
   answer_or_timeout --timeout=INTERNAL_CMD_TIMEOUT_MS-> bool:
     exception := catch: 
       with_timeout --ms=timeout: 
-        uart_buffer = antenna.read
+        uart_buffer = port.read
         rec_message = uart_buffer.to_string.trim
         answer_len = rec_message.size
     
@@ -107,12 +107,12 @@ class RN4871:
 
   send_data message/string:
     answer_len = 0
-    antenna.write message
+    port.write message
     print "Message sent: $message" 
 
   send_command stream/string->none:
     answer_len = 0
-    antenna.write (stream.trim+CR)
+    port.write (stream.trim+CR)
 
   validate_answer:
     if status == STATUS_ENTER_CONFMODE:
@@ -203,7 +203,7 @@ class RN4871:
   
   enter_data_mode ->bool:
     set_status STATUS_ENTER_DATAMODE
-    antenna.write EXIT_COMMAND
+    port.write EXIT_COMMAND
     result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
     if read_data == PROMPT_END:
       set_status STATUS_DATAMODE
