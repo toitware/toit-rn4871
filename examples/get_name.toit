@@ -5,6 +5,7 @@
 import uart
 import gpio
 import rn4871 show *
+import rn4871.constants show *
 
 RX_PIN ::= 33
 TX_PIN ::= 32
@@ -13,9 +14,9 @@ RESET_PIN ::= 25
 main:
   tx_pin := gpio.Pin TX_PIN
   rx_pin := gpio.Pin RX_PIN 
-  rst_pin := gpio.Pin RESET_PIN --input=false --output=true --pull_up=true --pull_down=false
+  rst_pin := gpio.Pin RESET_PIN --output --pull_up
   
-  device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 --debug_mode=true
+  device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 --debug_mode
   device.pin_reboot
   device.enter_configuration_mode
   
