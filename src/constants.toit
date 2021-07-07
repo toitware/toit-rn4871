@@ -136,7 +136,7 @@ GET_SETTINGS          ::= "G"
 GET_DEVICE_NAME       ::= "GN"
 GET_CONNECTION_STATUS ::= "GK"
 
-//--- Action Commands
+//-- Action Commands
 START_DEFAULT_ADV       ::= "A"
 START_CUSTOM_ADV        ::= "A,"
 STOP_ADV                ::= "Y"
