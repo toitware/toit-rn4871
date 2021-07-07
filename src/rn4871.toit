@@ -176,8 +176,7 @@ class RN4871:
     if assign_random_address == false:
       return false
 
-    if enter_data_mode == false:
-      return false
+    if not enter_data_mode: return false
 
     return true
 
