@@ -13,16 +13,15 @@ import encoding.hex
 
 class RN4871:
   
-  rec_message := ""
-  port/serial.Port
-  status/int := STATUS_DATAMODE
-  answer_len/int := 0
-  uart_buffer := []
+  rec_message_ := ""
+  port_/serial.Port
+  status_/int := STATUS_DATAMODE
+  uart_buffer_ := []
   rx_pin_/gpio.Pin
   tx_pin_/gpio.Pin
   reset_pin_/gpio.Pin
-  ble_address := []
-  debug := false
+  ble_address_ := []
+  debug_ := false
 
   /**
   Constructs a RN4871 driver.
@@ -33,10 +32,9 @@ class RN4871:
     rx_pin_ = rx
     tx_pin_ = tx
     reset_pin_ = reset_pin
-    port = serial.Port --tx=tx --rx=rx --baud_rate=baud_rate
-    status = STATUS_DATAMODE
-    answer_len = 0
-    debug = debug_mode
+    port_ = serial.Port --tx=tx --rx=rx --baud_rate=baud_rate
+    status_ = STATUS_DATAMODE
+    debug_ = debug_mode
 
 // ---------------------------------------Utility Methods ----------------------------------------
 
@@ -57,7 +55,7 @@ class RN4871:
     return result == resp
 
   debug_print text/string:
-    if (debug == true):
+    if (debug_ == true):
       print text
 
   read_for_time --ms/int=INTERNAL_CMD_TIMEOUT_MS -> string:
@@ -70,20 +68,18 @@ class RN4871:
     return result
 
   pop_data -> string:
-    result := rec_message
-    rec_message = ""
-    answer_len =0
+    result := rec_message_
+    rec_message_ = ""
     return result
   
   read_data -> string:
-    return rec_message
+    return rec_message_
 
   answer_or_timeout --timeout=INTERNAL_CMD_TIMEOUT_MS-> bool:
     exception := catch: 
       with_timeout --ms=timeout: 
-        uart_buffer = port.read
-        rec_message = uart_buffer.to_string.trim
-        answer_len = rec_message.size
+        uart_buffer_ = port_.read
+        rec_message_ = uart_buffer_.to_string.trim
     
     if exception != null:  
       return false
@@ -106,22 +102,20 @@ class RN4871:
     return extract_result "" lis false
 
   send_data message/string:
-    answer_len = 0
-    port.write message
+    port_.write message
     print "Message sent: $message" 
 
   send_command stream/string->none:
-    answer_len = 0
-    port.write (stream.trim+CR)
+    port_.write (stream.trim+CR)
 
   validate_answer:
-    if status == STATUS_ENTER_CONFMODE:
-      if rec_message[0] == PROMPT_FIRST_CHAR and rec_message[rec_message.size-1] == PROMPT_LAST_CHAR:
+    if status_ == STATUS_ENTER_CONFMODE:
+      if rec_message_[0] == PROMPT_FIRST_CHAR and rec_message_[rec_message_.size-1] == PROMPT_LAST_CHAR:
         set_status STATUS_CONFMODE
         return true
 
-    if status == STATUS_ENTER_DATAMODE:
-      if rec_message[0] == PROMPT_FIRST_CHAR and rec_message[rec_message.size-1] == PROMPT_LAST_CHAR:
+    if status_ == STATUS_ENTER_DATAMODE:
+      if rec_message_[0] == PROMPT_FIRST_CHAR and rec_message_[rec_message_.size-1] == PROMPT_LAST_CHAR:
         set_status STATUS_DATAMODE
         return true
     return false
@@ -138,11 +132,11 @@ class RN4871:
     else:
       print "Error [set_status]: Not able to update status. Mode: $status_to_set is unknown"
       return false
-    status = status_to_set
+    status_ = status_to_set
     return true
 
   set_address address:
-    ble_address  = address
+    ble_address_  = address
     debug_print "[set_address] Address assigned to $address"
     return true
 
@@ -203,14 +197,14 @@ class RN4871:
   
   enter_data_mode ->bool:
     set_status STATUS_ENTER_DATAMODE
-    port.write EXIT_COMMAND
+    port_.write EXIT_COMMAND
     result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
     if read_data == PROMPT_END:
       set_status STATUS_DATAMODE
     return result
 
   factory_reset: 
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       if not enter_configuration_mode:
         return false
     send_command FACTORY_RESET
@@ -219,7 +213,7 @@ class RN4871:
     return result
 
   assign_random_address user_RA=null -> bool:
-    if status == STATUS_CONFMODE:
+    if status_ == STATUS_CONFMODE:
       timeout := 0
       if user_RA == null:
         send_command AUTO_RANDOM_ADDRESS
@@ -235,7 +229,7 @@ class RN4871:
       return false
 
   set_name new_name:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       return false
 
     if new_name.size > MAX_DEVICE_NAME_LEN:
@@ -245,13 +239,13 @@ class RN4871:
     return is_expected_result_ AOK_RESP
 
   get_name:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       return "Error [get_name]: Not in the CONFMODE"
     send_command GET_DEVICE_NAME
     return extract_result read_for_time
 
   get_fw_version:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       return false
 
     send_command DISPLAY_FW_VERSION
@@ -259,7 +253,7 @@ class RN4871:
     return pop_data
 
   get_sw_version:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       return false
 
     send_command GET_SWVERSION
@@ -267,7 +261,7 @@ class RN4871:
     return pop_data
 
   get_hw_version:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       return false
 
     send_command GET_HWVERSION
@@ -282,7 +276,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   set_baud_rate param/string -> bool:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       return false    
     setting := lookup_key BAUDRATES param
 
@@ -294,7 +288,7 @@ class RN4871:
     return is_expected_result_ AOK_RESP
 
   get_baud_rate -> string:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       print "Error: Not in Configuration mode"
       return ""
 
@@ -303,7 +297,7 @@ class RN4871:
     return pop_data
 
   get_serial_number -> string:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       print "Error [get_serial_number]: Not in Configuration mode"
       return ""
 
@@ -312,7 +306,7 @@ class RN4871:
     return pop_data
 
   set_power_save power_save/bool:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       if not enter_configuration_mode:
         print "Error [set_power_save]: Cannot enter Configuration mode"
         return ""
@@ -328,7 +322,7 @@ class RN4871:
     return result
   
   get_con_status -> string:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
       print "Error [get_con_status]: Not in Configuration mode"
       return ""
 
@@ -337,7 +331,7 @@ class RN4871:
     return pop_data
 
   get_power_save:
-    if status != STATUS_CONFMODE:
+    if status_ != STATUS_CONFMODE:
         return false
     send_command GET_POWERSAVE
     answer_or_timeout
