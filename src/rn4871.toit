@@ -845,7 +845,7 @@ class RN4871:
   # Gets the current connection status
   
   If the RN4870/71 is not connected, the output is none.
-  If the RN4870/71 is connected, the buffer must contains the information:
+  If the RN4870/71 is connected, the buffer contains the information:
   <Peer BT Address>,<Address Type>,<Connection Type>
   where <Peer BT Address> is the 6-byte hex address of the peer device; 
         <Address Type> is either 0 for public address or 1 for random address; 
