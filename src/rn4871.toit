@@ -44,7 +44,7 @@ class RN4871:
         return it
     return ""
     
-  convert_string_to_hex input/string -> string:
+  convert_string_to_hex_ input/string -> string:
     output := ""
     input.to_byte_array.do:
       output += it.stringify 16
@@ -482,7 +482,7 @@ class RN4871:
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
     debug_print "[start_immediate_advertising]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex ad_data
+    ad_data = convert_string_to_hex_ ad_data
     debug_print "Send command: $START_IMMEDIATE_ADV$ad_type,$ad_data"
     send_command "$START_IMMEDIATE_ADV$ad_type,$ad_data"
     return is_expected_result_ AOK_RESP
@@ -504,7 +504,7 @@ class RN4871:
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
     debug_print "[start_permanent_advertising]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex ad_data
+    ad_data = convert_string_to_hex_ ad_data
     debug_print "Send command: $START_PERMANENT_ADV$ad_type,$ad_data"
     send_command "$START_PERMANENT_ADV$ad_type,$ad_data"
     return is_expected_result_ AOK_RESP
@@ -525,7 +525,7 @@ class RN4871:
       print "Error [start_immediate_beacon]: ad_type $ad_type is not one of accepted types"
       return false
     debug_print "[start_immediate_beacon]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex ad_data
+    ad_data = convert_string_to_hex_ ad_data
     debug_print "Send command: $START_IMMEDIATE_BEACON$ad_type,$ad_data"
     send_command "$START_IMMEDIATE_BEACON$ad_type,$ad_data"    
     return is_expected_result_ AOK_RESP
@@ -547,7 +547,7 @@ class RN4871:
       print "Error [start_permanent_beacon]: ad_type $ad_type is not one of accepted types"
       return false
     debug_print "[start_permanent_beacon]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex ad_data
+    ad_data = convert_string_to_hex_ ad_data
     debug_print "Send command: $START_PERMANENT_BEACON$ad_type,$ad_data"
     send_command "$START_PERMANENT_BEACON$ad_type,$ad_data" 
     return is_expected_result_ AOK_RESP
