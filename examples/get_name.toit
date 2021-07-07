@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-import uart
+import serial.ports.uart
 import gpio
 import rn4871 show *
 import rn4871.constants show *
