@@ -205,7 +205,7 @@ CHAR_PROPS ::= {
     "READ"          : 0x02
     }
 
-// --- Characteristic Access
+// -- Characteristic Access
 READ_REMOTE_CHARACT  ::= "CHR,"
 WRITE_REMOTE_CHARACT ::= "CHW,"
 DISCOVER_REMOTE      ::= "CI"  // start client role
