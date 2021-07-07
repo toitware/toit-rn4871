@@ -82,7 +82,7 @@ BAUDRATES ::={
     "2400"   : "0B"
     }
 
-// --- Set Commands
+// -- Set Commands
 SET_BEACON_FEATURES  ::= "SC,"
 
 BEACON_SETTINGS ::= {
