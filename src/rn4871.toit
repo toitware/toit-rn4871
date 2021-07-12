@@ -216,7 +216,7 @@ class RN4871:
     send_command SET_NAME + new_name
     return is_expected_result_ AOK_RESP
 
-  get_name:
+  get_name -> string:
     if status_ != STATUS_CONFMODE:
       throw "Error [get_name]: Not in the CONFMODE"
     send_command GET_DEVICE_NAME
@@ -335,11 +335,12 @@ class RN4871:
 
   
   /**
-  # Sets supported features
+  Sets supported features
 
   Selects the features that are supported by the device
-  Input : string value from FEATURES map
-  Output: bool true if successfully executed
+  The $feature parameter must be ...
+
+  Returns whether the operation was successful.
   */
   set_sup_features feature/string:
     is_valid := [FEATURE_ENABLE_FLOW_CONTROL,\
