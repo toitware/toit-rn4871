@@ -38,7 +38,7 @@ class RN4871:
 
 // ---------------------------------------Utility Methods ----------------------------------------
 
-  lookup_key params_map/Map param/any -> string:
+  lookup_key_ params_map/Map param/any -> string:
     params_map.do:
       if params_map[it] == param:
         return it
@@ -272,7 +272,7 @@ class RN4871:
   set_baud_rate param/string -> bool:
     if status_ != STATUS_CONFMODE:
       return false    
-    setting := lookup_key BAUDRATES param
+    setting := lookup_key_ BAUDRATES param
 
     if setting == "":
       print "Error: Value: $param is not in BAUDRATE commands set"
@@ -344,7 +344,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   set_sup_features feature/string:
-    key := lookup_key FEATURES feature
+    key := lookup_key_ FEATURES feature
     if key == "":
       print "Error [set_sup_features]: Feature: $feature is not in supported features set"
       return false
@@ -362,7 +362,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   set_def_services service:
-    key := lookup_key SERVICES service
+    key := lookup_key_ SERVICES service
     if key == "":
       print "Error [set_def_services]: Value: $service is not a default service"
       return false
@@ -476,7 +476,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   start_immediate_advertising ad_type/string ad_data/string ->bool:    
-    type_name := lookup_key AD_TYPES ad_type
+    type_name := lookup_key_ AD_TYPES ad_type
     if type_name == "":
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
@@ -498,7 +498,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   start_permanent_advertising ad_type/string ad_data/string ->bool:    
-    type_name := lookup_key AD_TYPES ad_type
+    type_name := lookup_key_ AD_TYPES ad_type
     if type_name == "":
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
@@ -519,7 +519,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   start_immediate_beacon ad_type/string ad_data/string ->bool:
-    type_name := lookup_key AD_TYPES ad_type
+    type_name := lookup_key_ AD_TYPES ad_type
     if type_name == "":
       print "Error [start_immediate_beacon]: ad_type $ad_type is not one of accepted types"
       return false
@@ -541,7 +541,7 @@ class RN4871:
   Output: bool true if successfully executed
   */
   start_permanent_beacon ad_type/string ad_data/string ->bool:
-    type_name := lookup_key AD_TYPES ad_type
+    type_name := lookup_key_ AD_TYPES ad_type
     if type_name == "":
       print "Error [start_permanent_beacon]: ad_type $ad_type is not one of accepted types"
       return false
@@ -776,7 +776,7 @@ class RN4871:
     
     tempProp := 0
     property_list.do:
-      if (lookup_key CHAR_PROPS it) == "":
+      if (lookup_key_ CHAR_PROPS it) == "":
         print "Error [set_charact_UUID]: received unknown property $it"
         return false
       else:    
@@ -891,7 +891,7 @@ class RN4871:
   Output: return true if successfully executed
   */
   set_beacon_features value/string -> bool:
-    setting := lookup_key BEACON_SETTINGS value
+    setting := lookup_key_ BEACON_SETTINGS value
     if setting == "":
       print "Error [set_beacon_features]: Value $value is not in beacon commands set"
       return false
