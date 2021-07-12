@@ -122,19 +122,10 @@ class RN4871:
     debug_print "[set_address] Address assigned to $address"
     return true
 
-  validate_input_hex_data data/string -> bool:
-    range := [[48, 57], [65, 70], [97, 102]]
-    char := ""
-    out_of_range := true
+  validate_input_hex_data_ data/string -> bool:
     data.do:
-      char = it
-      out_of_range = true
-      range.do:
-        if it[0] <= char and char <= it[1]:
-          out_of_range = false
-      if out_of_range:
-        return false
-    return true
+      if not ('0' <= it <= '9' or 'a' <= it <= 'f' or 'A' <= it <= 'F'): return false
+    return data != ""
 
 // ---------------------------------------- Public section ----------------------------------------    
     
@@ -247,10 +238,10 @@ class RN4871:
     return pop_data
 
   /**
-  # Sets UART communication baudrate
+  Sets UART communication baudrate
 
   Selects the UART communication baudrate from the list of available settings.
-  Input : value from BAUDRATE map
+  Input : param string
   Output: bool true if successfully executed
   */
   set_baud_rate param/string -> bool:
@@ -337,7 +328,7 @@ class RN4871:
   /**
   Sets supported features
 
-  Selects the features that are supported by the device
+  Selects the features that are supported by the device.
   The $feature parameter must be ...
 
   Returns whether the operation was successful.
@@ -366,7 +357,7 @@ class RN4871:
 
   
   /**
-  # Sets default services
+  Sets default services
 
   This command sets the default services to be supported by the RN4870 in the GAP
   server role.
@@ -801,18 +792,16 @@ Gets the RSSI level.
 
   
   /**
-  # Sets the service UUID
+  Sets the service UUID
   
   Sets the UUID of the public or the private service.
-  This method must be called before the set_charact_UUID() method.
+  This method must be called before the $set_charact_UUID method.
   
-  Input : string uuid containing hex ID
-          can be either a 16-bit UUID for public service
-          or a 128-bit UUID for private service
-  Output: bool true if successfully executed
+  The $uuid string contains the hex ID, which can be either a 16-bit UUID for
+  public service or a 128-bit UUID for private service.
   */
   set_service_UUID uuid/string -> bool:
-    if not validate_input_hex_data uuid:
+    if not validate_input_hex_data_ uuid:
       print "Error [set_service_UUID]: $uuid is not a valid hex value"
       return false
     if (uuid.size == PRIVATE_SERVICE_LEN):
@@ -828,7 +817,7 @@ Gets the RSSI level.
 
   
   /**
-  # Sets the private characteristic.
+  Sets the private characteristic.
   
   Command PC must be called after service UUID is set by command PS.“PS,<hex16/hex128>” 
   for command PS. If service UUID is set to be a 16-bit public UUID in command PS, 
@@ -875,14 +864,14 @@ Gets the RSSI level.
     property_hex = tempProp.stringify 16
 
     [uuid, property_hex, octet_len_hex].do:
-      if not validate_input_hex_data it:
+      if not validate_input_hex_data_ it:
         print "Error [set_charact_UUID]: Value $it is not in correct hex format"
         return false
   
     if not  1 <= octet_len_int <= 20:
       print "Error [set_charact_UUID]: octet_len_hex 0x$octet_len_hex is out of range, should be between 0x1 and 0x14 in hex format " 
       return false
-    else if not validate_input_hex_data uuid:
+    else if not validate_input_hex_data_ uuid:
       print "Error [set_charact_UUID]: $uuid is not a valid hex value"
       return false
     
@@ -958,7 +947,7 @@ Gets the RSSI level.
 
   
   /**
-  # Sets and get settings
+  Sets and get settings
   
   The Set command starts with character “S” and followed by one or two character 
   configuration identifier. All Set commands take at least one parameter 
@@ -1020,7 +1009,7 @@ Gets the RSSI level.
 
   
   /**
-  # Sets the module to Dormant
+  Sets the module to Dormant
   
   Immediately forces the device into lowest power mode possible.
   Removing the device from Dormant mode requires power reset.
