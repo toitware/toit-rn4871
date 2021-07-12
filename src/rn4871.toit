@@ -894,7 +894,7 @@ class RN4871:
     
     tempProp := 0
     property_list.do:
-      if (lookup_key_ CHAR_PROPS it) == "":
+      if not [CHAR_PROPS_INDICATE, CHAR_PROPS_NOTIFY, CHAR_PROPS_WRITE, CHAR_PROPS_WRITE_NO_RESP, CHAR_PROPS_READ].contains it:
         print "Error [set_charact_UUID]: received unknown property $it"
         return false
       else:    

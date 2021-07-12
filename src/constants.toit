@@ -187,13 +187,12 @@ PRIVATE_SERVICE_LEN  ::=  32  // 128-bit
 PUBLIC_SERVICE_LEN   ::=  4   // 16-bit
 
 // -- Characteristic properties
-CHAR_PROPS ::= {
-    "INDICATE"      : 0x20,
-    "NOTIFY"        : 0x10,
-    "WRITE"         : 0x08,
-    "WRITE_NO_RESP" : 0x04,
-    "READ"          : 0x02
-    }
+
+CHAR_PROPS_INDICATE      ::= 0x20
+CHAR_PROPS_NOTIFY        ::= 0x10
+CHAR_PROPS_WRITE         ::= 0x08
+CHAR_PROPS_WRITE_NO_RESP ::= 0x04
+CHAR_PROPS_READ          ::= 0x02
 
 // -- Characteristic Access
 READ_REMOTE_CHARACT  ::= "CHR,"
