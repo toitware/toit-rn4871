@@ -37,12 +37,6 @@ class RN4871:
     debug_ = debug_mode
 
 // ---------------------------------------Utility Methods ----------------------------------------
-
-  lookup_key_ params_map/Map param/any -> string:
-    params_map.do:
-      if params_map[it] == param:
-        return it
-    return ""
     
   convert_string_to_hex_ input/string -> string:
     output := ""
