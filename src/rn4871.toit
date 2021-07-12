@@ -781,7 +781,7 @@ Gets the RSSI level.
 
   
   /**
-  # Reboots the module with a software method
+  Reboots the module with a software method
   
   Forces a complete device reboot (similar to a power cycle).
   After rebooting RN487x, all prior made setting changes takes effect.
