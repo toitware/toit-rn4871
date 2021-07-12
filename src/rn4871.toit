@@ -102,18 +102,6 @@ class RN4871:
   send_command stream/string->none:
     port_.write (stream.trim+CR)
 
-  validate_answer:
-    if status_ == STATUS_ENTER_CONFMODE:
-      if rec_message_[0] == PROMPT_FIRST_CHAR and rec_message_[rec_message_.size-1] == PROMPT_LAST_CHAR:
-        set_status STATUS_CONFMODE
-        return true
-
-    if status_ == STATUS_ENTER_DATAMODE:
-      if rec_message_[0] == PROMPT_FIRST_CHAR and rec_message_[rec_message_.size-1] == PROMPT_LAST_CHAR:
-        set_status STATUS_DATAMODE
-        return true
-    return false
-
   set_status status_to_set:
     if STATUS_ENTER_DATAMODE == status_to_set:
       print "[set_status]Status set to: ENTER_DATMODE"
