@@ -208,7 +208,7 @@ class RN4871:
     if status_ == STATUS_CONFMODE:
       send_command AUTO_RANDOM_ADDRESS
       
-      if answer_or_timeout == true:
+      if answer_or_timeout:
         set_address pop_data.trim.to_byte_array
         return true
       else:
