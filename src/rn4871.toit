@@ -805,7 +805,7 @@ Gets the RSSI level.
     send_command REBOOT
     if is_expected_result_ REBOOTING_RESP:
       sleep --ms=STATUS_CHANGE_TIMEOUT_MS
-      debug_print "[reboot] Software reboot succesful"
+      debug_print "[reboot] Software reboot succesfull"
       return true
     else:
       sleep --ms=STATUS_CHANGE_TIMEOUT_MS
