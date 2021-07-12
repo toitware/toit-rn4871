@@ -21,6 +21,7 @@ SCANNING_RESP           ::= "Scanning"
 
 //-- Events
 REBOOT_EVENT            ::= "%REBOOT%"
+
 PROMPT_FIRST_CHAR       ::= 'C'
 PROMPT_LAST_CHAR        ::= '>'
 PROMPT_LEN              ::=  4

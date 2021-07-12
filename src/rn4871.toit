@@ -80,7 +80,7 @@ class RN4871:
 
     return true
 
-  extract_result name/string="" lis/List=[] first_iteration=true-> string:
+  extract_result name/string="" list/List=[] first_iteration=true -> string:
     if first_iteration:
       if name == "":
         return name
