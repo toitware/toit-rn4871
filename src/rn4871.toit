@@ -335,11 +335,12 @@ class RN4871:
 
   
   /**
-  # Sets supported features
+  Sets supported features
 
   Selects the features that are supported by the device
-  Input : string value from FEATURES map
-  Output: bool true if successfully executed
+  The $feature parameter must be ...
+
+  Returns whether the operation was successful.
   */
   set_sup_features feature/string:
     is_valid := [FEATURE_ENABLE_FLOW_CONTROL,\
