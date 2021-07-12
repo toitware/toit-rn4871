@@ -84,11 +84,9 @@ BAUDRATES ::={
 // -- Set Commands
 SET_BEACON_FEATURES  ::= "SC,"
 
-BEACON_SETTINGS ::= {
-    "OFF"   :  "0",
-    "ON"    :  "1",
-    "ADV_ON":  "2"
-    }
+BEACON_SETTINGS_OFF ::= "0"
+BEACON_SETTINGS_ON ::= "1"
+BEACON_SETTINGS_ADV_ON ::= "2"
 
 SET_ADV_POWER           ::=  "SGA,"
 SET_CONN_POWER          ::=  "SGC,"

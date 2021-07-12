@@ -891,14 +891,15 @@ class RN4871:
   Output: return true if successfully executed
   */
   set_beacon_features value/string -> bool:
-    setting := lookup_key_ BEACON_SETTINGS value
-    if setting == "":
-      print "Error [set_beacon_features]: Value $value is not in beacon commands set"
-      return false
-    else:
-      debug_print "[set_beacon_features]: set the Beacon Feature to $setting"
+    is_valid := [BEACON_SETTINGS_ADV_ON, BEACON_SETTINGS_OFF, BEACON_SETTINGS_OFF].contains value
+
+    if is_valid:
+      debug_print "[set_beacon_features]: set the Beacon Feature to $value"
       send_command SET_BEACON_FEATURES+value
       return is_expected_result_ AOK_RESP
+    else:
+      print "Error [set_beacon_features]: Value $value is not in beacon commands set"
+      return false
 
 
   /// # Gets setting from selected address
