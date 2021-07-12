@@ -86,14 +86,14 @@ class RN4871:
         return name
       temp_list := name.split "\n"
       temp_list.map:
-        lis = lis + (it.split " ")
-    if lis == []:
+        list = list + (it.split " ")
+    if list == []:
       return ""
         
-    elem := lis.remove_last.trim
+    elem := list.remove_last.trim
     if  elem != "CMD>" and elem != "," and elem !="":
       return elem
-    return extract_result "" lis false
+    return extract_result "" list false
 
   send_data message/string:
     port_.write message
