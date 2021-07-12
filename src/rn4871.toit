@@ -218,7 +218,7 @@ class RN4871:
 
   get_name:
     if status_ != STATUS_CONFMODE:
-      return "Error [get_name]: Not in the CONFMODE"
+      throw "Error [get_name]: Not in the CONFMODE"
     send_command GET_DEVICE_NAME
     return extract_result read_for_time
 
@@ -280,7 +280,7 @@ class RN4871:
 
   get_baud_rate -> string:
     if status_ != STATUS_CONFMODE:
-      print "Error: Not in Configuration mode"
+      throw "Error: Not in Configuration mode"
       return ""
 
     send_command GET_BAUDRATE
@@ -289,7 +289,7 @@ class RN4871:
 
   get_serial_number -> string:
     if status_ != STATUS_CONFMODE:
-      print "Error [get_serial_number]: Not in Configuration mode"
+      throw "Error [get_serial_number]: Not in Configuration mode"
       return ""
 
     send_command GET_SERIALNUM
@@ -299,7 +299,7 @@ class RN4871:
   set_power_save power_save/bool:
     if status_ != STATUS_CONFMODE:
       if not enter_configuration_mode:
-        print "Error [set_power_save]: Cannot enter Configuration mode"
+        throw "Error [set_power_save]: Cannot enter Configuration mode"
         return ""
 
     if power_save:
@@ -315,7 +315,7 @@ class RN4871:
   
   get_con_status -> string:
     if status_ != STATUS_CONFMODE:
-      print "Error [get_con_status]: Not in Configuration mode"
+      throw "Error [get_con_status]: Not in Configuration mode"
       return ""
 
     send_command GET_CONNECTION_STATUS
