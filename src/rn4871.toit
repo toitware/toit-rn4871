@@ -57,7 +57,7 @@ class RN4871:
     start := Time.now
     result := ""
     while start.to_now < dur:
-      answer_or_timeout
+      answer_or_timeout_
       result = result + pop_data
     return result
 
@@ -69,7 +69,7 @@ class RN4871:
   read_data -> string:
     return rec_message_
 
-  answer_or_timeout --timeout=INTERNAL_CMD_TIMEOUT_MS-> bool:
+  answer_or_timeout_ --timeout=INTERNAL_CMD_TIMEOUT_MS-> bool:
     exception := catch: 
       with_timeout --ms=timeout: 
         uart_buffer_ = port_.read
@@ -190,7 +190,7 @@ class RN4871:
   enter_data_mode ->bool:
     set_status STATUS_ENTER_DATAMODE
     port_.write EXIT_COMMAND
-    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
+    result := answer_or_timeout_ --timeout=STATUS_CHANGE_TIMEOUT_MS
     if pop_data == PROMPT_END:
       set_status STATUS_DATAMODE
     return result
@@ -200,7 +200,7 @@ class RN4871:
       if not enter_configuration_mode:
         return false
     send_command FACTORY_RESET
-    result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
+    result := answer_or_timeout_ --timeout=STATUS_CHANGE_TIMEOUT_MS
     sleep --ms=STATUS_CHANGE_TIMEOUT_MS
     pop_data
     return result
@@ -209,7 +209,7 @@ class RN4871:
     if status_ == STATUS_CONFMODE:
       send_command AUTO_RANDOM_ADDRESS
       
-      if answer_or_timeout:
+      if answer_or_timeout_:
         set_address pop_data.trim.to_byte_array
         return true
       else:
@@ -238,7 +238,7 @@ class RN4871:
       return false
 
     send_command DISPLAY_FW_VERSION
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
 
   get_sw_version:
@@ -246,7 +246,7 @@ class RN4871:
       return false
 
     send_command GET_SWVERSION
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
 
   get_hw_version:
@@ -254,7 +254,7 @@ class RN4871:
       return false
 
     send_command GET_HWVERSION
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
 
   /**
@@ -295,7 +295,7 @@ class RN4871:
       return ""
 
     send_command GET_BAUDRATE
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
 
   get_serial_number -> string:
@@ -304,7 +304,7 @@ class RN4871:
       return ""
 
     send_command GET_SERIALNUM
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
 
   set_power_save power_save/bool:
@@ -320,7 +320,7 @@ class RN4871:
       send_command SET_LOW_POWER_OFF
       print "[set_power_save] Low power OFF"
 
-    result := answer_or_timeout
+    result := answer_or_timeout_
     pop_data
     return result
   
@@ -330,14 +330,14 @@ class RN4871:
       return ""
 
     send_command GET_CONNECTION_STATUS
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
 
   get_power_save:
     if status_ != STATUS_CONFMODE:
         return false
     send_command GET_POWERSAVE
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
 
   dev_info -> string:
@@ -1020,7 +1020,7 @@ class RN4871:
   get_settings addr/string -> string:
     debug_print "[get_settings]: Send command $GET_SETTINGS$addr"
     send_command GET_SETTINGS + addr
-    answer_or_timeout
+    answer_or_timeout_
     return pop_data
   
   set_adv_power value/int -> bool:
