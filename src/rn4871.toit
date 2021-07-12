@@ -216,7 +216,7 @@ class RN4871:
     send_command SET_NAME + new_name
     return is_expected_result_ AOK_RESP
 
-  get_name:
+  get_name -> string:
     if status_ != STATUS_CONFMODE:
       return "Error [get_name]: Not in the CONFMODE"
     send_command GET_DEVICE_NAME
