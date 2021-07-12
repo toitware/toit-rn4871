@@ -222,7 +222,7 @@ class RN4871:
     else:
       return false
 
-  set_name new_name:
+  set_name new_name/string -> bool:
     if status_ != STATUS_CONFMODE:
       return false
 
