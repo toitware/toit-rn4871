@@ -202,6 +202,7 @@ class RN4871:
     send_command FACTORY_RESET
     result := answer_or_timeout --timeout=STATUS_CHANGE_TIMEOUT_MS
     sleep --ms=STATUS_CHANGE_TIMEOUT_MS
+    pop_data
     return result
 
   assign_random_address -> bool:
@@ -320,6 +321,7 @@ class RN4871:
       print "[set_power_save] Low power OFF"
 
     result := answer_or_timeout
+    pop_data
     return result
   
   get_con_status -> string:
