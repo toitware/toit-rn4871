@@ -776,7 +776,7 @@ class RN4871:
 
   
   /**
-  # Gets the RSSI level
+Gets the RSSI level.
   
   Get the signal strength in dBm of the last communication with the peer device. 
   The signal strength is used to estimate the distance between the device and its
