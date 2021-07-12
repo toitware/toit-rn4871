@@ -165,6 +165,7 @@ class RN4871:
   /// # Command mode
   enter_configuration_mode ->bool:
     set_status STATUS_ENTER_CONFMODE
+    sleep --ms=100
     send_data CONF_COMMAND
     result := read_for_time --ms=STATUS_CHANGE_TIMEOUT_MS
     if result == PROMPT or result == "CMD":
