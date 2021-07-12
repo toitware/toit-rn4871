@@ -382,7 +382,7 @@ class RN4871:
   
   
   /**
-  # Clears all services
+  Clears all services
   
   Clears all settings of services and characteristics.
   A power cycle is required afterwards to make the changes effective.
@@ -395,9 +395,9 @@ class RN4871:
 
   
   /**
-  # Starts Advertisement
+  Starts Advertisement
   
-  The advertisement is undirect connectable.
+  The controller is configured to send undirected connectable advertising events.
 
   */
   start_advertising:
@@ -407,7 +407,7 @@ class RN4871:
 
   
   /**
-  # Stops Advertisement
+  Stops Advertisement
   
   Stops advertisement started by the start_advertising method.
 
@@ -419,9 +419,9 @@ class RN4871:
 
   
   /**
-  # Clears the advertising structure Immediately
+  Clears the advertising structure Immediately
   
-  Make the changes immediately effective without a reboot.
+  Makes the changes immediately effective without a reboot.
 
   */
   clear_immediate_advertising:
@@ -431,7 +431,7 @@ class RN4871:
 
   
   /**
-  # Clears the advertising structure in a permanent way
+  Clears the advertising structure in a permanent way
   
   The changes are saved into NVM only if other procedures require permanent
   configuration changes. A reboot is requested after executing this method.
@@ -444,9 +444,9 @@ class RN4871:
 
   
   /**
-  # Clears the Beacon structure Immediately
+  Clears the Beacon structure immediately.
   
-  Make the changes immediately effective without a reboot.
+  Makes the changes immediately effective without a reboot.
 
   */
   clear_immediate_beacon:
@@ -456,7 +456,7 @@ class RN4871:
 
   
   /**
-  # Clears the Beacon structure in a permanent way
+  Clears the Beacon structure in a permanent way
   
   The changes are saved into NVM only if other procedures require permanent
   configuration changes. A reboot is requested after executing this method.
@@ -470,7 +470,7 @@ class RN4871:
 
   
   /**
-  # Starts Advertising immediatly
+  Starts Advertising immediatly
   
   Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
           number list in the Core Specification 
@@ -512,7 +512,7 @@ class RN4871:
 
   
   /**
-  # Starts Advertising permanently
+  Starts Advertising permanently
   
   A reboot is needed after issuing this method
   Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
@@ -555,7 +555,7 @@ class RN4871:
 
   
   /**
-  # Starts Beacon adv immediatly
+  Starts Beacon adv immediatly
   
   Input : Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
           number list in the Core Specification 
@@ -598,7 +598,7 @@ class RN4871:
 
   
   /**
-  # Starts Beacon adv permanently
+  Starts Beacon adv permanently
   
   A reboot is needed after issuing this method
   Input : Input : value from AD_TYPES map - Bluetooth SIG defines AD types in the assigned 
@@ -641,7 +641,7 @@ class RN4871:
 
   
   /**
-  # Starts Scanning
+  Starts Scanning
   
   Method available only when the module is set as a Central (GAP) device and is
   ready for scan before establishing connection.
@@ -675,7 +675,7 @@ class RN4871:
 
   
   /**
-  # Stops Scanning
+  Stops Scanning
   
   Stops scan process started by start_scanning() method
 
@@ -732,7 +732,7 @@ class RN4871:
 
   
   /**
-  # Clears the white list
+  Clears the white list
   
   Once the white list is cleared, white list feature is disabled.
 
