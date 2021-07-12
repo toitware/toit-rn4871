@@ -117,15 +117,13 @@ FEATURE_COMMAND_MODE_GUARD  ::= "0008"
 
 SET_DEFAULT_SERVICES::="SS,"
 // > Bitmap of services
-SERVICES := {
-    "UART_AND_BEACON"    : "C0",
-    "NO_SERVICE"         : "00",
-    "DEVICE_INFO_SERVICE": "80",//0x80
-    "UART_TRANSP_SERVICE": "40",//0x40
-    "BEACON_SERVICE"     : "20",//0x20
-    "AIRPATCH_SERVICE"   : "10"//0x10
-    }
-
+SERVICES_UART_AND_BEACON     ::=  "C0"
+SERVICES_NO_SERVICE          ::=  "00"
+SERVICES_DEVICE_INFO_SERVICE ::=  "80"//0x80
+SERVICES_UART_TRANSP_SERVICE ::=  "40"//0x40
+SERVICES_BEACON_SERVICE      ::=  "20"//0x20
+SERVICES_AIRPATCH_SERVICE    ::=  "10"//0x10
+    
 //-- Get Commands
 GET_SETTINGS          ::= "G"
 GET_DEVICE_NAME       ::= "GN"

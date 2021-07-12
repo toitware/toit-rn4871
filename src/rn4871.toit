@@ -387,14 +387,21 @@ class RN4871:
   Input : string value from SERVICES map
   Output: bool true if successfully executed
   */
-  set_def_services service:
-    key := lookup_key_ SERVICES service
-    if key == "":
+  set_def_services service/string -> bool:
+    is_valid := [SERVICES_UART_AND_BEACON,\
+    SERVICES_NO_SERVICE,\
+    SERVICES_DEVICE_INFO_SERVICE,\
+    SERVICES_UART_TRANSP_SERVICE,\
+    SERVICES_BEACON_SERVICE,\
+    SERVICES_AIRPATCH_SERVICE].contains service    
+
+    if not is_valid:
       print "Error [set_def_services]: Value: $service is not a default service"
       return false
-    debug_print "[set_def_services]: The default service $key is set with the command: $SET_DEFAULT_SERVICES$service"
-    send_command SET_DEFAULT_SERVICES+service
-    return is_expected_result_ AOK_RESP
+    else:
+      debug_print "[set_def_services]: The default service $service is set with the command: $SET_DEFAULT_SERVICES$service"
+      send_command SET_DEFAULT_SERVICES+service
+      return is_expected_result_ AOK_RESP
   
   
   /**
