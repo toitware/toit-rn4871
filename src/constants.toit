@@ -66,20 +66,19 @@ ANSWER_COMPLETE   ::= 3
 ANSWER_DATA       ::= 4
 
 // Baudrate settings
-BAUDRATES ::={
-    "460800" : "01",
-    "921600" : "00",
-    "230400" : "02",
-    "115200" : "03",
-    "57600"  : "04",
-    "38400"  : "05",
-    "28800"  : "06",
-    "19200"  : "07",
-    "14400"  : "08",
-    "9600"   : "09",
-    "4800"   : "0A",
-    "2400"   : "0B"
-    }
+BAUDRATES_460800 ::= "01"
+BAUDRATES_921600 ::= "00"
+BAUDRATES_230400 ::= "02"
+BAUDRATES_115200 ::= "03"
+BAUDRATES_57600  ::= "04"
+BAUDRATES_38400  ::= "05"
+BAUDRATES_28800  ::= "06"
+BAUDRATES_19200  ::= "07"
+BAUDRATES_14400  ::= "08"
+BAUDRATES_9600   ::= "09"
+BAUDRATES_4800   ::= "0A"
+BAUDRATES_2400   ::= "0B"
+
 
 // -- Set Commands
 SET_BEACON_FEATURES  ::= "SC,"

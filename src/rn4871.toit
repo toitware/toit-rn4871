@@ -272,14 +272,27 @@ class RN4871:
   set_baud_rate param/string -> bool:
     if status_ != STATUS_CONFMODE:
       return false    
-    setting := lookup_key_ BAUDRATES param
+    
+    is_valid := [BAUDRATES_460800,\
+    BAUDRATES_921600,\
+    BAUDRATES_230400,\
+    BAUDRATES_115200,\
+    BAUDRATES_57600,\
+    BAUDRATES_38400,\
+    BAUDRATES_28800,\
+    BAUDRATES_19200,\
+    BAUDRATES_14400,\
+    BAUDRATES_9600,\
+    BAUDRATES_4800,\
+    BAUDRATES_2400].contains param
 
-    if setting == "":
+    if not is_valid:
       print "Error: Value: $param is not in BAUDRATE commands set"
       return false
-    debug_print "[set_baud_rate]: The baudrate is being set to $setting with the command: $SET_BAUDRATE$param"
-    send_command "$SET_BAUDRATE$param"
-    return is_expected_result_ AOK_RESP
+    else:
+      debug_print "[set_baud_rate]: The baudrate is being set with command: $SET_BAUDRATE$param"
+      send_command "$SET_BAUDRATE$param"
+      return is_expected_result_ AOK_RESP
 
   get_baud_rate -> string:
     if status_ != STATUS_CONFMODE:
