@@ -344,13 +344,26 @@ class RN4871:
   Output: bool true if successfully executed
   */
   set_sup_features feature/string:
-    key := lookup_key_ FEATURES feature
-    if key == "":
+    is_valid := [FEATURE_ENABLE_FLOW_CONTROL,\
+    FEATURE_NO_PROMPT          ,\
+    FEATURE_FAST_MODE          ,\
+    FEATURE_NO_BEACON_SCAN     ,\
+    FEATURE_NO_CONNECT_SCAN    ,\
+    FEATURE_NO_DUPLICATE_SCAN  ,\
+    FEATURE_PASSIVE_SCAN       ,\
+    FEATURE_UART_TRANSP_NO_ACK ,\
+    FEATURE_MLDP_SUPPORT       ,\
+    FEATURE_SCRIPT_ON_POWER_ON ,\
+    FEATURE_RN4020_MLDP_STREAM ,\
+    FEATURE_COMMAND_MODE_GUARD ].contains feature
+
+    if not is_valid:
       print "Error [set_sup_features]: Feature: $feature is not in supported features set"
       return false
-    debug_print "[set_sup_features]: The supported feature $key is set with the command: $SET_SUPPORTED_FEATURES$feature"
-    send_command SET_SUPPORTED_FEATURES+feature
-    return is_expected_result_ AOK_RESP
+    else:
+      debug_print "[set_sup_features]: The supported feature $feature is set with the command: $SET_SUPPORTED_FEATURES$feature"
+      send_command SET_SUPPORTED_FEATURES+feature
+      return is_expected_result_ AOK_RESP
 
   
   /**
