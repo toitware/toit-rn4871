@@ -508,16 +508,37 @@ class RN4871:
           converted to the chain of hex ASCII values
   Output: bool true if successfully executed
   */
-  start_immediate_advertising ad_type/string ad_data/string ->bool:    
-    type_name := lookup_key_ AD_TYPES ad_type
-    if type_name == "":
+  start_immediate_advertising ad_type/string ad_data/string ->bool:
+    is_valid := [AD_TYPES_FLAGS,\
+    AD_TYPES_INCOMPLETE_16_UUID,\
+    AD_TYPES_COMPLETE_16_UUID,\
+    AD_TYPES_INCOMPLETE_32_UUID,\
+    AD_TYPES_COMPLETE_32_UUID,\
+    AD_TYPES_INCOMPLETE_128_UUID,\
+    AD_TYPES_COMPLETE_128_UUID,\
+    AD_TYPES_SHORTENED_LOCAL_NAME,\
+    AD_TYPES_COMPLETE_LOCAL_NAME,\
+    AD_TYPES_TX_POWER_LEVEL,\
+    AD_TYPES_CLASS_OF_DEVICE,\
+    AD_TYPES_SIMPLE_PAIRING_HASH,\
+    AD_TYPES_SIMPLE_PAIRING_RANDOMIZER,\
+    AD_TYPES_TK_VALUE,\
+    AD_TYPES_SECURITY_OOB_FLAG,\
+    AD_TYPES_SLAVE_CONNECTION_INTERVAL,\
+    AD_TYPES_LIST_16_SERVICE_UUID,\
+    AD_TYPES_LIST_128_SERVICE_UUID,\
+    AD_TYPES_SERVICE_DATA,\
+    AD_TYPES_MANUFACTURE_SPECIFIC_DATA].contains ad_type
+
+    if not is_valid:
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
-    debug_print "[start_immediate_advertising]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex_ ad_data
-    debug_print "Send command: $START_IMMEDIATE_ADV$ad_type,$ad_data"
-    send_command "$START_IMMEDIATE_ADV$ad_type,$ad_data"
-    return is_expected_result_ AOK_RESP
+    else:
+      debug_print "[start_immediate_advertising]: type $ad_type, data $ad_data "
+      ad_data = convert_string_to_hex_ ad_data
+      debug_print "Send command: $START_IMMEDIATE_ADV$ad_type,$ad_data"
+      send_command "$START_IMMEDIATE_ADV$ad_type,$ad_data"
+      return is_expected_result_ AOK_RESP
 
   
   /**
@@ -531,15 +552,36 @@ class RN4871:
   Output: bool true if successfully executed
   */
   start_permanent_advertising ad_type/string ad_data/string ->bool:    
-    type_name := lookup_key_ AD_TYPES ad_type
-    if type_name == "":
+    is_valid := [AD_TYPES_FLAGS,\
+    AD_TYPES_INCOMPLETE_16_UUID,\
+    AD_TYPES_COMPLETE_16_UUID,\
+    AD_TYPES_INCOMPLETE_32_UUID,\
+    AD_TYPES_COMPLETE_32_UUID,\
+    AD_TYPES_INCOMPLETE_128_UUID,\
+    AD_TYPES_COMPLETE_128_UUID,\
+    AD_TYPES_SHORTENED_LOCAL_NAME,\
+    AD_TYPES_COMPLETE_LOCAL_NAME,\
+    AD_TYPES_TX_POWER_LEVEL,\
+    AD_TYPES_CLASS_OF_DEVICE,\
+    AD_TYPES_SIMPLE_PAIRING_HASH,\
+    AD_TYPES_SIMPLE_PAIRING_RANDOMIZER,\
+    AD_TYPES_TK_VALUE,\
+    AD_TYPES_SECURITY_OOB_FLAG,\
+    AD_TYPES_SLAVE_CONNECTION_INTERVAL,\
+    AD_TYPES_LIST_16_SERVICE_UUID,\
+    AD_TYPES_LIST_128_SERVICE_UUID,\
+    AD_TYPES_SERVICE_DATA,\
+    AD_TYPES_MANUFACTURE_SPECIFIC_DATA].contains ad_type
+
+    if not is_valid:
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
-    debug_print "[start_permanent_advertising]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex_ ad_data
-    debug_print "Send command: $START_PERMANENT_ADV$ad_type,$ad_data"
-    send_command "$START_PERMANENT_ADV$ad_type,$ad_data"
-    return is_expected_result_ AOK_RESP
+    else:
+      debug_print "[start_permanent_advertising]: type $ad_type, data $ad_data "
+      ad_data = convert_string_to_hex_ ad_data
+      debug_print "Send command: $START_PERMANENT_ADV$ad_type,$ad_data"
+      send_command "$START_PERMANENT_ADV$ad_type,$ad_data"
+      return is_expected_result_ AOK_RESP
 
   
   /**
@@ -552,15 +594,37 @@ class RN4871:
   Output: bool true if successfully executed
   */
   start_immediate_beacon ad_type/string ad_data/string ->bool:
-    type_name := lookup_key_ AD_TYPES ad_type
-    if type_name == "":
+  
+    is_valid := [AD_TYPES_FLAGS,\
+    AD_TYPES_INCOMPLETE_16_UUID,\
+    AD_TYPES_COMPLETE_16_UUID,\
+    AD_TYPES_INCOMPLETE_32_UUID,\
+    AD_TYPES_COMPLETE_32_UUID,\
+    AD_TYPES_INCOMPLETE_128_UUID,\
+    AD_TYPES_COMPLETE_128_UUID,\
+    AD_TYPES_SHORTENED_LOCAL_NAME,\
+    AD_TYPES_COMPLETE_LOCAL_NAME,\
+    AD_TYPES_TX_POWER_LEVEL,\
+    AD_TYPES_CLASS_OF_DEVICE,\
+    AD_TYPES_SIMPLE_PAIRING_HASH,\
+    AD_TYPES_SIMPLE_PAIRING_RANDOMIZER,\
+    AD_TYPES_TK_VALUE,\
+    AD_TYPES_SECURITY_OOB_FLAG,\
+    AD_TYPES_SLAVE_CONNECTION_INTERVAL,\
+    AD_TYPES_LIST_16_SERVICE_UUID,\
+    AD_TYPES_LIST_128_SERVICE_UUID,\
+    AD_TYPES_SERVICE_DATA,\
+    AD_TYPES_MANUFACTURE_SPECIFIC_DATA].contains ad_type
+
+    if not is_valid:
       print "Error [start_immediate_beacon]: ad_type $ad_type is not one of accepted types"
       return false
-    debug_print "[start_immediate_beacon]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex_ ad_data
-    debug_print "Send command: $START_IMMEDIATE_BEACON$ad_type,$ad_data"
-    send_command "$START_IMMEDIATE_BEACON$ad_type,$ad_data"    
-    return is_expected_result_ AOK_RESP
+    else:
+      debug_print "[start_immediate_beacon]: type $ad_type, data $ad_data "
+      ad_data = convert_string_to_hex_ ad_data
+      debug_print "Send command: $START_IMMEDIATE_BEACON$ad_type,$ad_data"
+      send_command "$START_IMMEDIATE_BEACON$ad_type,$ad_data"    
+      return is_expected_result_ AOK_RESP
 
   
   /**
@@ -574,15 +638,36 @@ class RN4871:
   Output: bool true if successfully executed
   */
   start_permanent_beacon ad_type/string ad_data/string ->bool:
-    type_name := lookup_key_ AD_TYPES ad_type
-    if type_name == "":
+    is_valid := [AD_TYPES_FLAGS,\
+    AD_TYPES_INCOMPLETE_16_UUID,\
+    AD_TYPES_COMPLETE_16_UUID,\
+    AD_TYPES_INCOMPLETE_32_UUID,\
+    AD_TYPES_COMPLETE_32_UUID,\
+    AD_TYPES_INCOMPLETE_128_UUID,\
+    AD_TYPES_COMPLETE_128_UUID,\
+    AD_TYPES_SHORTENED_LOCAL_NAME,\
+    AD_TYPES_COMPLETE_LOCAL_NAME,\
+    AD_TYPES_TX_POWER_LEVEL,\
+    AD_TYPES_CLASS_OF_DEVICE,\
+    AD_TYPES_SIMPLE_PAIRING_HASH,\
+    AD_TYPES_SIMPLE_PAIRING_RANDOMIZER,\
+    AD_TYPES_TK_VALUE,\
+    AD_TYPES_SECURITY_OOB_FLAG,\
+    AD_TYPES_SLAVE_CONNECTION_INTERVAL,\
+    AD_TYPES_LIST_16_SERVICE_UUID,\
+    AD_TYPES_LIST_128_SERVICE_UUID,\
+    AD_TYPES_SERVICE_DATA,\
+    AD_TYPES_MANUFACTURE_SPECIFIC_DATA].contains ad_type
+
+    if not is_valid:
       print "Error [start_permanent_beacon]: ad_type $ad_type is not one of accepted types"
       return false
-    debug_print "[start_permanent_beacon]: type $type_name, data $ad_data "
-    ad_data = convert_string_to_hex_ ad_data
-    debug_print "Send command: $START_PERMANENT_BEACON$ad_type,$ad_data"
-    send_command "$START_PERMANENT_BEACON$ad_type,$ad_data" 
-    return is_expected_result_ AOK_RESP
+    else:
+      debug_print "[start_permanent_beacon]: type $ad_type, data $ad_data "
+      ad_data = convert_string_to_hex_ ad_data
+      debug_print "Send command: $START_PERMANENT_BEACON$ad_type,$ad_data"
+      send_command "$START_PERMANENT_BEACON$ad_type,$ad_data" 
+      return is_expected_result_ AOK_RESP
 
   
   /**

@@ -142,30 +142,27 @@ START_PERMANENT_ADV     ::= "NA,"
 START_IMMEDIATE_BEACON  ::= "IB,"
 START_PERMANENT_BEACON  ::= "NB,"
 
-AD_TYPES ::= {
-    "FLAGS"                     :"01",
-    "INCOMPLETE_16_UUID"        :"02",
-    "COMPLETE_16_UUID"          :"03",
-    "INCOMPLETE_32_UUID"        :"04",
-    "COMPLETE_32_UUID"          :"05",
-    "INCOMPLETE_128_UUID"       :"06",
-    "COMPLETE_128_UUID"         :"07",
-    "SHORTENED_LOCAL_NAME"      :"08",
-    "COMPLETE_LOCAL_NAME"       :"09",
-    "TX_POWER_LEVEL"            :"0A",
-    "CLASS_OF_DEVICE"           :"0D",
-    "SIMPLE_PAIRING_HASH"       :"0E",
-    "SIMPLE_PAIRING_RANDOMIZER" :"0F",
-    "TK_VALUE"                  :"10",
-    "SECURITY_OOB_FLAG"         :"11",
-    "SLAVE_CONNECTION_INTERVAL" :"12",
-    "LIST_16_SERVICE_UUID"      :"14",
-    "LIST_128_SERVICE_UUID"     :"15",
-    "SERVICE_DATA"              :"16",
-    "MANUFACTURE_SPECIFIC_DATA" :"FF"
-    }
-
-
+// > Map of supported advertisement types
+AD_TYPES_FLAGS                     ::= "01"
+AD_TYPES_INCOMPLETE_16_UUID        ::= "02"
+AD_TYPES_COMPLETE_16_UUID          ::= "03"
+AD_TYPES_INCOMPLETE_32_UUID        ::= "04"
+AD_TYPES_COMPLETE_32_UUID          ::= "05"
+AD_TYPES_INCOMPLETE_128_UUID       ::= "06"
+AD_TYPES_COMPLETE_128_UUID         ::= "07"
+AD_TYPES_SHORTENED_LOCAL_NAME      ::= "08"
+AD_TYPES_COMPLETE_LOCAL_NAME       ::= "09"
+AD_TYPES_TX_POWER_LEVEL            ::= "0A"
+AD_TYPES_CLASS_OF_DEVICE           ::= "0D"
+AD_TYPES_SIMPLE_PAIRING_HASH       ::= "0E"
+AD_TYPES_SIMPLE_PAIRING_RANDOMIZER ::= "0F"
+AD_TYPES_TK_VALUE                  ::= "10"
+AD_TYPES_SECURITY_OOB_FLAG         ::= "11"
+AD_TYPES_SLAVE_CONNECTION_INTERVAL ::= "12"
+AD_TYPES_LIST_16_SERVICE_UUID      ::= "14"
+AD_TYPES_LIST_128_SERVICE_UUID     ::= "15"
+AD_TYPES_SERVICE_DATA              ::= "16"
+AD_TYPES_MANUFACTURE_SPECIFIC_DATA ::= "FF"
 
 START_DEFAULT_SCAN   ::= "F"
 START_CUSTOM_SCAN    ::= "F,"
