@@ -395,8 +395,7 @@ class RN4871:
   
   Clears all settings of services and characteristics.
   A power cycle is required afterwards to make the changes effective.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   clear_all_services:
     debug_print "[clear_all_services]"
@@ -408,8 +407,7 @@ class RN4871:
   # Starts Advertisement
   
   The advertisement is undirect connectable.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   start_advertising:
     debug_print "[start_advertising]"
@@ -421,8 +419,7 @@ class RN4871:
   # Stops Advertisement
   
   Stops advertisement started by the start_advertising method.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   stop_advertising:
     debug_print "[stop_advertising]"
@@ -434,8 +431,7 @@ class RN4871:
   # Clears the advertising structure Immediately
   
   Make the changes immediately effective without a reboot.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   clear_immediate_advertising:
     debug_print "[clear_immediate_advertising]"
@@ -448,8 +444,7 @@ class RN4871:
   
   The changes are saved into NVM only if other procedures require permanent
   configuration changes. A reboot is requested after executing this method.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   clear_permanent_advertising:
     debug_print "[clear_permanent_advertising]"
@@ -461,8 +456,7 @@ class RN4871:
   # Clears the Beacon structure Immediately
   
   Make the changes immediately effective without a reboot.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   clear_immediate_beacon:
     debug_print "[clear_immediate_beacon]"
@@ -475,8 +469,7 @@ class RN4871:
   
   The changes are saved into NVM only if other procedures require permanent
   configuration changes. A reboot is requested after executing this method.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   clear_permanent_beacon:
     debug_print "[clear_permanent_beacon]"
@@ -694,8 +687,7 @@ class RN4871:
   # Stops Scanning
   
   Stops scan process started by start_scanning() method
-  Input : void
-  Output: bool true if successfully executed
+
   */
   stop_scanning -> bool:
     debug_print "[stop_scanning]"
@@ -740,8 +732,7 @@ class RN4871:
   from the same physical device, therefore, allows connection from such peer 
   device. This feature is particularly useful if the peer device is a iOS or 
   Android device which uses resolvable random.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   add_bonded_white_list:
     debug_print "[add_bonded_white_list]"
@@ -753,8 +744,7 @@ class RN4871:
   # Clears the white list
   
   Once the white list is cleared, white list feature is disabled.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   clear_white_list:
     debug_print "[clear_white_list]"
@@ -766,8 +756,7 @@ class RN4871:
   # Kills the active connection
   
   Disconnect the active BTLE link. It can be used in central or peripheral role.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   kill_connection:
     debug_print "[kill_connection]"
@@ -781,8 +770,7 @@ Gets the RSSI level.
   Get the signal strength in dBm of the last communication with the peer device. 
   The signal strength is used to estimate the distance between the device and its
   remote peer.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   get_RSSI -> string:
     debug_print "[get_RSSI]"
@@ -797,8 +785,7 @@ Gets the RSSI level.
   
   Forces a complete device reboot (similar to a power cycle).
   After rebooting RN487x, all prior made setting changes takes effect.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   reboot -> bool:
     debug_print "[reboot]"
@@ -1037,8 +1024,7 @@ Gets the RSSI level.
   
   Immediately forces the device into lowest power mode possible.
   Removing the device from Dormant mode requires power reset.
-  Input : void
-  Output: bool true if successfully executed
+
   */
   dormant_mode -> none:
     debug_print "[dormant_mode]"
