@@ -100,6 +100,7 @@ class RN4871:
     debug_print_ "Message sent: $message" 
 
   send_command stream/string->none:
+    print stream
     port_.write (stream.trim+CR)
 
   set_status status_to_set:
@@ -709,8 +710,8 @@ class RN4871:
         debug_print_ "[add_mac_addr_white_list]: Send Command: $ADD_WHITE_LIST$addr_type,$ad_data"
         send_command "$ADD_WHITE_LIST$addr_type,$ad_data"
         return is_expected_result_ AOK_RESP
-      else:
-        print "Error [add_mac_addr_white_list]: received faulty input, $ADD_WHITE_LIST$addr_type,$ad_data"
+    
+    print "Error [add_mac_addr_white_list]: received faulty input, $ADD_WHITE_LIST$addr_type,$ad_data"
     return false
       
   
