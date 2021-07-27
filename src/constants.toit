@@ -1,7 +1,9 @@
-DELAY_INTERNAL_CMD      ::= 5
-INTERNAL_CMD_TIMEOUT    ::= 300 // 1000 mSec = 1Sec.
-STATUS_CHANGE_TIMEOUT   ::= 1000
-SMALL_ANSWER_DATA_LEN   ::= 20
+// Copyright 2021 Krzysztof Mróz. All rights reserved.
+// Use of this source code is governed by a MIT-style license that can be
+// found in the LICENSE file.
+
+INTERNAL_CMD_TIMEOUT_MS    ::= 300 // 1000 mSec = 1Sec.
+STATUS_CHANGE_TIMEOUT_MS   ::= 1000
 
 
 // ------------------- Response -----------------------
@@ -19,6 +21,7 @@ SCANNING_RESP           ::= "Scanning"
 
 //-- Events
 REBOOT_EVENT            ::= "%REBOOT%"
+
 PROMPT_FIRST_CHAR       ::= 'C'
 PROMPT_LAST_CHAR        ::= '>'
 PROMPT_LEN              ::=  4
@@ -31,9 +34,9 @@ CR                      ::= "\r"
 LF                      ::= "\n"
 CONF_COMMAND            ::= "\$\$\$"
 
-// commands
+// -- Commands
 FACTORY_RESET           ::= "SF,1"
-EXIT_CONF               ::= "---\r"
+EXIT_COMMAND            ::= "---\r"
 
 AUTO_RANDOM_ADDRESS     ::= "&R"
 USER_RANDOM_ADDRESS     ::= "&,"
@@ -50,42 +53,40 @@ GET_HWVERSION           ::= "GDH"
 GET_SWVERSION           ::= "GDR"
 GET_SERIALNUM           ::= "GDS"
 GET_DEVICE_INFO         ::= "D"
-// Status enums
-ENUM_ENTER_DATMODE      ::= 0
-ENUM_DATAMODE           ::= 1
-ENUM_ENTER_CONFMODE     ::= 2
-ENUM_CONFMODE           ::= 3
 
-// Answers enums    
-ENUM_NO_ANSWER          ::= 1
-ENUM_PARTIAL_ANSWER     ::= 2
-ENUM_COMPLETE_ANSWER    ::= 3
-ENUM_DATA_ANSWER        ::= 4
+// -- Status enums
+STATUS_ENTER_DATAMODE      ::= 0
+STATUS_DATAMODE           ::= 1
+STATUS_ENTER_CONFMODE     ::= 2
+STATUS_CONFMODE           ::= 3
+
+// -- Answers enums    
+ANSWER_NONE       ::= 1
+ANSWER_PARTIAL    ::= 2
+ANSWER_COMPLETE   ::= 3
+ANSWER_DATA       ::= 4
 
 // Baudrate settings
-BAUDRATES ::={
-    "460800" : "01",
-    "921600" : "00",
-    "230400" : "02",
-    "115200" : "03",
-    "57600"  : "04",
-    "38400"  : "05",
-    "28800"  : "06",
-    "19200"  : "07",
-    "14400"  : "08",
-    "9600"   : "09",
-    "4800"   : "0A",
-    "2400"   : "0B"
-    }
+BAUDRATES_460800 ::= "01"
+BAUDRATES_921600 ::= "00"
+BAUDRATES_230400 ::= "02"
+BAUDRATES_115200 ::= "03"
+BAUDRATES_57600  ::= "04"
+BAUDRATES_38400  ::= "05"
+BAUDRATES_28800  ::= "06"
+BAUDRATES_19200  ::= "07"
+BAUDRATES_14400  ::= "08"
+BAUDRATES_9600   ::= "09"
+BAUDRATES_4800   ::= "0A"
+BAUDRATES_2400   ::= "0B"
 
-// --- Set Commands
+
+// -- Set Commands
 SET_BEACON_FEATURES  ::= "SC,"
 
-BEACON_SETTINGS ::= {
-    "OFF"   :  "0",
-    "ON"    :  "1",
-    "ADV_ON":  "2"
-    }
+BEACON_SETTINGS_OFF ::= "0"
+BEACON_SETTINGS_ON ::= "1"
+BEACON_SETTINGS_ADV_ON ::= "2"
 
 SET_ADV_POWER           ::=  "SGA,"
 SET_CONN_POWER          ::=  "SGC,"
@@ -102,38 +103,34 @@ SET_SETTINGS            ::= "S"
 
 SET_SUPPORTED_FEATURES ::= "SR,"
 // > Map of supported features
-FEATURES := {
-    "ENABLE_FLOW_CONTROL":"8000",
-    "NO_PROMPT"          :"4000",
-    "FAST_MODE"          :"2000",
-    "NO_BEACON_SCAN"     :"1000",
-    "NO_CONNECT_SCAN"    :"0800",
-    "NO_DUPLICATE_SCAN"  :"0400",
-    "PASSIVE_SCAN"       :"0200",
-    "UART_TRANSP_NO_ACK" :"0100",
-    "MLDP_SUPPORT"       :"0080",
-    "SCRIPT_ON_POWER_ON" :"0040",
-    "RN4020_MLDP_STREAM" :"0020",
-    "COMMAND_MODE_GUARD" :"0008"
-    }
+FEATURE_ENABLE_FLOW_CONTROL ::= "8000"
+FEATURE_NO_PROMPT           ::= "4000"
+FEATURE_FAST_MODE           ::= "2000"
+FEATURE_NO_BEACON_SCAN      ::= "1000"
+FEATURE_NO_CONNECT_SCAN     ::= "0800"
+FEATURE_NO_DUPLICATE_SCAN   ::= "0400"
+FEATURE_PASSIVE_SCAN        ::= "0200"
+FEATURE_UART_TRANSP_NO_ACK  ::= "0100"
+FEATURE_MLDP_SUPPORT        ::= "0080"
+FEATURE_SCRIPT_ON_POWER_ON  ::= "0040"
+FEATURE_RN4020_MLDP_STREAM  ::= "0020"
+FEATURE_COMMAND_MODE_GUARD  ::= "0008"
 
 SET_DEFAULT_SERVICES::="SS,"
 // > Bitmap of services
-SERVICES := {
-    "UART_AND_BEACON"    : "C0",
-    "NO_SERVICE"         : "00",
-    "DEVICE_INFO_SERVICE": "80",//0x80
-    "UART_TRANSP_SERVICE": "40",//0x40
-    "BEACON_SERVICE"     : "20",//0x20
-    "AIRPATCH_SERVICE"   : "10"//0x10
-    }
-
+SERVICES_UART_AND_BEACON     ::=  "C0"
+SERVICES_NO_SERVICE          ::=  "00"
+SERVICES_DEVICE_INFO_SERVICE ::=  "80"//0x80
+SERVICES_UART_TRANSP_SERVICE ::=  "40"//0x40
+SERVICES_BEACON_SERVICE      ::=  "20"//0x20
+SERVICES_AIRPATCH_SERVICE    ::=  "10"//0x10
+    
 //-- Get Commands
 GET_SETTINGS          ::= "G"
 GET_DEVICE_NAME       ::= "GN"
 GET_CONNECTION_STATUS ::= "GK"
 
-//--- Action Commands
+//-- Action Commands
 START_DEFAULT_ADV       ::= "A"
 START_CUSTOM_ADV        ::= "A,"
 STOP_ADV                ::= "Y"
@@ -146,30 +143,27 @@ START_PERMANENT_ADV     ::= "NA,"
 START_IMMEDIATE_BEACON  ::= "IB,"
 START_PERMANENT_BEACON  ::= "NB,"
 
-AD_TYPES ::= {
-    "FLAGS"                     :"01",
-    "INCOMPLETE_16_UUID"        :"02",
-    "COMPLETE_16_UUID"          :"03",
-    "INCOMPLETE_32_UUID"        :"04",
-    "COMPLETE_32_UUID"          :"05",
-    "INCOMPLETE_128_UUID"       :"06",
-    "COMPLETE_128_UUID"         :"07",
-    "SHORTENED_LOCAL_NAME"      :"08",
-    "COMPLETE_LOCAL_NAME"       :"09",
-    "TX_POWER_LEVEL"            :"0A",
-    "CLASS_OF_DEVICE"           :"0D",
-    "SIMPLE_PAIRING_HASH"       :"0E",
-    "SIMPLE_PAIRING_RANDOMIZER" :"0F",
-    "TK_VALUE"                  :"10",
-    "SECURITY_OOB_FLAG"         :"11",
-    "SLAVE_CONNECTION_INTERVAL" :"12",
-    "LIST_16_SERVICE_UUID"      :"14",
-    "LIST_128_SERVICE_UUID"     :"15",
-    "SERVICE_DATA"              :"16",
-    "MANUFACTURE_SPECIFIC_DATA" :"FF"
-    }
-
-
+// > Map of supported advertisement types
+AD_TYPES_FLAGS                     ::= "01"
+AD_TYPES_INCOMPLETE_16_UUID        ::= "02"
+AD_TYPES_COMPLETE_16_UUID          ::= "03"
+AD_TYPES_INCOMPLETE_32_UUID        ::= "04"
+AD_TYPES_COMPLETE_32_UUID          ::= "05"
+AD_TYPES_INCOMPLETE_128_UUID       ::= "06"
+AD_TYPES_COMPLETE_128_UUID         ::= "07"
+AD_TYPES_SHORTENED_LOCAL_NAME      ::= "08"
+AD_TYPES_COMPLETE_LOCAL_NAME       ::= "09"
+AD_TYPES_TX_POWER_LEVEL            ::= "0A"
+AD_TYPES_CLASS_OF_DEVICE           ::= "0D"
+AD_TYPES_SIMPLE_PAIRING_HASH       ::= "0E"
+AD_TYPES_SIMPLE_PAIRING_RANDOMIZER ::= "0F"
+AD_TYPES_TK_VALUE                  ::= "10"
+AD_TYPES_SECURITY_OOB_FLAG         ::= "11"
+AD_TYPES_SLAVE_CONNECTION_INTERVAL ::= "12"
+AD_TYPES_LIST_16_SERVICE_UUID      ::= "14"
+AD_TYPES_LIST_128_SERVICE_UUID     ::= "15"
+AD_TYPES_SERVICE_DATA              ::= "16"
+AD_TYPES_MANUFACTURE_SPECIFIC_DATA ::= "FF"
 
 START_DEFAULT_SCAN   ::= "F"
 START_CUSTOM_SCAN    ::= "F,"
@@ -186,24 +180,22 @@ GET_RSSI_LEVEL       ::= "M"
 REBOOT               ::= "R,1"
 DISPLAY_FW_VERSION   ::= "V"
 
-// --- List Commands
-
 // --- Service Definition
 DEFINE_CHARACT_UUID  ::= "PC,"
 DEFINE_SERVICE_UUID  ::= "PS,"
 CLEAR_ALL_SERVICES   ::= "PZ"
 PRIVATE_SERVICE_LEN  ::=  32  // 128-bit
 PUBLIC_SERVICE_LEN   ::=  4   // 16-bit
-//Characteristic properties
-CHAR_PROPS ::= {
-    "INDICATE"      : 0x20,
-    "NOTIFY"        : 0x10,
-    "WRITE"         : 0x08,
-    "WRITE_NO_RESP" : 0x04,
-    "READ"          : 0x02
-    }
 
-// --- Characteristic Access
+// -- Characteristic properties
+
+CHAR_PROPS_INDICATE      ::= 0x20
+CHAR_PROPS_NOTIFY        ::= 0x10
+CHAR_PROPS_WRITE         ::= 0x08
+CHAR_PROPS_WRITE_NO_RESP ::= 0x04
+CHAR_PROPS_READ          ::= 0x02
+
+// -- Characteristic Access
 READ_REMOTE_CHARACT  ::= "CHR,"
 WRITE_REMOTE_CHARACT ::= "CHW,"
 DISCOVER_REMOTE      ::= "CI"  // start client role
