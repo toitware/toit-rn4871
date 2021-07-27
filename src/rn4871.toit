@@ -100,7 +100,6 @@ class RN4871:
     debug_print_ "Message sent: $message" 
 
   send_command stream/string->none:
-    print stream
     port_.write (stream.trim+CR)
 
   set_status status_to_set:
@@ -779,7 +778,6 @@ Gets the RSSI level.
 
   */
   reboot -> bool:
-    debug_print_ "[reboot]"
     send_command REBOOT
     if is_expected_result_ REBOOTING_RESP:
       sleep --ms=STATUS_CHANGE_TIMEOUT_MS
