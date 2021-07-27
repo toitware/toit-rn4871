@@ -104,7 +104,7 @@ class RN4871:
 
   set_status status_to_set:
     if STATUS_ENTER_DATAMODE == status_to_set:
-      print "[set_status]Status set to: ENTER_DATMODE"
+      print "[set_status]Status set to: ENTER_DATAMODE"
     else if STATUS_DATAMODE == status_to_set:
       print "[set_status]Status set to: DATAMODE"
     else if STATUS_ENTER_CONFMODE == status_to_set:
