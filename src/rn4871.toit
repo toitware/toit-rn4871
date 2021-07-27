@@ -97,7 +97,7 @@ class RN4871:
 
   send_data message/string:
     port_.write message
-    debug_print_ "Message sent: $message" 
+    debug_print_ "[send_data]: $message" 
 
   send_command stream/string->none:
     port_.write (stream.trim+CR)
