@@ -768,7 +768,6 @@ Gets the RSSI level.
     debug_print_ "[get_RSSI]"
     send_command GET_RSSI_LEVEL
     result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT_MS)
-    debug_print_ "Received RSSI is: $result"
     return result
 
   
