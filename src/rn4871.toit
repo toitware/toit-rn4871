@@ -48,7 +48,7 @@ class RN4871:
     result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT_MS)
     return result == resp
 
-  debug_print text/string:
+  debug_print_ text/string:
     if (debug_ == true):
       print text
 
@@ -119,7 +119,7 @@ class RN4871:
 
   set_address address:
     ble_address_  = address
-    debug_print "[set_address] Address assigned to $address"
+    debug_print_ "[set_address] Address assigned to $address"
     return true
 
   validate_input_hex_data_ data/string -> bool:
@@ -209,7 +209,7 @@ class RN4871:
 
   get_name -> string:
     if status_ != STATUS_CONFMODE:
-      throw "Error [get_name]: Not in the CONFMODE"
+      debug_print_ "Error [get_name]: Not in the CONFMODE"
     send_command GET_DEVICE_NAME
     return extract_result read_for_time
 
@@ -265,13 +265,13 @@ class RN4871:
       print "Error: Value: $param is not in BAUDRATE commands set"
       return false
     else:
-      debug_print "[set_baud_rate]: The baudrate is being set with command: $SET_BAUDRATE$param"
+      debug_print_ "[set_baud_rate]: The baudrate is being set with command: $SET_BAUDRATE$param"
       send_command "$SET_BAUDRATE$param"
       return is_expected_result_ AOK_RESP
 
   get_baud_rate -> string:
     if status_ != STATUS_CONFMODE:
-      throw "Error: Not in Configuration mode"
+      debug_print_ "Error: Not in Configuration mode"
       return ""
 
     send_command GET_BAUDRATE
@@ -280,7 +280,7 @@ class RN4871:
 
   get_serial_number -> string:
     if status_ != STATUS_CONFMODE:
-      throw "Error [get_serial_number]: Not in Configuration mode"
+      debug_print_ "Error [get_serial_number]: Not in Configuration mode"
       return ""
 
     send_command GET_SERIALNUM
@@ -290,7 +290,7 @@ class RN4871:
   set_power_save power_save/bool:
     if status_ != STATUS_CONFMODE:
       if not enter_configuration_mode:
-        throw "Error [set_power_save]: Cannot enter Configuration mode"
+        debug_print_ "Error [set_power_save]: Cannot enter Configuration mode"
         return ""
 
     if power_save:
@@ -306,7 +306,7 @@ class RN4871:
   
   get_con_status -> string:
     if status_ != STATUS_CONFMODE:
-      throw "Error [get_con_status]: Not in Configuration mode"
+      debug_print_ "Error [get_con_status]: Not in Configuration mode"
       return ""
 
     send_command GET_CONNECTION_STATUS
@@ -351,7 +351,7 @@ class RN4871:
       print "Error [set_sup_features]: Feature: $feature is not in supported features set"
       return false
     else:
-      debug_print "[set_sup_features]: The supported feature $feature is set with the command: $SET_SUPPORTED_FEATURES$feature"
+      debug_print_ "[set_sup_features]: The supported feature $feature is set with the command: $SET_SUPPORTED_FEATURES$feature"
       send_command SET_SUPPORTED_FEATURES+feature
       return is_expected_result_ AOK_RESP
 
@@ -376,7 +376,7 @@ class RN4871:
       print "Error [set_def_services]: Value: $service is not a default service"
       return false
     else:
-      debug_print "[set_def_services]: The default service $service is set with the command: $SET_DEFAULT_SERVICES$service"
+      debug_print_ "[set_def_services]: The default service $service is set with the command: $SET_DEFAULT_SERVICES$service"
       send_command SET_DEFAULT_SERVICES+service
       return is_expected_result_ AOK_RESP
   
@@ -389,7 +389,7 @@ class RN4871:
 
   */
   clear_all_services:
-    debug_print "[clear_all_services]"
+    debug_print_ "[clear_all_services]"
     send_command CLEAR_ALL_SERVICES
     return is_expected_result_ AOK_RESP
 
@@ -401,7 +401,7 @@ class RN4871:
 
   */
   start_advertising:
-    debug_print "[start_advertising]"
+    debug_print_ "[start_advertising]"
     send_command(START_DEFAULT_ADV)
     return is_expected_result_ AOK_RESP
 
@@ -413,7 +413,7 @@ class RN4871:
 
   */
   stop_advertising:
-    debug_print "[stop_advertising]"
+    debug_print_ "[stop_advertising]"
     send_command(STOP_ADV)
     return is_expected_result_ AOK_RESP
 
@@ -425,7 +425,7 @@ class RN4871:
 
   */
   clear_immediate_advertising:
-    debug_print "[clear_immediate_advertising]"
+    debug_print_ "[clear_immediate_advertising]"
     send_command(CLEAR_IMMEDIATE_ADV)
     return is_expected_result_ AOK_RESP
 
@@ -438,7 +438,7 @@ class RN4871:
 
   */
   clear_permanent_advertising:
-    debug_print "[clear_permanent_advertising]"
+    debug_print_ "[clear_permanent_advertising]"
     send_command CLEAR_PERMANENT_ADV
     return is_expected_result_ AOK_RESP
 
@@ -450,7 +450,7 @@ class RN4871:
 
   */
   clear_immediate_beacon:
-    debug_print "[clear_immediate_beacon]"
+    debug_print_ "[clear_immediate_beacon]"
     send_command CLEAR_IMMEDIATE_BEACON
     return is_expected_result_ AOK_RESP
 
@@ -463,7 +463,7 @@ class RN4871:
 
   */
   clear_permanent_beacon:
-    debug_print "[clear_permanent_beacon]"
+    debug_print_ "[clear_permanent_beacon]"
     send_command CLEAR_PERMANENT_BEACON
     return is_expected_result_ AOK_RESP
 
@@ -504,9 +504,9 @@ class RN4871:
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
     else:
-      debug_print "[start_immediate_advertising]: type $ad_type, data $ad_data "
+      debug_print_ "[start_immediate_advertising]: type $ad_type, data $ad_data "
       ad_data = convert_string_to_hex_ ad_data
-      debug_print "Send command: $START_IMMEDIATE_ADV$ad_type,$ad_data"
+      debug_print_ "Send command: $START_IMMEDIATE_ADV$ad_type,$ad_data"
       send_command "$START_IMMEDIATE_ADV$ad_type,$ad_data"
       return is_expected_result_ AOK_RESP
 
@@ -547,9 +547,9 @@ class RN4871:
       print "Error [start_immediate_advertising]: ad_type $ad_type is not one of accepted types"
       return false
     else:
-      debug_print "[start_permanent_advertising]: type $ad_type, data $ad_data "
+      debug_print_ "[start_permanent_advertising]: type $ad_type, data $ad_data "
       ad_data = convert_string_to_hex_ ad_data
-      debug_print "Send command: $START_PERMANENT_ADV$ad_type,$ad_data"
+      debug_print_ "Send command: $START_PERMANENT_ADV$ad_type,$ad_data"
       send_command "$START_PERMANENT_ADV$ad_type,$ad_data"
       return is_expected_result_ AOK_RESP
 
@@ -590,9 +590,9 @@ class RN4871:
       print "Error [start_immediate_beacon]: ad_type $ad_type is not one of accepted types"
       return false
     else:
-      debug_print "[start_immediate_beacon]: type $ad_type, data $ad_data "
+      debug_print_ "[start_immediate_beacon]: type $ad_type, data $ad_data "
       ad_data = convert_string_to_hex_ ad_data
-      debug_print "Send command: $START_IMMEDIATE_BEACON$ad_type,$ad_data"
+      debug_print_ "Send command: $START_IMMEDIATE_BEACON$ad_type,$ad_data"
       send_command "$START_IMMEDIATE_BEACON$ad_type,$ad_data"    
       return is_expected_result_ AOK_RESP
 
@@ -633,9 +633,9 @@ class RN4871:
       print "Error [start_permanent_beacon]: ad_type $ad_type is not one of accepted types"
       return false
     else:
-      debug_print "[start_permanent_beacon]: type $ad_type, data $ad_data "
+      debug_print_ "[start_permanent_beacon]: type $ad_type, data $ad_data "
       ad_data = convert_string_to_hex_ ad_data
-      debug_print "Send command: $START_PERMANENT_BEACON$ad_type,$ad_data"
+      debug_print_ "Send command: $START_PERMANENT_BEACON$ad_type,$ad_data"
       send_command "$START_PERMANENT_BEACON$ad_type,$ad_data" 
       return is_expected_result_ AOK_RESP
 
@@ -664,12 +664,12 @@ class RN4871:
       if values.first == 2.5 and values.last == 1024:
         scan_interval :=  (scan_interval_ms / 0.625).to_int.stringify 16
         scan_window :=  (scan_window_ms / 0.625).to_int.stringify 16
-        debug_print "[start_scanning] Custom scanning\nSend Command: $START_CUSTOM_SCAN$scan_interval,$scan_window"
+        debug_print_ "[start_scanning] Custom scanning\nSend Command: $START_CUSTOM_SCAN$scan_interval,$scan_window"
         send_command "$START_CUSTOM_SCAN$scan_interval,$scan_window"
       else:
         print "Error [start_scanning]: input values out of range"
     else:
-      debug_print "[start_scanning] Default scanning"
+      debug_print_ "[start_scanning] Default scanning"
       send_command START_DEFAULT_SCAN
     return is_expected_result_ SCANNING_RESP
 
@@ -681,7 +681,7 @@ class RN4871:
 
   */
   stop_scanning -> bool:
-    debug_print "[stop_scanning]"
+    debug_print_ "[stop_scanning]"
     send_command STOP_SCAN
     return is_expected_result_ AOK_RESP
 
@@ -706,7 +706,7 @@ class RN4871:
   add_mac_addr_white_list --addr_type/string --ad_data/string ->bool:    
     [PUBLIC_ADDRESS_TYPE, PRIVATE_ADDRESS_TYPE].do:
       if it == addr_type:
-        debug_print "[add_mac_addr_white_list]: Send Command: $ADD_WHITE_LIST$addr_type,$ad_data"
+        debug_print_ "[add_mac_addr_white_list]: Send Command: $ADD_WHITE_LIST$addr_type,$ad_data"
         send_command "$ADD_WHITE_LIST$addr_type,$ad_data"
         return is_expected_result_ AOK_RESP
       else:
@@ -726,7 +726,7 @@ class RN4871:
 
   */
   add_bonded_white_list:
-    debug_print "[add_bonded_white_list]"
+    debug_print_ "[add_bonded_white_list]"
     send_command ADD_BONDED_WHITE_LIST
     return is_expected_result_ AOK_RESP
 
@@ -738,7 +738,7 @@ class RN4871:
 
   */
   clear_white_list:
-    debug_print "[clear_white_list]"
+    debug_print_ "[clear_white_list]"
     send_command CLEAR_WHITE_LIST
     return is_expected_result_ AOK_RESP
 
@@ -750,7 +750,7 @@ class RN4871:
 
   */
   kill_connection:
-    debug_print "[kill_connection]"
+    debug_print_ "[kill_connection]"
     send_command KILL_CONNECTION
     return is_expected_result_ AOK_RESP
 
@@ -764,10 +764,10 @@ Gets the RSSI level.
 
   */
   get_RSSI -> string:
-    debug_print "[get_RSSI]"
+    debug_print_ "[get_RSSI]"
     send_command GET_RSSI_LEVEL
     result := extract_result(read_for_time --ms=INTERNAL_CMD_TIMEOUT_MS)
-    debug_print "Received RSSI is: $result"
+    debug_print_ "Received RSSI is: $result"
     return result
 
   
@@ -779,15 +779,15 @@ Gets the RSSI level.
 
   */
   reboot -> bool:
-    debug_print "[reboot]"
+    debug_print_ "[reboot]"
     send_command REBOOT
     if is_expected_result_ REBOOTING_RESP:
       sleep --ms=STATUS_CHANGE_TIMEOUT_MS
-      debug_print "[reboot] Software reboot succesfull"
+      debug_print_ "[reboot] Software reboot succesfull"
       return true
     else:
       sleep --ms=STATUS_CHANGE_TIMEOUT_MS
-      debug_print "[reboot] Software reboot failed"
+      debug_print_ "[reboot] Software reboot failed"
       return false
 
   
@@ -805,13 +805,13 @@ Gets the RSSI level.
       print "Error [set_service_UUID]: $uuid is not a valid hex value"
       return false
     if (uuid.size == PRIVATE_SERVICE_LEN):
-      debug_print("[set_service_UUID]: Set public UUID")
+      debug_print_("[set_service_UUID]: Set public UUID")
     else if (uuid.size == PUBLIC_SERVICE_LEN):
-      debug_print("[set_service_UUID]: Set private UUID")
+      debug_print_("[set_service_UUID]: Set private UUID")
     else:
       print("Error [set_service_UUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
       return false
-    debug_print "[set_service_UUID] Send command: $DEFINE_SERVICE_UUID$uuid"  
+    debug_print_ "[set_service_UUID] Send command: $DEFINE_SERVICE_UUID$uuid"  
     send_command "$DEFINE_SERVICE_UUID$uuid"  
     return is_expected_result_ AOK_RESP
 
@@ -876,14 +876,14 @@ Gets the RSSI level.
       return false
     
     if uuid.size == PRIVATE_SERVICE_LEN:
-      debug_print "[set_charact_UUID]: Set public UUID"
+      debug_print_ "[set_charact_UUID]: Set public UUID"
     else if uuid.size == PUBLIC_SERVICE_LEN:
-      debug_print "[set_charact_UUID]: Set private UUID"
+      debug_print_ "[set_charact_UUID]: Set private UUID"
     else:
       print "Error [set_charact_UUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number)"
       return false
 
-    debug_print "[set_charact_UUID]: Send command $DEFINE_CHARACT_UUID$uuid,$property_hex,$octet_len_hex"    
+    debug_print_ "[set_charact_UUID]: Send command $DEFINE_CHARACT_UUID$uuid,$property_hex,$octet_len_hex"    
     send_command "$DEFINE_CHARACT_UUID$uuid,$property_hex,$octet_len_hex"  
     return is_expected_result_ AOK_RESP
 
@@ -898,7 +898,7 @@ Gets the RSSI level.
   Output: bool true if successfully executed
   */
   write_local_characteristic --handle/string --value/string -> bool:
-    debug_print "[write_local_characteristic]: Send command $WRITE_LOCAL_CHARACT$handle,$value"
+    debug_print_ "[write_local_characteristic]: Send command $WRITE_LOCAL_CHARACT$handle,$value"
     send_command "$WRITE_LOCAL_CHARACT$handle,$value"
     return is_expected_result_ AOK_RESP
 
@@ -913,7 +913,7 @@ Gets the RSSI level.
   Output: string with result
   */
   read_local_characteristic --handle/string -> string:
-    debug_print "[read_local_characteristic]: Send command $READ_LOCAL_CHARACT$handle "
+    debug_print_ "[read_local_characteristic]: Send command $READ_LOCAL_CHARACT$handle "
     send_command "$READ_LOCAL_CHARACT$handle"
     result := extract_result read_for_time
     return result
@@ -934,11 +934,11 @@ Gets the RSSI level.
   Output: string with result
   */
   get_connection_status --time_ms=10000 -> string:
-    debug_print "[get_connection_status]: Send command $GET_CONNECTION_STATUS"
+    debug_print_ "[get_connection_status]: Send command $GET_CONNECTION_STATUS"
     send_command GET_CONNECTION_STATUS
     result := extract_result (read_for_time --ms=time_ms)
     if result == NONE_RESP:
-      debug_print "[get_connection_status]: $NONE_RESP"
+      debug_print_ "[get_connection_status]: $NONE_RESP"
     else if result == "":
       print "Error: [get_connection_status] connection timeout"
     return result
@@ -959,7 +959,7 @@ Gets the RSSI level.
   */
   set_settings --addr/string --value/string -> bool:
     // Manual insertion of settings
-    debug_print "[set_settings]: Send command $SET_SETTINGS$addr,$value"
+    debug_print_ "[set_settings]: Send command $SET_SETTINGS$addr,$value"
     send_command "$SET_SETTINGS$addr,$value"
     return is_expected_result_ AOK_RESP
 
@@ -974,7 +974,7 @@ Gets the RSSI level.
     is_valid := [BEACON_SETTINGS_ADV_ON, BEACON_SETTINGS_OFF, BEACON_SETTINGS_OFF].contains value
 
     if is_valid:
-      debug_print "[set_beacon_features]: set the Beacon Feature to $value"
+      debug_print_ "[set_beacon_features]: set the Beacon Feature to $value"
       send_command SET_BEACON_FEATURES+value
       return is_expected_result_ AOK_RESP
     else:
@@ -984,7 +984,7 @@ Gets the RSSI level.
 
   /// # Gets setting from selected address
   get_settings addr/string -> string:
-    debug_print "[get_settings]: Send command $GET_SETTINGS$addr"
+    debug_print_ "[get_settings]: Send command $GET_SETTINGS$addr"
     send_command GET_SETTINGS + addr
     answer_or_timeout_
     return pop_data
@@ -994,7 +994,7 @@ Gets the RSSI level.
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
-    debug_print "[set_adv_power]: Send command $SET_ADV_POWER$value"
+    debug_print_ "[set_adv_power]: Send command $SET_ADV_POWER$value"
     send_command "$SET_ADV_POWER$value"
     return is_expected_result_ AOK_RESP
 
@@ -1003,7 +1003,7 @@ Gets the RSSI level.
       value = MAX_POWER_OUTPUT
     else if value < MIN_POWER_OUTPUT:
       value = MIN_POWER_OUTPUT
-    debug_print "[set_conn_power]: Send command $SET_CONN_POWER$value"
+    debug_print_ "[set_conn_power]: Send command $SET_CONN_POWER$value"
     send_command "$SET_CONN_POWER$value"
     return is_expected_result_ AOK_RESP
 
@@ -1016,6 +1016,6 @@ Gets the RSSI level.
 
   */
   dormant_mode -> none:
-    debug_print "[dormant_mode]"
+    debug_print_ "[dormant_mode]"
     send_command SET_DORMANT_MODE
     sleep --ms=INTERNAL_CMD_TIMEOUT_MS

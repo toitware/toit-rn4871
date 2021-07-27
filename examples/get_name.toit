@@ -21,5 +21,5 @@ main:
   device.enter_configuration_mode
   
   /// Print the device name
-  print device.get_name
+  print (device.read_for_time --ms=1000)
   
