@@ -34,4 +34,4 @@ See the `examples` folder for more examples.
 
 Please file feature requests and bugs at the [issue tracker][tracker].
 
-[tracker]: https://github.com/toitware/bluetooth-rn4871-module/issues
+[tracker]: https://github.com/toitware/toit-rn4871/issues
