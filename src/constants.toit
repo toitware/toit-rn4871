@@ -2,202 +2,202 @@
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
-INTERNAL_CMD_TIMEOUT_MS    ::= 300 // 1000 mSec = 1Sec.
-STATUS_CHANGE_TIMEOUT_MS   ::= 1000
+INTERNAL-CMD-TIMEOUT-MS    ::= 300 // 1000 mSec = 1Sec.
+STATUS-CHANGE-TIMEOUT-MS   ::= 1000
 
 
 // ------------------- Response -----------------------
 PROMPT                  ::= "CMD>"  // exact prompt is "CMD> " (last char is a space)
-PROMPT_END              ::= "END"
+PROMPT-END              ::= "END"
 
 //-- Response
-AOK_RESP                ::= "AOK"
-ERR_RESP                ::= "Err"
-FACTORY_RESET_RESP      ::= "Reboot after Factory Reset"
-DEVICE_MODEL            ::= "RN"
-REBOOTING_RESP          ::= "Rebooting"
-NONE_RESP               ::= "none"
-SCANNING_RESP           ::= "Scanning"
+AOK-RESP                ::= "AOK"
+ERR-RESP                ::= "Err"
+FACTORY-RESET-RESP      ::= "Reboot after Factory Reset"
+DEVICE-MODEL            ::= "RN"
+REBOOTING-RESP          ::= "Rebooting"
+NONE-RESP               ::= "none"
+SCANNING-RESP           ::= "Scanning"
 
 //-- Events
-REBOOT_EVENT            ::= "%REBOOT%"
+REBOOT-EVENT            ::= "%REBOOT%"
 
-PROMPT_FIRST_CHAR       ::= 'C'
-PROMPT_LAST_CHAR        ::= '>'
-PROMPT_LEN              ::=  4
-PROMPT_END_FIST_CHAR    ::= 'E'
-PROMPT_END_LAST_CHAR    ::= 'D'
-PROMPT_ERROR            ::= "Err"
+PROMPT-FIRST-CHAR       ::= 'C'
+PROMPT-LAST-CHAR        ::= '>'
+PROMPT-LEN              ::=  4
+PROMPT-END-FIST-CHAR    ::= 'E'
+PROMPT-END-LAST-CHAR    ::= 'D'
+PROMPT-ERROR            ::= "Err"
 
 CRLF                    ::= "\r\n"
 CR                      ::= "\r"
 LF                      ::= "\n"
-CONF_COMMAND            ::= "\$\$\$"
+CONF-COMMAND            ::= "\$\$\$"
 
 // -- Commands
-FACTORY_RESET           ::= "SF,1"
-EXIT_COMMAND            ::= "---\r"
+FACTORY-RESET           ::= "SF,1"
+EXIT-COMMAND            ::= "---\r"
 
-AUTO_RANDOM_ADDRESS     ::= "&R"
-USER_RANDOM_ADDRESS     ::= "&,"
+AUTO-RANDOM-ADDRESS     ::= "&R"
+USER-RANDOM-ADDRESS     ::= "&,"
 
-SET_NAME                ::= "SN,"
-GET_MODEL_NUMBER        ::= "GDM"
+SET-NAME                ::= "SN,"
+GET-MODEL-NUMBER        ::= "GDM"
 
-SET_BAUDRATE            ::= "SB,"
-GET_BAUDRATE            ::= "GB"
+SET-BAUDRATE            ::= "SB,"
+GET-BAUDRATE            ::= "GB"
 
-GET_POWERSAVE           ::= "GO"
+GET-POWERSAVE           ::= "GO"
 
-GET_HWVERSION           ::= "GDH"
-GET_SWVERSION           ::= "GDR"
-GET_SERIALNUM           ::= "GDS"
-GET_DEVICE_INFO         ::= "D"
+GET-HWVERSION           ::= "GDH"
+GET-SWVERSION           ::= "GDR"
+GET-SERIALNUM           ::= "GDS"
+GET-DEVICE-INFO         ::= "D"
 
 // -- Status enums
-STATUS_ENTER_DATAMODE      ::= 0
-STATUS_DATAMODE           ::= 1
-STATUS_ENTER_CONFMODE     ::= 2
-STATUS_CONFMODE           ::= 3
+STATUS-ENTER-DATAMODE      ::= 0
+STATUS-DATAMODE           ::= 1
+STATUS-ENTER-CONFMODE     ::= 2
+STATUS-CONFMODE           ::= 3
 
 // -- Answers enums
-ANSWER_NONE       ::= 1
-ANSWER_PARTIAL    ::= 2
-ANSWER_COMPLETE   ::= 3
-ANSWER_DATA       ::= 4
+ANSWER-NONE       ::= 1
+ANSWER-PARTIAL    ::= 2
+ANSWER-COMPLETE   ::= 3
+ANSWER-DATA       ::= 4
 
 // Baudrate settings
-BAUDRATES_460800 ::= "01"
-BAUDRATES_921600 ::= "00"
-BAUDRATES_230400 ::= "02"
-BAUDRATES_115200 ::= "03"
-BAUDRATES_57600  ::= "04"
-BAUDRATES_38400  ::= "05"
-BAUDRATES_28800  ::= "06"
-BAUDRATES_19200  ::= "07"
-BAUDRATES_14400  ::= "08"
-BAUDRATES_9600   ::= "09"
-BAUDRATES_4800   ::= "0A"
-BAUDRATES_2400   ::= "0B"
+BAUDRATES-460800 ::= "01"
+BAUDRATES-921600 ::= "00"
+BAUDRATES-230400 ::= "02"
+BAUDRATES-115200 ::= "03"
+BAUDRATES-57600  ::= "04"
+BAUDRATES-38400  ::= "05"
+BAUDRATES-28800  ::= "06"
+BAUDRATES-19200  ::= "07"
+BAUDRATES-14400  ::= "08"
+BAUDRATES-9600   ::= "09"
+BAUDRATES-4800   ::= "0A"
+BAUDRATES-2400   ::= "0B"
 
 
 // -- Set Commands
-SET_BEACON_FEATURES  ::= "SC,"
+SET-BEACON-FEATURES  ::= "SC,"
 
-BEACON_SETTINGS_OFF ::= "0"
-BEACON_SETTINGS_ON ::= "1"
-BEACON_SETTINGS_ADV_ON ::= "2"
+BEACON-SETTINGS-OFF ::= "0"
+BEACON-SETTINGS-ON ::= "1"
+BEACON-SETTINGS-ADV-ON ::= "2"
 
-SET_ADV_POWER           ::=  "SGA,"
-SET_CONN_POWER          ::=  "SGC,"
-MIN_POWER_OUTPUT        ::=   0
-MAX_POWER_OUTPUT        ::=   5
-SET_SERIALIZED_NAME     ::=  "S-,"
-MAX_SERIALIZED_NAME_LEN ::=  15
-SET_DEVICE_NAME         ::= "SN,"
-MAX_DEVICE_NAME_LEN     ::=  20
-SET_LOW_POWER_ON        ::= "SO,1"
-SET_LOW_POWER_OFF       ::= "SO,0"
-SET_DORMANT_MODE        ::= "O,0"
-SET_SETTINGS            ::= "S"
+SET-ADV-POWER           ::=  "SGA,"
+SET-CONN-POWER          ::=  "SGC,"
+MIN-POWER-OUTPUT        ::=   0
+MAX-POWER-OUTPUT        ::=   5
+SET-SERIALIZED-NAME     ::=  "S-,"
+MAX-SERIALIZED-NAME-LEN ::=  15
+SET-DEVICE-NAME         ::= "SN,"
+MAX-DEVICE-NAME-LEN     ::=  20
+SET-LOW-POWER-ON        ::= "SO,1"
+SET-LOW-POWER-OFF       ::= "SO,0"
+SET-DORMANT-MODE        ::= "O,0"
+SET-SETTINGS            ::= "S"
 
-SET_SUPPORTED_FEATURES ::= "SR,"
+SET-SUPPORTED-FEATURES ::= "SR,"
 // > Map of supported features
-FEATURE_ENABLE_FLOW_CONTROL ::= "8000"
-FEATURE_NO_PROMPT           ::= "4000"
-FEATURE_FAST_MODE           ::= "2000"
-FEATURE_NO_BEACON_SCAN      ::= "1000"
-FEATURE_NO_CONNECT_SCAN     ::= "0800"
-FEATURE_NO_DUPLICATE_SCAN   ::= "0400"
-FEATURE_PASSIVE_SCAN        ::= "0200"
-FEATURE_UART_TRANSP_NO_ACK  ::= "0100"
-FEATURE_MLDP_SUPPORT        ::= "0080"
-FEATURE_SCRIPT_ON_POWER_ON  ::= "0040"
-FEATURE_RN4020_MLDP_STREAM  ::= "0020"
-FEATURE_COMMAND_MODE_GUARD  ::= "0008"
+FEATURE-ENABLE-FLOW-CONTROL ::= "8000"
+FEATURE-NO-PROMPT           ::= "4000"
+FEATURE-FAST-MODE           ::= "2000"
+FEATURE-NO-BEACON-SCAN      ::= "1000"
+FEATURE-NO-CONNECT-SCAN     ::= "0800"
+FEATURE-NO-DUPLICATE-SCAN   ::= "0400"
+FEATURE-PASSIVE-SCAN        ::= "0200"
+FEATURE-UART-TRANSP-NO-ACK  ::= "0100"
+FEATURE-MLDP-SUPPORT        ::= "0080"
+FEATURE-SCRIPT-ON-POWER-ON  ::= "0040"
+FEATURE-RN4020-MLDP-STREAM  ::= "0020"
+FEATURE-COMMAND-MODE-GUARD  ::= "0008"
 
-SET_DEFAULT_SERVICES::="SS,"
+SET-DEFAULT-SERVICES::="SS,"
 // > Bitmap of services
-SERVICES_UART_AND_BEACON     ::=  "C0"
-SERVICES_NO_SERVICE          ::=  "00"
-SERVICES_DEVICE_INFO_SERVICE ::=  "80"//0x80
-SERVICES_UART_TRANSP_SERVICE ::=  "40"//0x40
-SERVICES_BEACON_SERVICE      ::=  "20"//0x20
-SERVICES_AIRPATCH_SERVICE    ::=  "10"//0x10
+SERVICES-UART-AND-BEACON     ::=  "C0"
+SERVICES-NO-SERVICE          ::=  "00"
+SERVICES-DEVICE-INFO-SERVICE ::=  "80"//0x80
+SERVICES-UART-TRANSP-SERVICE ::=  "40"//0x40
+SERVICES-BEACON-SERVICE      ::=  "20"//0x20
+SERVICES-AIRPATCH-SERVICE    ::=  "10"//0x10
 
 //-- Get Commands
-GET_SETTINGS          ::= "G"
-GET_DEVICE_NAME       ::= "GN"
-GET_CONNECTION_STATUS ::= "GK"
+GET-SETTINGS          ::= "G"
+GET-DEVICE-NAME       ::= "GN"
+GET-CONNECTION-STATUS ::= "GK"
 
 //-- Action Commands
-START_DEFAULT_ADV       ::= "A"
-START_CUSTOM_ADV        ::= "A,"
-STOP_ADV                ::= "Y"
-CLEAR_IMMEDIATE_ADV     ::= "IA,Z"
-CLEAR_PERMANENT_ADV     ::= "NA,Z"
-CLEAR_IMMEDIATE_BEACON  ::= "IB,Z"
-CLEAR_PERMANENT_BEACON  ::= "NB,Z"
-START_IMMEDIATE_ADV     ::= "IA,"
-START_PERMANENT_ADV     ::= "NA,"
-START_IMMEDIATE_BEACON  ::= "IB,"
-START_PERMANENT_BEACON  ::= "NB,"
+START-DEFAULT-ADV       ::= "A"
+START-CUSTOM-ADV        ::= "A,"
+STOP-ADV                ::= "Y"
+CLEAR-IMMEDIATE-ADV     ::= "IA,Z"
+CLEAR-PERMANENT-ADV     ::= "NA,Z"
+CLEAR-IMMEDIATE-BEACON  ::= "IB,Z"
+CLEAR-PERMANENT-BEACON  ::= "NB,Z"
+START-IMMEDIATE-ADV     ::= "IA,"
+START-PERMANENT-ADV     ::= "NA,"
+START-IMMEDIATE-BEACON  ::= "IB,"
+START-PERMANENT-BEACON  ::= "NB,"
 
 // > Map of supported advertisement types
-AD_TYPES_FLAGS                     ::= "01"
-AD_TYPES_INCOMPLETE_16_UUID        ::= "02"
-AD_TYPES_COMPLETE_16_UUID          ::= "03"
-AD_TYPES_INCOMPLETE_32_UUID        ::= "04"
-AD_TYPES_COMPLETE_32_UUID          ::= "05"
-AD_TYPES_INCOMPLETE_128_UUID       ::= "06"
-AD_TYPES_COMPLETE_128_UUID         ::= "07"
-AD_TYPES_SHORTENED_LOCAL_NAME      ::= "08"
-AD_TYPES_COMPLETE_LOCAL_NAME       ::= "09"
-AD_TYPES_TX_POWER_LEVEL            ::= "0A"
-AD_TYPES_CLASS_OF_DEVICE           ::= "0D"
-AD_TYPES_SIMPLE_PAIRING_HASH       ::= "0E"
-AD_TYPES_SIMPLE_PAIRING_RANDOMIZER ::= "0F"
-AD_TYPES_TK_VALUE                  ::= "10"
-AD_TYPES_SECURITY_OOB_FLAG         ::= "11"
-AD_TYPES_SLAVE_CONNECTION_INTERVAL ::= "12"
-AD_TYPES_LIST_16_SERVICE_UUID      ::= "14"
-AD_TYPES_LIST_128_SERVICE_UUID     ::= "15"
-AD_TYPES_SERVICE_DATA              ::= "16"
-AD_TYPES_MANUFACTURE_SPECIFIC_DATA ::= "FF"
+AD-TYPES-FLAGS                     ::= "01"
+AD-TYPES-INCOMPLETE-16-UUID        ::= "02"
+AD-TYPES-COMPLETE-16-UUID          ::= "03"
+AD-TYPES-INCOMPLETE-32-UUID        ::= "04"
+AD-TYPES-COMPLETE-32-UUID          ::= "05"
+AD-TYPES-INCOMPLETE-128-UUID       ::= "06"
+AD-TYPES-COMPLETE-128-UUID         ::= "07"
+AD-TYPES-SHORTENED-LOCAL-NAME      ::= "08"
+AD-TYPES-COMPLETE-LOCAL-NAME       ::= "09"
+AD-TYPES-TX-POWER-LEVEL            ::= "0A"
+AD-TYPES-CLASS-OF-DEVICE           ::= "0D"
+AD-TYPES-SIMPLE-PAIRING-HASH       ::= "0E"
+AD-TYPES-SIMPLE-PAIRING-RANDOMIZER ::= "0F"
+AD-TYPES-TK-VALUE                  ::= "10"
+AD-TYPES-SECURITY-OOB-FLAG         ::= "11"
+AD-TYPES-SLAVE-CONNECTION-INTERVAL ::= "12"
+AD-TYPES-LIST-16-SERVICE-UUID      ::= "14"
+AD-TYPES-LIST-128-SERVICE-UUID     ::= "15"
+AD-TYPES-SERVICE-DATA              ::= "16"
+AD-TYPES-MANUFACTURE-SPECIFIC-DATA ::= "FF"
 
-START_DEFAULT_SCAN   ::= "F"
-START_CUSTOM_SCAN    ::= "F,"
-STOP_SCAN            ::= "X"
-ADD_WHITE_LIST       ::= "JA,"
-MAX_WHITE_LIST_SIZE  ::=  16
-MAC_ADDRESS_LEN      ::=  12
-PUBLIC_ADDRESS_TYPE  ::= "0"
-PRIVATE_ADDRESS_TYPE ::= "1"
-ADD_BONDED_WHITE_LIST::= "JB"
-CLEAR_WHITE_LIST     ::= "JC"
-KILL_CONNECTION      ::= "K,1"
-GET_RSSI_LEVEL       ::= "M"
+START-DEFAULT-SCAN   ::= "F"
+START-CUSTOM-SCAN    ::= "F,"
+STOP-SCAN            ::= "X"
+ADD-WHITE-LIST       ::= "JA,"
+MAX-WHITE-LIST-SIZE  ::=  16
+MAC-ADDRESS-LEN      ::=  12
+PUBLIC-ADDRESS-TYPE  ::= "0"
+PRIVATE-ADDRESS-TYPE ::= "1"
+ADD-BONDED-WHITE-LIST::= "JB"
+CLEAR-WHITE-LIST     ::= "JC"
+KILL-CONNECTION      ::= "K,1"
+GET-RSSI-LEVEL       ::= "M"
 REBOOT               ::= "R,1"
-DISPLAY_FW_VERSION   ::= "V"
+DISPLAY-FW-VERSION   ::= "V"
 
 // --- Service Definition
-DEFINE_CHARACT_UUID  ::= "PC,"
-DEFINE_SERVICE_UUID  ::= "PS,"
-CLEAR_ALL_SERVICES   ::= "PZ"
-PRIVATE_SERVICE_LEN  ::=  32  // 128-bit
-PUBLIC_SERVICE_LEN   ::=  4   // 16-bit
+DEFINE-CHARACT-UUID  ::= "PC,"
+DEFINE-SERVICE-UUID  ::= "PS,"
+CLEAR-ALL-SERVICES   ::= "PZ"
+PRIVATE-SERVICE-LEN  ::=  32  // 128-bit
+PUBLIC-SERVICE-LEN   ::=  4   // 16-bit
 
 // -- Characteristic properties
 
-CHAR_PROPS_INDICATE      ::= 0x20
-CHAR_PROPS_NOTIFY        ::= 0x10
-CHAR_PROPS_WRITE         ::= 0x08
-CHAR_PROPS_WRITE_NO_RESP ::= 0x04
-CHAR_PROPS_READ          ::= 0x02
+CHAR-PROPS-INDICATE      ::= 0x20
+CHAR-PROPS-NOTIFY        ::= 0x10
+CHAR-PROPS-WRITE         ::= 0x08
+CHAR-PROPS-WRITE-NO-RESP ::= 0x04
+CHAR-PROPS-READ          ::= 0x02
 
 // -- Characteristic Access
-READ_REMOTE_CHARACT  ::= "CHR,"
-WRITE_REMOTE_CHARACT ::= "CHW,"
-DISCOVER_REMOTE      ::= "CI"  // start client role
-READ_LOCAL_CHARACT   ::= "SHR,"
-WRITE_LOCAL_CHARACT  ::= "SHW,"
+READ-REMOTE-CHARACT  ::= "CHR,"
+WRITE-REMOTE-CHARACT ::= "CHW,"
+DISCOVER-REMOTE      ::= "CI"  // start client role
+READ-LOCAL-CHARACT   ::= "SHR,"
+WRITE-LOCAL-CHARACT  ::= "SHW,"
