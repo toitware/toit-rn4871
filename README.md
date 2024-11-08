@@ -4,6 +4,10 @@ Contains all the functionalities of RN4871 Bluetooth module.
 
 Needs `RX`, `TX` and `RESET` pins to be connected to the ESP32 microcontroller and specified at `RN4871` object creation. Uses the `UART` interface of the ESP32.
 
+## Reference
+
+It looks like the code was based on https://github.com/SodaqMoja/Microchip_RN487x/blob/master/src/RN487x_BLE.cpp
+
 ## Usage
 A simple usage example.
 

@@ -1,20 +1,21 @@
 // Copyright 2021 Toitware ApS.
-// Use of this source code is governed by a MIT-style license that can be
+// Copyright 2016 Microchip Technology Inc.
+// Use of this source code is governed by a proprietary license that can be
 // found in the LICENSE file.
 
 import binary
 import serial.device
 import serial.registers
-import serial.ports.uart
+import uart
 import gpio
 import .constants show *
 import encoding.hex
 
 
-class RN4871:
+class Rn4871:
 
   rec-message_ := ""
-  port_/serial.Port
+  port_/uart.Port
   status_/int := STATUS-DATAMODE
   uart-buffer_ := []
   rx-pin_/gpio.Pin
@@ -32,7 +33,7 @@ class RN4871:
     rx-pin_ = rx
     tx-pin_ = tx
     reset-pin_ = reset-pin
-    port_ = serial.Port --tx=tx --rx=rx --baud-rate=baud-rate
+    port_ = uart.Port --tx=tx --rx=rx --baud-rate=baud-rate
     status_ = STATUS-DATAMODE
     debug_ = debug-mode
 
@@ -72,7 +73,7 @@ class RN4871:
   answer-or-timeout_ --timeout=INTERNAL-CMD-TIMEOUT-MS-> bool:
     exception := catch:
       with-timeout --ms=timeout:
-        uart-buffer_ = port_.read
+        uart-buffer_ = port_.in.read
         rec-message_ = uart-buffer_.to-string.trim
 
     if exception != null:
@@ -80,7 +81,7 @@ class RN4871:
 
     return true
 
-  extract-result name/string="" list/List=[] first-iteration=true -> string:
+  extract-result name/string="" list/List=[] first-iteration/bool=true -> string:
     if first-iteration:
       if name == "":
         return name
@@ -96,11 +97,11 @@ class RN4871:
     return extract-result "" list false
 
   send-data message/string:
-    port_.write message
+    port_.out.write message
     debug-print_ "[send_data]: $message"
 
   send-command stream/string->none:
-    port_.write (stream.trim+CR)
+    port_.out.write (stream.trim + CR)
 
   set-status status-to-set:
     if STATUS-ENTER-DATAMODE == status-to-set:
@@ -129,8 +130,10 @@ class RN4871:
 
 // ---------------------------------------- Public section ----------------------------------------
 
+  close:
+
   /// # Resets device with a hardware method
-  pin-reboot ->bool:
+  pin-reboot -> bool:
     reset-pin_.set 0
     sleep --ms=50
     reset-pin_.set 1
@@ -143,7 +146,7 @@ class RN4871:
       print "[pin_reboot] Reboot failure"
       return false
 
-  start-BLE:
+  start-ble:
     if not enter-configuration-mode: return false
 
     if assign-random-address == false:
@@ -154,7 +157,7 @@ class RN4871:
     return true
 
   /// # Command mode
-  enter-configuration-mode ->bool:
+  enter-configuration-mode -> bool:
     set-status STATUS-ENTER-CONFMODE
     sleep --ms=100
     send-data CONF-COMMAND
@@ -167,9 +170,9 @@ class RN4871:
       print "[enter_configuration_mode] Failed to set command mode"
       return false
 
-  enter-data-mode ->bool:
+  enter-data-mode -> bool:
     set-status STATUS-ENTER-DATAMODE
-    port_.write EXIT-COMMAND
+    port_.out.write EXIT-COMMAND
     result := answer-or-timeout_ --timeout=STATUS-CHANGE-TIMEOUT-MS
     if pop-data == PROMPT-END:
       set-status STATUS-DATAMODE
@@ -248,18 +251,7 @@ class RN4871:
     if status_ != STATUS-CONFMODE:
       return false
 
-    is-valid := [BAUDRATES-460800,\
-    BAUDRATES-921600,\
-    BAUDRATES-230400,\
-    BAUDRATES-115200,\
-    BAUDRATES-57600,\
-    BAUDRATES-38400,\
-    BAUDRATES-28800,\
-    BAUDRATES-19200,\
-    BAUDRATES-14400,\
-    BAUDRATES-9600,\
-    BAUDRATES-4800,\
-    BAUDRATES-2400].contains param
+    is-valid := BAUDRATES.contains param
 
     if not is-valid:
       print "Error: Value: $param is not in BAUDRATE commands set"
@@ -333,19 +325,8 @@ class RN4871:
 
   Returns whether the operation was successful.
   */
-  set-sup-features feature/string:
-    is-valid := [FEATURE-ENABLE-FLOW-CONTROL,\
-    FEATURE-NO-PROMPT          ,\
-    FEATURE-FAST-MODE          ,\
-    FEATURE-NO-BEACON-SCAN     ,\
-    FEATURE-NO-CONNECT-SCAN    ,\
-    FEATURE-NO-DUPLICATE-SCAN  ,\
-    FEATURE-PASSIVE-SCAN       ,\
-    FEATURE-UART-TRANSP-NO-ACK ,\
-    FEATURE-MLDP-SUPPORT       ,\
-    FEATURE-SCRIPT-ON-POWER-ON ,\
-    FEATURE-RN4020-MLDP-STREAM ,\
-    FEATURE-COMMAND-MODE-GUARD ].contains feature
+  set-supported-features feature/string:
+    is-valid := FEATURES.contains feature
 
     if not is-valid:
       print "Error [set_sup_features]: Feature: $feature is not in supported features set"
@@ -360,17 +341,12 @@ class RN4871:
   Sets default services
 
   This command sets the default services to be supported by the RN4870 in the GAP
-  server role.
+    server role.
   Input : string value from SERVICES map
   Output: bool true if successfully executed
   */
-  set-def-services service/string -> bool:
-    is-valid := [SERVICES-UART-AND-BEACON,\
-    SERVICES-NO-SERVICE,\
-    SERVICES-DEVICE-INFO-SERVICE,\
-    SERVICES-UART-TRANSP-SERVICE,\
-    SERVICES-BEACON-SERVICE,\
-    SERVICES-AIRPATCH-SERVICE].contains service
+  set-default-services service/string -> bool:
+    is-valid := SERVICES.contains service
 
     if not is-valid:
       print "Error [set_def_services]: Value: $service is not a default service"
@@ -386,7 +362,6 @@ class RN4871:
 
   Clears all settings of services and characteristics.
   A power cycle is required afterwards to make the changes effective.
-
   */
   clear-all-services:
     debug-print_ "[clear_all_services]"
@@ -398,11 +373,10 @@ class RN4871:
   Starts Advertisement
 
   The controller is configured to send undirected connectable advertising events.
-
   */
   start-advertising:
     debug-print_ "[start_advertising]"
-    send-command(START-DEFAULT-ADV)
+    send-command START-DEFAULT-ADV
     return is-expected-result_ AOK-RESP
 
 
@@ -410,11 +384,10 @@ class RN4871:
   Stops Advertisement
 
   Stops advertisement started by the start_advertising method.
-
   */
   stop-advertising:
     debug-print_ "[stop_advertising]"
-    send-command(STOP-ADV)
+    send-command STOP-ADV
     return is-expected-result_ AOK-RESP
 
 
@@ -422,11 +395,10 @@ class RN4871:
   Clears the advertising structure Immediately
 
   Makes the changes immediately effective without a reboot.
-
   */
   clear-immediate-advertising:
     debug-print_ "[clear_immediate_advertising]"
-    send-command(CLEAR-IMMEDIATE-ADV)
+    send-command CLEAR-IMMEDIATE-ADV
     return is-expected-result_ AOK-RESP
 
 
@@ -434,8 +406,7 @@ class RN4871:
   Clears the advertising structure in a permanent way
 
   The changes are saved into NVM only if other procedures require permanent
-  configuration changes. A reboot is requested after executing this method.
-
+    configuration changes. A reboot is requested after executing this method.
   */
   clear-permanent-advertising:
     debug-print_ "[clear_permanent_advertising]"
@@ -447,7 +418,6 @@ class RN4871:
   Clears the Beacon structure immediately.
 
   Makes the changes immediately effective without a reboot.
-
   */
   clear-immediate-beacon:
     debug-print_ "[clear_immediate_beacon]"
@@ -459,8 +429,7 @@ class RN4871:
   Clears the Beacon structure in a permanent way
 
   The changes are saved into NVM only if other procedures require permanent
-  configuration changes. A reboot is requested after executing this method.
-
+    configuration changes. A reboot is requested after executing this method.
   */
   clear-permanent-beacon:
     debug-print_ "[clear_permanent_beacon]"
@@ -478,27 +447,8 @@ class RN4871:
           converted to the chain of hex ASCII values
   Output: bool true if successfully executed
   */
-  start-immediate-advertising ad-type/string ad-data/string ->bool:
-    is-valid := [AD-TYPES-FLAGS,\
-    AD-TYPES-INCOMPLETE-16-UUID,\
-    AD-TYPES-COMPLETE-16-UUID,\
-    AD-TYPES-INCOMPLETE-32-UUID,\
-    AD-TYPES-COMPLETE-32-UUID,\
-    AD-TYPES-INCOMPLETE-128-UUID,\
-    AD-TYPES-COMPLETE-128-UUID,\
-    AD-TYPES-SHORTENED-LOCAL-NAME,\
-    AD-TYPES-COMPLETE-LOCAL-NAME,\
-    AD-TYPES-TX-POWER-LEVEL,\
-    AD-TYPES-CLASS-OF-DEVICE,\
-    AD-TYPES-SIMPLE-PAIRING-HASH,\
-    AD-TYPES-SIMPLE-PAIRING-RANDOMIZER,\
-    AD-TYPES-TK-VALUE,\
-    AD-TYPES-SECURITY-OOB-FLAG,\
-    AD-TYPES-SLAVE-CONNECTION-INTERVAL,\
-    AD-TYPES-LIST-16-SERVICE-UUID,\
-    AD-TYPES-LIST-128-SERVICE-UUID,\
-    AD-TYPES-SERVICE-DATA,\
-    AD-TYPES-MANUFACTURE-SPECIFIC-DATA].contains ad-type
+  start-immediate-advertising ad-type/string ad-data/string -> bool:
+    is-valid := AD_TYPES.contains ad-type
 
     if not is-valid:
       print "Error [start_immediate_advertising]: ad_type $ad-type is not one of accepted types"
@@ -521,27 +471,8 @@ class RN4871:
           converted to the chain of hex ASCII values
   Output: bool true if successfully executed
   */
-  start-permanent-advertising ad-type/string ad-data/string ->bool:
-    is-valid := [AD-TYPES-FLAGS,\
-    AD-TYPES-INCOMPLETE-16-UUID,\
-    AD-TYPES-COMPLETE-16-UUID,\
-    AD-TYPES-INCOMPLETE-32-UUID,\
-    AD-TYPES-COMPLETE-32-UUID,\
-    AD-TYPES-INCOMPLETE-128-UUID,\
-    AD-TYPES-COMPLETE-128-UUID,\
-    AD-TYPES-SHORTENED-LOCAL-NAME,\
-    AD-TYPES-COMPLETE-LOCAL-NAME,\
-    AD-TYPES-TX-POWER-LEVEL,\
-    AD-TYPES-CLASS-OF-DEVICE,\
-    AD-TYPES-SIMPLE-PAIRING-HASH,\
-    AD-TYPES-SIMPLE-PAIRING-RANDOMIZER,\
-    AD-TYPES-TK-VALUE,\
-    AD-TYPES-SECURITY-OOB-FLAG,\
-    AD-TYPES-SLAVE-CONNECTION-INTERVAL,\
-    AD-TYPES-LIST-16-SERVICE-UUID,\
-    AD-TYPES-LIST-128-SERVICE-UUID,\
-    AD-TYPES-SERVICE-DATA,\
-    AD-TYPES-MANUFACTURE-SPECIFIC-DATA].contains ad-type
+  start-permanent-advertising ad-type/string ad-data/string -> bool:
+    is-valid := AD-TYPES.contains ad-type
 
     if not is-valid:
       print "Error [start_immediate_advertising]: ad_type $ad-type is not one of accepted types"
@@ -563,28 +494,9 @@ class RN4871:
           converted to the chain of hex ASCII values
   Output: bool true if successfully executed
   */
-  start-immediate-beacon ad-type/string ad-data/string ->bool:
+  start-immediate-beacon ad-type/string ad-data/string -> bool:
 
-    is-valid := [AD-TYPES-FLAGS,\
-    AD-TYPES-INCOMPLETE-16-UUID,\
-    AD-TYPES-COMPLETE-16-UUID,\
-    AD-TYPES-INCOMPLETE-32-UUID,\
-    AD-TYPES-COMPLETE-32-UUID,\
-    AD-TYPES-INCOMPLETE-128-UUID,\
-    AD-TYPES-COMPLETE-128-UUID,\
-    AD-TYPES-SHORTENED-LOCAL-NAME,\
-    AD-TYPES-COMPLETE-LOCAL-NAME,\
-    AD-TYPES-TX-POWER-LEVEL,\
-    AD-TYPES-CLASS-OF-DEVICE,\
-    AD-TYPES-SIMPLE-PAIRING-HASH,\
-    AD-TYPES-SIMPLE-PAIRING-RANDOMIZER,\
-    AD-TYPES-TK-VALUE,\
-    AD-TYPES-SECURITY-OOB-FLAG,\
-    AD-TYPES-SLAVE-CONNECTION-INTERVAL,\
-    AD-TYPES-LIST-16-SERVICE-UUID,\
-    AD-TYPES-LIST-128-SERVICE-UUID,\
-    AD-TYPES-SERVICE-DATA,\
-    AD-TYPES-MANUFACTURE-SPECIFIC-DATA].contains ad-type
+    is-valid := AD-TYPES.contains ad-type
 
     if not is-valid:
       print "Error [start_immediate_beacon]: ad_type $ad-type is not one of accepted types"
@@ -607,27 +519,8 @@ class RN4871:
           converted to the chain of hex ASCII values
   Output: bool true if successfully executed
   */
-  start-permanent-beacon ad-type/string ad-data/string ->bool:
-    is-valid := [AD-TYPES-FLAGS,\
-    AD-TYPES-INCOMPLETE-16-UUID,\
-    AD-TYPES-COMPLETE-16-UUID,\
-    AD-TYPES-INCOMPLETE-32-UUID,\
-    AD-TYPES-COMPLETE-32-UUID,\
-    AD-TYPES-INCOMPLETE-128-UUID,\
-    AD-TYPES-COMPLETE-128-UUID,\
-    AD-TYPES-SHORTENED-LOCAL-NAME,\
-    AD-TYPES-COMPLETE-LOCAL-NAME,\
-    AD-TYPES-TX-POWER-LEVEL,\
-    AD-TYPES-CLASS-OF-DEVICE,\
-    AD-TYPES-SIMPLE-PAIRING-HASH,\
-    AD-TYPES-SIMPLE-PAIRING-RANDOMIZER,\
-    AD-TYPES-TK-VALUE,\
-    AD-TYPES-SECURITY-OOB-FLAG,\
-    AD-TYPES-SLAVE-CONNECTION-INTERVAL,\
-    AD-TYPES-LIST-16-SERVICE-UUID,\
-    AD-TYPES-LIST-128-SERVICE-UUID,\
-    AD-TYPES-SERVICE-DATA,\
-    AD-TYPES-MANUFACTURE-SPECIFIC-DATA].contains ad-type
+  start-permanent-beacon ad-type/string ad-data/string -> bool:
+    is-valid := AD-TYPES.contains ad-type
 
     if not is-valid:
       print "Error [start_permanent_beacon]: ad_type $ad-type is not one of accepted types"
@@ -644,13 +537,13 @@ class RN4871:
   Starts Scanning
 
   Method available only when the module is set as a Central (GAP) device and is
-  ready for scan before establishing connection.
+    ready for scan before establishing connection.
   By default, scan interval of 375 milliseconds and scan window of 250 milliseconds
   Use stop_scanning() method to stop an active scan
   The user has the option to specify the scan interval and scan window as first
-  and second parameter, respectively. Each unit is 0.625 millisecond. Scan interval
-  must be larger or equal to scan window. The scan interval and the scan window
-  values can range from 2.5 milliseconds to 10.24 seconds.
+    and second parameter, respectively. Each unit is 0.625 millisecond. Scan interval
+    must be larger or equal to scan window. The scan interval and the scan window
+    values can range from 2.5 milliseconds to 10.24 seconds.
   Input1 : void
   or
   Input2 : int scan interval value (must be >= scan window)
@@ -692,18 +585,18 @@ class RN4871:
 
   Once one device is added to the white list, the white list feature is enabled.
   With the white list feature enabled, when performing a scan, any device not
-  included in the white list does not appear in the scan results.
+    included in the white list does not appear in the scan results.
   As a peripheral, any device not listed in the white list cannot be connected
-  with a local device. RN4870/71 supports up to 16 addresses in the white list.
+    with a local device. RN4870/71 supports up to 16 addresses in the white list.
   A random address stored in the white list cannot be resolved. If the peer
-  device does not change the random address, it is valid in the white list.
+    device does not change the random address, it is valid in the white list.
   If the random address is changed, this device is no longer considered to be on
-  the white list.
+    the white list.
   Input : string addr_type = 0 if following address is public (=1 for private)
           string addr 6-byte address in hex format
   Output: bool true if successfully executed
   */
-  add-mac-addr-white-list --addr-type/string --ad-data/string ->bool:
+  add-mac-addr-white-list --addr-type/string --ad-data/string -> bool:
     [PUBLIC-ADDRESS-TYPE, PRIVATE-ADDRESS-TYPE].do:
       if it == addr-type:
         debug-print_ "[add_mac_addr_white_list]: Send Command: $ADD-WHITE-LIST$addr-type,$ad-data"
@@ -718,12 +611,11 @@ class RN4871:
   # Adds all currently bonded devices to the white list
 
   The random address in the white list can be resolved with this method for
-  connection purpose. If the peer device changes its resolvable random address,
-  the RN4870/71 is still able to detect that the different random addresses are
-  from the same physical device, therefore, allows connection from such peer
-  device. This feature is particularly useful if the peer device is a iOS or
-  Android device which uses resolvable random.
-
+    connection purpose. If the peer device changes its resolvable random address,
+    the RN4870/71 is still able to detect that the different random addresses are
+    from the same physical device, therefore, allows connection from such peer
+    device. This feature is particularly useful if the peer device is a iOS or
+    Android device which uses resolvable random.
   */
   add-bonded-white-list:
     debug-print_ "[add_bonded_white_list]"
@@ -803,11 +695,13 @@ Gets the RSSI level.
       print "Error [set_service_UUID]: $uuid is not a valid hex value"
       return false
     if (uuid.size == PRIVATE-SERVICE-LEN):
-      debug-print_("[set_service_UUID]: Set public UUID")
+      debug-print_ "[set_service_UUID]: Set public UUID"
     else if (uuid.size == PUBLIC-SERVICE-LEN):
-      debug-print_("[set_service_UUID]: Set private UUID")
+      debug-print_ "[set_service_UUID]: Set private UUID"
     else:
-      print("Error [set_service_UUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number\nExample: PS,010203040506070809000A0B0C0D0E0F")
+      print """
+        Error [set_service_UUID]: received wrong UUID length. Should be 16 or 128 bit hexidecimal number
+        Example: PS,010203040506070809000A0B0C0D0E0F"""
       return false
     debug-print_ "[set_service_UUID] Send command: $DEFINE-SERVICE-UUID$uuid"
     send-command "$DEFINE-SERVICE-UUID$uuid"
