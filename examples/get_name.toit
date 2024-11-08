@@ -7,18 +7,18 @@ import gpio
 import rn4871 show *
 import rn4871.constants show *
 
-RX_PIN ::= 33
-TX_PIN ::= 32
-RESET_PIN ::= 25
+RX-PIN ::= 33
+TX-PIN ::= 32
+RESET-PIN ::= 25
 
 main:
-  tx_pin := gpio.Pin TX_PIN
-  rx_pin := gpio.Pin RX_PIN
-  rst_pin := gpio.Pin RESET_PIN --output --pull_up
+  tx-pin := gpio.Pin TX-PIN
+  rx-pin := gpio.Pin RX-PIN
+  rst-pin := gpio.Pin RESET-PIN --output --pull-up
 
-  device := RN4871 --tx=tx_pin --rx=rx_pin --reset_pin=rst_pin --baud_rate=115200 --debug_mode
-  device.pin_reboot
-  device.enter_configuration_mode
+  device := RN4871 --tx=tx-pin --rx=rx-pin --reset-pin=rst-pin --baud-rate=115200 --debug-mode
+  device.pin-reboot
+  device.enter-configuration-mode
 
   /// Print the device name
-  print (device.read_for_time --ms=1000)
+  print (device.read-for-time --ms=1000)
