@@ -1,4 +1,4 @@
-// Copyright 2021 Krzysztof Mróz. All rights reserved.
+// Copyright 2021 Toitware ApS.
 // Use of this source code is governed by a MIT-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ FACTORY_RESET_RESP      ::= "Reboot after Factory Reset"
 DEVICE_MODEL            ::= "RN"
 REBOOTING_RESP          ::= "Rebooting"
 NONE_RESP               ::= "none"
-SCANNING_RESP           ::= "Scanning"		
+SCANNING_RESP           ::= "Scanning"
 
 //-- Events
 REBOOT_EVENT            ::= "%REBOOT%"
@@ -43,12 +43,12 @@ USER_RANDOM_ADDRESS     ::= "&,"
 
 SET_NAME                ::= "SN,"
 GET_MODEL_NUMBER        ::= "GDM"
- 
+
 SET_BAUDRATE            ::= "SB,"
 GET_BAUDRATE            ::= "GB"
- 
+
 GET_POWERSAVE           ::= "GO"
- 
+
 GET_HWVERSION           ::= "GDH"
 GET_SWVERSION           ::= "GDR"
 GET_SERIALNUM           ::= "GDS"
@@ -60,7 +60,7 @@ STATUS_DATAMODE           ::= 1
 STATUS_ENTER_CONFMODE     ::= 2
 STATUS_CONFMODE           ::= 3
 
-// -- Answers enums    
+// -- Answers enums
 ANSWER_NONE       ::= 1
 ANSWER_PARTIAL    ::= 2
 ANSWER_COMPLETE   ::= 3
@@ -124,7 +124,7 @@ SERVICES_DEVICE_INFO_SERVICE ::=  "80"//0x80
 SERVICES_UART_TRANSP_SERVICE ::=  "40"//0x40
 SERVICES_BEACON_SERVICE      ::=  "20"//0x20
 SERVICES_AIRPATCH_SERVICE    ::=  "10"//0x10
-    
+
 //-- Get Commands
 GET_SETTINGS          ::= "G"
 GET_DEVICE_NAME       ::= "GN"
